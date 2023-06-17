@@ -8,6 +8,8 @@ export default function Document() {
                     rel="stylesheet"
                     href="https://fonts.googleapis.com/css?family=Inter:300,400,500,700&display=swap"
                 />
+                <link rel="manifest" href="/manifest.json" />
+                <meta name="apple-mobile-web-app-capable" content="yes" />
             </Head>
             <body>
                 <Main />

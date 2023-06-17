@@ -1,22 +1,31 @@
-import { BottomNavigation, CssBaseline, BottomNavigationAction, Container } from "@mui/material";
+import { useState } from 'react';
+
+import { BottomNavigation, CssBaseline, BottomNavigationAction, Container, useTheme } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CacheProvider, EmotionCache } from '@emotion/react';
+import { Celebration, Home, ReceiptLong } from "@mui/icons-material";
 import createEmotionCache from '../createEmotionCache';
-import { Home } from "@mui/icons-material";
+import VerticalGroup from '@/components/VerticalGroup';
 
 const theme = createTheme({
     palette: {
         mode: 'dark',
-        colin: {
-            main: '#fdffb6',
-            contrastText: '#000000',
+        primary: {
+            main: '#C2DEDC',
         },
-        eric: {
+        secondary: {
+            main: '#ECE5C7'
+        },
+        colin: {
             main: '#ffd6a5',
             contrastText: '#000000',
         },
+        eric: {
+            main: '#ffadad',
+            contrastText: '#000000',
+        },
         matty: {
-            main: '#ffc6ff',
+            main: '#bdb2ff',
             contrastText: '#000000',
         },
         hudson: {
@@ -36,18 +45,24 @@ const clientSideEmotionCache = createEmotionCache();
 
 export default function App({ Component, emotionCache = clientSideEmotionCache, pageProps }) {
 
+    const [selectedPage, setSelectedPage] = useState(0)
 
     return (
         <CacheProvider value={emotionCache}>
             <ThemeProvider theme={theme}>
                 <CssBaseline />
 
-                <Container maxWidth="sm" sx={{ height: "100%", width: "100%", padding: "15px", display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", marginBottom: "52px" }}>
-                    <Component {...pageProps} />
+                <Container maxWidth="sm" sx={{ height: "100%", width: "100%", padding: "15px", display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", marginBottom: "76px" }}>
+                    <Component {...pageProps} selectedPage={selectedPage} />
 
-                    <BottomNavigation value={0} sx={{ width: "100%", position: "fixed", bottom: 0 }}>
-                        <BottomNavigationAction label="Home" icon={<Home />} />
-                    </BottomNavigation>
+                    <VerticalGroup style={{ width: "100%", height: "76px", position: "fixed", bottom: 0 }}>
+                        <BottomNavigation value={selectedPage} onChange={(e, newValue) => setSelectedPage(newValue)} sx={{ width: "100%"}}>
+                            <BottomNavigationAction label="Home" icon={<Home />} />
+                            <BottomNavigationAction label="Occasions" icon={<Celebration />} />
+                            <BottomNavigationAction label="Ledger" icon={<ReceiptLong />} />
+                        </BottomNavigation>
+                        <div style={{ width: "100%", height: "20px", backgroundColor: theme.palette.background.default }} />
+                    </VerticalGroup>
                 </Container>
 
             </ThemeProvider>

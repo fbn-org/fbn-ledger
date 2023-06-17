@@ -12,7 +12,7 @@ function Card(props) {
                         <HorizontalGroup style={{ gap: "10px" }}>
 
                             <VerticalGroup style={{ alignItems: "flex-start" }}>
-                                <HorizontalGroup style={{ gap: "10px" }}>
+                                <HorizontalGroup style={{ gap: "10px", }}>
                                     {props.icon}
                                     <Typography variant="h5">{props.title}</Typography>
                                     {props.titleChip}

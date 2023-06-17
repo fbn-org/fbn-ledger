@@ -2,9 +2,13 @@ import { useState } from 'react';
 
 import { BottomNavigation, CssBaseline, BottomNavigationAction, Container, useTheme } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { CacheProvider, EmotionCache } from '@emotion/react';
 import { Celebration, Home, ReceiptLong } from "@mui/icons-material";
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+
+import { CacheProvider, EmotionCache } from '@emotion/react';
 import createEmotionCache from '../createEmotionCache';
+
 import VerticalGroup from '@/components/VerticalGroup';
 
 const theme = createTheme({
@@ -50,21 +54,23 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
     return (
         <CacheProvider value={emotionCache}>
             <ThemeProvider theme={theme}>
-                <CssBaseline />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <CssBaseline />
 
-                <Container maxWidth="sm" sx={{ height: "100%", width: "100%", padding: "15px", display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", marginBottom: "76px" }}>
-                    <Component {...pageProps} selectedPage={selectedPage} />
+                    <Container maxWidth="sm" sx={{ height: "100%", width: "100%", padding: "15px", display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", marginBottom: "76px" }}>
+                        <Component {...pageProps} selectedPage={selectedPage} />
 
-                    <VerticalGroup style={{ width: "100%", height: "76px", position: "fixed", bottom: 0 }}>
-                        <BottomNavigation value={selectedPage} onChange={(e, newValue) => setSelectedPage(newValue)} sx={{ width: "100%"}}>
-                            <BottomNavigationAction label="Home" icon={<Home />} />
-                            <BottomNavigationAction label="Occasions" icon={<Celebration />} />
-                            <BottomNavigationAction label="Ledger" icon={<ReceiptLong />} />
-                        </BottomNavigation>
-                        <div style={{ width: "100%", height: "20px", backgroundColor: theme.palette.background.default }} />
-                    </VerticalGroup>
-                </Container>
+                        <VerticalGroup style={{ width: "100%", height: "80px", position: "fixed", bottom: 0, zIndex: 100 }}>
+                            <BottomNavigation value={selectedPage} onChange={(e, newValue) => setSelectedPage(newValue)} sx={{ width: "100%" }}>
+                                <BottomNavigationAction label="Home" icon={<Home />} />
+                                <BottomNavigationAction label="Occasions" icon={<Celebration />} />
+                                <BottomNavigationAction label="Ledger" icon={<ReceiptLong />} />
+                            </BottomNavigation>
+                            <div style={{ width: "100%", height: "24px", backgroundColor: theme.palette.background.default }} />
+                        </VerticalGroup>
+                    </Container>
 
+                </LocalizationProvider>
             </ThemeProvider>
         </CacheProvider>
     )

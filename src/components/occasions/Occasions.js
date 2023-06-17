@@ -1,25 +1,29 @@
 import { useState } from 'react'
 
 import { Typography, Grid, Chip, IconButton, Button, Fab, AvatarGroup, Avatar, Icon } from '@mui/material'
-import { Add, Celebration, Edit } from '@mui/icons-material'
+import { Add, Celebration, Delete, Edit } from '@mui/icons-material'
 
 import Card from '../Card.js'
 import HorizontalGroup from '../HorizontalGroup.js'
 import VerticalGroup from '../VerticalGroup.js'
 import EditOccasion from './EditOccasion.js'
+import Payouts from './Payouts.js'
 
 export default function Occasions(props) {
 
     const [editorOpen, setEditorOpen] = useState(false)
+    const [payoutsOpen, setPayoutsOpen] = useState(false)
 
     return (
         <>
-            <EditOccasion open={editorOpen} />
-            <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", gap: "15px", border: "none" }}>
+            <EditOccasion open={editorOpen} onClose={() => { setEditorOpen(false) }} />
+            <Payouts open={payoutsOpen} onClose={() => { setPayoutsOpen(false) }} />
 
-                <Fab color="secondary" sx={{ position: "fixed", bottom: 96, right: 16, zIndex: 2 }} onClick={() => { setEditorOpen(true) }}>
-                    <Add />
-                </Fab>
+            <Fab color="secondary" sx={{ position: "fixed", bottom: 96, right: 16, zIndex: 2 }} onClick={() => { setEditorOpen(true) }}>
+                <Add />
+            </Fab>
+
+            <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", gap: "15px", border: "none" }}>
 
                 <HorizontalGroup style={{ gap: "10px" }}>
                     <Celebration fontSize="large" />
@@ -29,10 +33,10 @@ export default function Occasions(props) {
                 <VerticalGroup style={{ width: "100%", gap: "15px", }}>
                     <Card
                         icon={<AvatarGroup spacing="small">
-                            <Avatar sx={{ bgcolor: "colin.main", height: 20, width: 20 }}><Icon/></Avatar>
-                            <Avatar sx={{ bgcolor: "eric.main", height: 20, width: 20 }}><Icon/></Avatar>
-                            <Avatar sx={{ bgcolor: "hudson.main", height: 20, width: 20 }}><Icon/></Avatar>
-                            <Avatar sx={{ bgcolor: "matty.main", height: 20, width: 20 }}><Icon/></Avatar>
+                            <Avatar sx={{ bgcolor: "colin.main", height: 20, width: 20 }}><Icon /></Avatar>
+                            <Avatar sx={{ bgcolor: "eric.main", height: 20, width: 20 }}><Icon /></Avatar>
+                            <Avatar sx={{ bgcolor: "hudson.main", height: 20, width: 20 }}><Icon /></Avatar>
+                            <Avatar sx={{ bgcolor: "matty.main", height: 20, width: 20 }}><Icon /></Avatar>
                         </AvatarGroup>}
                         title="longer name for testing"
                         subtitle="2023-06-10 - 2023-06-12"
@@ -102,7 +106,7 @@ export default function Occasions(props) {
 
                             </Grid>
 
-                            <Button variant="outlined" color="primary" sx={{ borderRadius: "5px", width: "100%", height: "auto", }}>Payouts</Button>
+                            <Button variant="outlined" color="primary" onClick={() => { setPayoutsOpen(true) }} sx={{ borderRadius: "5px", width: "100%", height: "auto", }}>Payouts</Button>
                         </VerticalGroup>
                     </Card>
                 </VerticalGroup>

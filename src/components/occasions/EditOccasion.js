@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 
-import { Dialog, Slide, useTheme, Typography, TextField, Divider, ToggleButtonGroup, ToggleButton, Button } from "@mui/material";
+import { Dialog, Slide, useTheme, Typography, TextField, Divider, ToggleButtonGroup, ToggleButton, Button, IconButton } from "@mui/material";
 
 import { DatePicker } from "@mui/x-date-pickers";
-import { DoubleArrow, KeyboardDoubleArrowRight } from "@mui/icons-material";
+import { Delete, KeyboardDoubleArrowRight } from "@mui/icons-material";
 
 import VerticalGroup from "../VerticalGroup";
 import HorizontalGroup from "../HorizontalGroup";
@@ -16,7 +16,7 @@ export default function EditOccasion(props) {
     const [included, setIncluded] = useState([])
 
     return (
-        <Drawer title="New Occasion" open={props.open} onClose={props.onClose}>
+        <Drawer title="New Occasion" open={props.open} actions={<IconButton color="secondary"><Delete /></IconButton>} >
 
             <VerticalGroup style={{ width: "100%", alignItems: "flex-start", gap: "15px" }}>
                 <TextField label="Name" variant="outlined" size="medium" fullWidth />
@@ -40,7 +40,7 @@ export default function EditOccasion(props) {
                 </ToggleButtonGroup>
 
                 <HorizontalGroup style={{ width: "100%", gap: "10px", justifyContent: "space-evenly", marginTop: "10px" }}>
-                    <Button variant="outlined" color="secondary" size="large" sx={{ width: "100%" }}>Cancel</Button>
+                    <Button variant="outlined" color="secondary" size="large" onClick={props.onClose} sx={{ width: "100%" }}>Cancel</Button>
                     <Button variant="outlined" color="primary" size="large" sx={{ width: "100%" }}>Save</Button>
                 </HorizontalGroup>
 

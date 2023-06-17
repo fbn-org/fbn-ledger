@@ -11,7 +11,7 @@ export default function Dashboard() {
 
     return (
         <>
-            <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", gap: "15px", border: "none" }}>
+            <div style={{ width: "100%", height: "100%", marginBottom: "15px", display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", gap: "15px", border: "none" }}>
 
                 <HorizontalGroup style={{ gap: "10px" }}>
                     <AutoAwesome fontSize="large" />

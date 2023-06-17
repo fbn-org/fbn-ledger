@@ -10,6 +10,7 @@ export default function Document() {
                 />
                 <link rel="manifest" href="/manifest.json" />
                 <meta name="apple-mobile-web-app-capable" content="yes" />
+                <meta http-equiv="ScreenOrientation" content="autoRotate:disabled"/>
             </Head>
             <body>
                 <Main />

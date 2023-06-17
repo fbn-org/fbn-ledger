@@ -57,10 +57,12 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <CssBaseline />
 
-                    <Container maxWidth="sm" sx={{ height: "100%", width: "100%", padding: "15px", display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", marginBottom: "76px" }}>
-                        <Component {...pageProps} selectedPage={selectedPage} />
+                    <Container maxWidth="sm" sx={{ height: "100vh", width: "100%", display: "flex", padding: "0px", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
+                        <div style={{ width: "100%", height: "auto", position: "relative", padding: "15px", flexGrow: 1, overflowY: "scroll" }}>
+                            <Component {...pageProps} selectedPage={selectedPage} />
+                        </div>
 
-                        <VerticalGroup style={{ width: "100%", height: "80px", position: "fixed", bottom: 0, zIndex: 100 }}>
+                        <VerticalGroup style={{ width: "100vw", height: "80px", bottom: 0, zIndex: 100 }}>
                             <BottomNavigation value={selectedPage} onChange={(e, newValue) => setSelectedPage(newValue)} sx={{ width: "100%" }}>
                                 <BottomNavigationAction label="Home" icon={<Home />} />
                                 <BottomNavigationAction label="Occasions" icon={<Celebration />} />

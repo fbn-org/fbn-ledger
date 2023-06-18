@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { BottomNavigation, CssBaseline, BottomNavigationAction, Container, useTheme } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -8,6 +8,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import createEmotionCache from '../createEmotionCache';
+
+import { PeopleContext } from '@/contexts/PeopleContext.js';
+import { OccasionsContext } from '@/contexts/OccasionsContext.js';
+import { LedgerContext } from '@/contexts/LedgerContext.js';
 
 import VerticalGroup from '@/components/VerticalGroup';
 
@@ -61,27 +65,87 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
 
     const [selectedPage, setSelectedPage] = useState(0)
 
+    const [occasions, setOccasions] = useState([])
+    const [people, setPeople] = useState([])
+    const [ledger, setLedger] = useState([])
+
+    function refresh() {
+        console.log("refreshing")
+        fetch("/api/occasions/fetchOccasions")
+            .then(res => res.json())
+            .then(data => {
+                // maybe come up with a better way to sort these
+                data.sort((a, b) => {
+                    if (a.start_date < b.start_date) {
+                        return 1
+                    }
+                    if (a.start_date > b.start_date) {
+                        return -1
+                    }
+                    return 0
+                })
+                setOccasions(data)
+            })
+        fetch("/api/fetchPeople")
+            .then(res => res.json())
+            .then(data => {
+                setPeople(data)
+            })
+        fetch("/api/ledger/fetchLedger")
+            .then(res => res.json())
+            .then(data => {
+                data.sort((a, b) => {
+                    if (a.date < b.date) {
+                        return 1
+                    }
+                    if (a.date > b.date) {
+                        return -1
+                    }
+                    return 0
+                })
+                setLedger(data)
+            })
+
+    }
+
+    useEffect(() => {
+        refresh()
+        const interval = setInterval(() => {
+            refresh();
+        }, 1000)
+
+        return () => clearInterval(interval)
+    }, [])
+
+
     return (
         <CacheProvider value={emotionCache}>
             <ThemeProvider theme={theme}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <CssBaseline />
+                    <OccasionsContext.Provider value={{occasions, refresh}}>
+                        <PeopleContext.Provider value={{people, refresh}}>
+                            <LedgerContext.Provider value={{ledger, refresh}}>
 
-                    <Container maxWidth="sm" sx={{ position: "fixed", height: "100vh", width: "100%", display: "flex", padding: "0px", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", WebkitOverflowScrolling: "touch" }}>
-                        <div style={{ width: "100%", height: "auto", position: "relative", padding: "15px", flexGrow: 1, overflowY: "scroll" }}>
-                            <Component {...pageProps} selectedPage={selectedPage} />
-                        </div>
+                                <CssBaseline />
 
-                        <VerticalGroup style={{ width: "100vw", height: "80px", bottom: 0, zIndex: 100 }}>
-                            <BottomNavigation value={selectedPage} onChange={(e, newValue) => setSelectedPage(newValue)} sx={{ width: "100%" }}>
-                                <BottomNavigationAction label="Home" icon={<Home />} />
-                                <BottomNavigationAction label="Occasions" icon={<Celebration />} />
-                                <BottomNavigationAction label="Ledger" icon={<ReceiptLong />} />
-                            </BottomNavigation>
-                            <div style={{ width: "100%", height: "24px", backgroundColor: theme.palette.background.default }} />
-                        </VerticalGroup>
-                    </Container>
+                                <Container maxWidth="sm" sx={{ position: "fixed", height: "100vh", width: "100%", display: "flex", padding: "0px", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", WebkitOverflowScrolling: "touch" }}>
+                                    <div style={{ width: "100%", height: "auto", position: "relative", padding: "15px", flexGrow: 1, overflowY: "scroll" }}>
+                                        <Component {...pageProps} selectedPage={selectedPage} />
+                                    </div>
 
+                                    <VerticalGroup style={{ width: "100vw", height: "80px", bottom: 0, zIndex: 100 }}>
+                                        <BottomNavigation value={selectedPage} onChange={(e, newValue) => setSelectedPage(newValue)} sx={{ width: "100%" }}>
+                                            <BottomNavigationAction label="Home" icon={<Home />} />
+                                            <BottomNavigationAction label="Occasions" icon={<Celebration />} />
+                                            <BottomNavigationAction label="Ledger" icon={<ReceiptLong />} />
+                                        </BottomNavigation>
+                                        <div style={{ width: "100%", height: "24px", backgroundColor: theme.palette.background.default }} />
+                                    </VerticalGroup>
+                                </Container>
+
+                            </LedgerContext.Provider>
+                        </PeopleContext.Provider >
+                    </OccasionsContext.Provider>
                 </LocalizationProvider>
             </ThemeProvider>
         </CacheProvider>

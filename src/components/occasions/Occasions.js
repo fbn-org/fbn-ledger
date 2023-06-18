@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 
-import { Typography, Grid, Chip, IconButton, Button, Fab, AvatarGroup, Avatar, Icon } from '@mui/material'
-import { Add, Celebration, Delete, Edit } from '@mui/icons-material'
+import { Typography, Grid, Chip, IconButton, Button, Fab, AvatarGroup, Avatar, Icon, useTheme } from '@mui/material'
+import { Add, Celebration, Delete, Edit, Done, HourglassTop } from '@mui/icons-material'
+
+import { OccasionsContext } from '@/contexts/OccasionsContext'
+import { PeopleContext } from '@/contexts/PeopleContext'
+import { LedgerContext } from '@/contexts/LedgerContext.js'
 
 import Card from '../Card.js'
 import HorizontalGroup from '../HorizontalGroup.js'
@@ -11,38 +15,29 @@ import Payouts from './Payouts.js'
 
 export default function Occasions(props) {
 
+    const theme = useTheme()
+
     const [editorOpen, setEditorOpen] = useState(false)
     const [editIsNew, setEditIsNew] = useState(false)
+    const [editData, setEditData] = useState(null)
 
     const [payoutsOpen, setPayoutsOpen] = useState(false)
 
-    const [occasions, setOccasions] = useState([])
+    const {occasions} = useContext(OccasionsContext)
+    const {people} = useContext(PeopleContext)
 
-    useEffect(() => {
-        fetch("/api/fetchOccasions")
-            .then(res => res.json())
-            .then(data => {
-                // sort data by date
-                data.sort((a, b) => {
-                    if (a.start_date < b.start_date) {
-                        return -1
-                    }
-                    if (a.start_date > b.start_date) {
-                        return 1
-                    }
-                    return 0
-                })
-                setOccasions(data)
-                console.log(data)
-            })
-    }, [])
+    function editOccasion(occasion) {
+        setEditorOpen(true)
+        setEditIsNew(false)
+        setEditData(occasion)
+    }
 
     return (
         <>
-            <EditOccasion open={editorOpen} onClose={() => { setEditorOpen(false) }} isNew={editIsNew} />
+            <EditOccasion open={editorOpen} onClose={() => { setEditorOpen(false) }} isNew={editIsNew} editData={editData} people={people} />
             <Payouts open={payoutsOpen} onClose={() => { setPayoutsOpen(false) }} />
 
-            <Fab color="secondary" sx={{ position: "fixed", bottom: 96, right: 16, zIndex: 2 }} onClick={() => { setEditorOpen(true); setEditIsNew(true) }}>
+            <Fab color="secondary" sx={{ position: "fixed", bottom: 96, right: 16, zIndex: 2 }} onClick={() => { setEditorOpen(true); setEditIsNew(true); setEditData(null) }}>
                 <Add />
             </Fab>
 
@@ -54,45 +49,64 @@ export default function Occasions(props) {
                 </HorizontalGroup>
 
                 <VerticalGroup style={{ width: "100%", gap: "15px", }}>
-                    
-                    <Card
-                        icon={<AvatarGroup spacing="small">
-                            <Avatar sx={{ bgcolor: "colin.main", height: 20, width: 20 }}><Icon /></Avatar>
-                            <Avatar sx={{ bgcolor: "eric.main", height: 20, width: 20 }}><Icon /></Avatar>
-                            <Avatar sx={{ bgcolor: "hudson.main", height: 20, width: 20 }}><Icon /></Avatar>
-                            <Avatar sx={{ bgcolor: "matty.main", height: 20, width: 20 }}><Icon /></Avatar>
-                        </AvatarGroup>}
-                        title="longer name for testing"
-                        subtitle="2023-06-10 - 2023-06-12"
-                        //titleChip={<Chip label="Active" color="primary" variant="outlined" size="small" />}
-                        actions={<IconButton color="primary"><Edit /></IconButton>} style={{ width: "100%" }}
-                    >
-                        <Grid container spacing={2}>
 
-                            <Grid item xs={6}>
-                                <VerticalGroup style={{ alignItems: "flex-start" }}>
-                                    <Typography variant="h6">
-                                        15
-                                    </Typography>
-                                    <Typography variant="body2">
-                                        transactions
-                                    </Typography>
-                                </VerticalGroup>
-                            </Grid>
+                    {occasions.length !== 0 && people.length !== 0 ?
+                        occasions.map(occasion => {
 
-                            <Grid item xs={6}>
-                                <VerticalGroup style={{ alignItems: "flex-start" }}>
-                                    <Typography variant="h6">
-                                        $1000
-                                    </Typography>
-                                    <Typography variant="body2">
-                                        total spend
-                                    </Typography>
-                                </VerticalGroup>
-                            </Grid>
+                            const active = new Date(occasion.start_date) < new Date() && new Date(occasion.end_date) >= new Date()
+                            const past = new Date(occasion.start_date) < new Date()
 
-                        </Grid>
-                    </Card>
+                            return (
+                                <Card
+                                    key={occasion._id}
+                                    icon={
+                                        <AvatarGroup spacing="small">
+                                            {occasion.included_people.map(personId => {
+                                                const personName = people.find(person => person._id === personId).name
+                                                return (
+                                                    <Avatar key={personId} sx={{ bgcolor: `${personName.toLowerCase()}.main`, height: 20, width: 20 }}><Icon /></Avatar>
+                                                )
+                                            })}
+                                        </AvatarGroup>
+                                    }
+                                    title={occasion.name}
+                                    subtitle={`${occasion.start_date} - ${occasion.end_date}`}
+                                    subtitleIcon={
+                                        active ? <HourglassTop fontSize='small' sx={{ color: theme.palette.text.secondary }} /> : (past ? <Done fontSize='small' sx={{ color: theme.palette.text.secondary }} /> : null)
+                                    }
+                                    //titleChip={<Chip label="Active" color="primary" variant="outlined" size="small" />}
+                                    actions={<IconButton color="primary" onClick={() => { editOccasion(occasion) }}><Edit /></IconButton>} style={{ width: "100%" }}
+                                >
+                                    <Grid container spacing={2}>
+
+                                        <Grid item xs={6}>
+                                            <VerticalGroup style={{ alignItems: "flex-start" }}>
+                                                <Typography variant="h6">
+                                                    15
+                                                </Typography>
+                                                <Typography variant="body2">
+                                                    transactions
+                                                </Typography>
+                                            </VerticalGroup>
+                                        </Grid>
+
+                                        <Grid item xs={6}>
+                                            <VerticalGroup style={{ alignItems: "flex-start" }}>
+                                                <Typography variant="h6">
+                                                    $1000
+                                                </Typography>
+                                                <Typography variant="body2">
+                                                    total spend
+                                                </Typography>
+                                            </VerticalGroup>
+                                        </Grid>
+
+                                    </Grid>
+                                </Card>
+                            )
+                        })
+                        : null}
+
 
 
 

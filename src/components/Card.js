@@ -17,7 +17,10 @@ function Card(props) {
                                     <Typography variant="h5">{props.title}</Typography>
                                     {props.titleChip}
                                 </HorizontalGroup>
-                                <Typography variant="subtitle2" color="text.secondary">{props.subtitle}</Typography>
+                                <HorizontalGroup style={{ gap: "5px", }}>
+                                    {props.subtitleIcon}
+                                    <Typography variant="subtitle2" color="text.secondary">{props.subtitle}</Typography>
+                                </HorizontalGroup>
                             </VerticalGroup>
 
                         </HorizontalGroup>

@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { AttachMoney, AutoAwesome, Celebration, KeyboardDoubleArrowDown, KeyboardDoubleArrowUp, Person, Receipt } from '@mui/icons-material'
 import { Chip, Container, Grid, Paper, Typography, useTheme } from '@mui/material'
 
@@ -11,10 +13,11 @@ export default function Dashboard() {
 
     return (
         <>
+
             <div style={{ width: "100%", height: "100%", marginBottom: "15px", display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", gap: "15px", border: "none" }}>
 
                 <HorizontalGroup style={{ gap: "10px" }}>
-                    <AutoAwesome fontSize="large" />
+                    <AutoAwesome fontSize="large" color="colin" />
                     <Typography variant="h4">FBN Ledger</Typography>
                 </HorizontalGroup>
 

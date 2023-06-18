@@ -29,18 +29,28 @@ const theme = createTheme({
             contrastText: '#000000',
         },
         matty: {
-            main: '#bdb2ff',
+            main: '#a0c4ff',
             contrastText: '#000000',
         },
         hudson: {
-            main: '#a0c4ff',
+            main: '#6e78ff',
             contrastText: '#000000',
         }
+    },
+    shape: {
+        borderRadius: 5,
     },
     typography: {
         fontFamily: [
             'Inter',
-            'sans-serif'
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
         ].join(','),
     },
 })
@@ -57,7 +67,7 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <CssBaseline />
 
-                    <Container maxWidth="sm" sx={{ height: "100vh", width: "100%", display: "flex", padding: "0px", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}>
+                    <Container maxWidth="sm" sx={{ position: "fixed", height: "100vh", width: "100%", display: "flex", padding: "0px", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", WebkitOverflowScrolling: "touch" }}>
                         <div style={{ width: "100%", height: "auto", position: "relative", padding: "15px", flexGrow: 1, overflowY: "scroll" }}>
                             <Component {...pageProps} selectedPage={selectedPage} />
                         </div>

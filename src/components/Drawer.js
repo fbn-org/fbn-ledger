@@ -15,7 +15,7 @@ export default function Drawer(props) {
 
                     <Divider style={{ width: "100%", marginBottom: "15px" }} />
 
-                    <VerticalGroup style={{ width: "100%", alignItems: "flex-start", gap: "15px", marginBottom: "16px" }}>
+                    <VerticalGroup style={{ width: "100%", alignItems: "flex-start", gap: "15px", marginBottom: "16px", padding: "0px 5px"}}>
 
                         <HorizontalGroup style={{ width: "100%",}}>
                             <VerticalGroup style={{ alignItems: "flex-start" }}>

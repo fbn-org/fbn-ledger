@@ -1,0 +1,14 @@
+[
+    {
+        "reason": "",
+        "date": "2019-01-01",
+        "payer": "",
+        "occasion": "",
+        "people_price": {
+            "colin": 100
+        },
+        "tax": 0,
+        "tip": 0,
+        "total": 100
+    }
+]

@@ -40,7 +40,6 @@ function PersonItem(props) {
                 }
             }
         }
-
     }, [amounts[personId]])
 
     return (
@@ -91,7 +90,7 @@ export default function EditTransaction(props) {
     const [total, setTotal] = useState(0)
     const [subtotal, setSubtotal] = useState(0)
 
-    const [amounts, setAmounts] = useState({})
+    const [amounts, setAmounts] = useState(null)
     const [reason, setReason] = useState("")
     const [userPaying, setUserPaying] = useState("")
 
@@ -100,23 +99,25 @@ export default function EditTransaction(props) {
     const [tax, setTax] = useState("")
     const [tip, setTip] = useState("")
 
-    const [currentOccasion, setCurrentOccasion] = useState()
+    const [currentOccasion, setCurrentOccasion] = useState(null)
     const [currentPeople, setCurrentPeople] = useState([])
 
 
     useEffect(() => {
         // add up all amounts
-        if (Object.keys(amounts).length > 0) {
-            let subtotal = 0
-            Object.keys(amounts).forEach(personId => {
-                amounts[personId].forEach(amount => {
-                    if (amount !== "") {
-                        subtotal += parseFloat(amount)
-                    }
+        if (amounts !== null) {
+            if (Object.keys(amounts).length > 0) {
+                let subtotal = 0
+                Object.keys(amounts).forEach(personId => {
+                    amounts[personId].forEach(amount => {
+                        if (amount !== "") {
+                            subtotal += parseFloat(amount)
+                        }
+                    })
                 })
-            })
 
-            setSubtotal(subtotal)
+                setSubtotal(subtotal)
+            }
         }
     }, [amounts])
 
@@ -133,27 +134,27 @@ export default function EditTransaction(props) {
         setTotal(total)
     }, [tax, tip, subtotal])
 
-    useEffect(() => {
 
+    useEffect(() => {
         // update currentOccasion and currentPeople
         var occasionFromId = occasions.find(o => o._id == occasion)
         var peopleForOccasion = []
         var peopleUnformattedForOccasion = []
-        
+
         if (occasionFromId) {
             peopleUnformattedForOccasion = occasionFromId.included_people
         } else {
-            for (const Index in people){
-                let peopleInfo = people[Index]
+            for (const index in people) {
+                let peopleInfo = people[index]
                 peopleUnformattedForOccasion.push(peopleInfo._id)
             }
         }
-        
+
         // Format personal info from table of users
         for (const index in peopleUnformattedForOccasion) {
             let personId = peopleUnformattedForOccasion[index]
             let personInfo = people.find(user => user._id === personId)
-            
+
             if (personInfo) {
                 let info = {
                     "id": personId,
@@ -162,35 +163,36 @@ export default function EditTransaction(props) {
                 peopleForOccasion.push(info)
             }
         }
-        
-        // make sure everyone in amounts is actually in the occasion
-        if (occasionFromId && Object.keys(amounts).length > 0) {
 
-            var newKeys = []
-            for (const personId of Object.keys(amounts)) {
-                if (!occasionFromId.included_people.includes(personId)) {
-                    newKeys.push(personId)
-                }
-            }
-
-            if (newKeys.length > 0) {
-                setAmounts(amounts => {
-                    const newAmounts = { ...amounts }
-                    newKeys.forEach(key => {
-                        delete newAmounts[key]
-                    })
-                    return newAmounts
-                })
-            }
-        }
-
-        // Set at
         setCurrentOccasion(occasionFromId)
         setCurrentPeople(peopleForOccasion)
 
-        console.log(currentPeople)
-        
     }, [occasion])
+
+    useEffect(() => {
+        // make sure everyone in amounts is actually in the occasion
+        if (currentPeople !== null && amounts !== null) {
+            if (Object.keys(amounts).length > 0) {
+                var newKeys = []
+                for (const personId of Object.keys(amounts)) {
+                    let targetPerson = currentPeople.find(user => user.id === personId)
+                    if (!targetPerson) {
+                        newKeys.push(personId)
+                    }
+                }
+
+                if (newKeys.length > 0) {
+                    setAmounts(amounts => {
+                        const newAmounts = { ...amounts }
+                        newKeys.forEach(key => {
+                            delete newAmounts[key]
+                        })
+                        return newAmounts
+                    })
+                }
+            }
+        }
+    }, [currentPeople])
 
     function submit() {
         setSaving(true)
@@ -204,7 +206,7 @@ export default function EditTransaction(props) {
         let data = {
             reason: reason,
             date: date.utc(),
-            payer: userPaying, 
+            payer: userPaying,
             occasion: occasion,
             type: "split",
             type_attrs: {
@@ -256,10 +258,11 @@ export default function EditTransaction(props) {
     }
 
     function close() {
+        props.onClose()
         setReason("")
         setDate(dayjs())
-        setAmounts({})
-        setOccasion("None")
+        setAmounts(null)
+        setOccasion("")
         setTax("")
         setTip("")
         setUserPaying("")
@@ -267,18 +270,19 @@ export default function EditTransaction(props) {
         setSubtotal(0)
         setSaving(false)
         setConfirmationOpen(false)
-        props.onClose()
+        setCurrentOccasion(null)
+        setCurrentPeople([])
     }
 
     useEffect(() => {
         if (editData) {
             setReason(editData.reason)
             setDate(dayjs(editData.date))
-            setOccasion(editData.occasion)
             setTax(editData.type_attrs.tax)
             setTip(editData.type_attrs.tip)
             setAmounts(editData.type_attrs.people_items)
-            setUserPaying(editData.userPaying)
+            setUserPaying(editData.payer)
+            setOccasion(editData.occasion)
         }
     }, [editData])
 
@@ -302,8 +306,8 @@ export default function EditTransaction(props) {
             </ClickAwayListener> : null} >
 
             <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
-                <TextField label="Description" variant="outlined" size="medium" fullWidth value={reason} onChange={(e) => setReason(e.target.value)} sx={{flexBasis: "60%"}}/>
-                
+                <TextField label="Description" variant="outlined" size="medium" fullWidth value={reason} onChange={(e) => setReason(e.target.value)} sx={{ flexBasis: "60%" }} />
+
                 <FormControl sx={{ flexBasis: "40%" }}>
                     <InputLabel id="payer-label">Whos Paying?</InputLabel>
                     <Select variant="outlined" size="medium" label="Buyer" value={userPaying} onChange={(selectionEntry) => {
@@ -320,7 +324,7 @@ export default function EditTransaction(props) {
             </HorizontalGroup>
 
             <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
-                <DateTimePicker slotProps={{ textField: { size: "medium", autoWidth: true } }} label="Time" value={date} onChange={(v) => { setDate(v) }} sx={{ flexBasis: "50%" }} />
+                <DateTimePicker slotProps={{ textField: { size: "medium" } }} label="Time" value={date} onChange={(v) => { setDate(v) }} sx={{ flexBasis: "50%" }} />
 
                 <FormControl sx={{ flexBasis: "50%" }}>
                     <InputLabel id="transaction-type-label">Occasion</InputLabel>
@@ -343,12 +347,12 @@ export default function EditTransaction(props) {
             </HorizontalGroup>
 
             <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px" }}>
-                {currentPeople.map(personInfo => {
+                {amounts !== null ? currentPeople.map(personInfo => {
                     return (
                         <PersonItem key={personInfo.id} personId={personInfo.id} name={personInfo.name} amounts={amounts} setAmounts={setAmounts} />
                     )
-                })}
-                
+                }) : null}
+
                 <HorizontalGroup style={{ width: "100%", gap: "5px", alignSelf: "flex-end", justifyContent: "flex-end", marginTop: "10px", }}>
                     <Typography variant="h6" sx={{ flexBasis: "40%", textAlign: "center" }}>Tax</Typography>
                     <Add />

@@ -68,6 +68,10 @@ export default function EditOccasion(props) {
     }
 
     function deleteOccasion() {
+        fetch(`/api/occasions/disconnectTransactions/${editData._id}`, {
+            method: "PUT",
+        })
+
         fetch(`/api/occasions/${editData._id}`, {
             method: "DELETE",
         })

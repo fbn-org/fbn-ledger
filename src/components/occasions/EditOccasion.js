@@ -6,6 +6,8 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { Delete, KeyboardDoubleArrowRight } from "@mui/icons-material";
 
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 import VerticalGroup from "../VerticalGroup";
 import HorizontalGroup from "../HorizontalGroup";
@@ -23,16 +25,16 @@ export default function EditOccasion(props) {
     const [confirmationOpen, setConfirmationOpen] = useState(false)
 
     const [name, setName] = useState("")
-    const [startDate, setStartDate] = useState(dayjs())
-    const [endDate, setEndDate] = useState(dayjs().set('date', dayjs().date() + 1))
+    const [startDate, setStartDate] = useState(dayjs.utc().local())
+    const [endDate, setEndDate] = useState(dayjs().utc().local().set('date', dayjs().utc().local().date() + 1))
     const [included, setIncluded] = useState([])
 
     function submit() {
         setSaving(true)
         let data = {
             name: name,
-            start_date: startDate.format("YYYY-MM-DD"),
-            end_date: endDate.format("YYYY-MM-DD"),
+            start_date: startDate.utc(),
+            end_date: endDate.utc(),
             included_people: included
         }
 
@@ -66,7 +68,6 @@ export default function EditOccasion(props) {
     }
 
     function deleteOccasion() {
-        console.log("deleting")
         fetch(`/api/occasions/${editData._id}`, {
             method: "DELETE",
         })
@@ -78,7 +79,7 @@ export default function EditOccasion(props) {
 
     function close() {
         setName("")
-        setStartDate(dayjs())
+        setStartDate(dayjs().local())
         setEndDate(dayjs().set('date', dayjs().date() + 1))
         setIncluded([])
         setSaving(false)
@@ -118,7 +119,7 @@ export default function EditOccasion(props) {
                 <TextField label="Name" variant="outlined" size="medium" fullWidth value={name} onChange={(e) => setName(e.target.value)} />
 
                 <HorizontalGroup style={{ width: "100%", alignItems: "flex-start", gap: "10px", alignItems: "center" }}>
-                    <DatePicker slotProps={{ textField: { size: "medium" } }} label="Start date" value={startDate} onChange={(v) => setStartDate(v)} />
+                    <DatePicker slotProps={{ textField: { size: "medium" } }} label="Start date" value={startDate} onChange={(v) => setStartDate(v) } />
                     <KeyboardDoubleArrowRight />
                     <DatePicker slotProps={{ textField: { size: "medium" } }} label="End date" value={endDate} onChange={(v) => setEndDate(v)} minDate={startDate} />
                 </HorizontalGroup>

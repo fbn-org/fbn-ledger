@@ -9,6 +9,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import createEmotionCache from '../createEmotionCache';
 
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+
 import { PeopleContext } from '@/contexts/PeopleContext.js';
 import { OccasionsContext } from '@/contexts/OccasionsContext.js';
 import { LedgerContext } from '@/contexts/LedgerContext.js';
@@ -75,10 +79,10 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
             .then(data => {
                 // maybe come up with a better way to sort these
                 data.sort((a, b) => {
-                    if (a.start_date < b.start_date) {
+                    if (dayjs(a.start_date) < dayjs(b.end_date)) {
                         return 1
                     }
-                    if (a.start_date > b.start_date) {
+                    if (dayjs(a.start_date) > dayjs(b.end_date)) {
                         return -1
                     }
                     return 0
@@ -98,15 +102,15 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
             .then(data => {
                 setPeople(data)
             })
-            
+
         fetch("/api/ledger/fetchLedger")
             .then(res => res.json())
             .then(data => {
                 data.sort((a, b) => {
-                    if (a.date < b.date) {
+                    if (dayjs(a.date) < dayjs(b.date)) {
                         return 1
                     }
-                    if (a.date > b.date) {
+                    if (dayjs(a.date) > dayjs(b.date)) {
                         return -1
                     }
                     return 0

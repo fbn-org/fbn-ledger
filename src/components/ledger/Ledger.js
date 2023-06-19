@@ -3,6 +3,12 @@ import { useState, useEffect, useContext } from "react"
 import { Chip, IconButton, Typography, Fab, Avatar, Icon } from "@mui/material"
 import { Edit, LocalAtm, ReceiptLong, Add } from "@mui/icons-material"
 
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+dayjs.extend(advancedFormat);
+dayjs.extend(utc);
+
 import Card from "../Card"
 import HorizontalGroup from "../HorizontalGroup"
 import VerticalGroup from "../VerticalGroup"
@@ -47,12 +53,15 @@ export default function Ledger(props) {
                 <VerticalGroup style={{ width: "100%", gap: "15px", }}>
 
                     {ledger.map(transaction => {
+                        
                         const payer = people.find(person => person._id === transaction.payer).name
+                        var date = dayjs.utc(transaction.date).local().format("MMMM Do, YYYY hh:mm A")
+
                         return (
                             <Card
                                 key={transaction._id}
                                 title={`$${transaction.total}`}
-                                subtitle={transaction.date}
+                                subtitle={date}
                                 icon={<Avatar sx={{ bgcolor: `${payer.toLowerCase()}.main`, height: 20, width: 20 }}><Icon /></Avatar>}
                                 actions={<IconButton color="primary" onClick={() => { editTransaction(transaction) }}><Edit /></IconButton>}
                                 style={{ width: "100%" }}

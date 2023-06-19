@@ -6,6 +6,8 @@ import { DateTimePicker } from "@mui/x-date-pickers";
 import { Add, Delete, ExpandLess, ExpandMore, KeyboardDoubleArrowRight } from "@mui/icons-material";
 
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 import Drawer from "../Drawer";
 import HorizontalGroup from "../HorizontalGroup";
@@ -91,10 +93,16 @@ export default function EditTransaction(props) {
 
     const [amounts, setAmounts] = useState({})
     const [reason, setReason] = useState("")
-    const [date, setDate] = useState(dayjs())
-    const [occasion, setOccasion] = useState("")
+    const [userPaying, setUserPaying] = useState("")
+
+    const [date, setDate] = useState(dayjs().utc().local())
+    const [occasion, setOccasion] = useState("None")
     const [tax, setTax] = useState("")
     const [tip, setTip] = useState("")
+
+    const [currentOccasion, setCurrentOccasion] = useState()
+    const [currentPeople, setCurrentPeople] = useState([])
+
 
     useEffect(() => {
         // add up all amounts
@@ -126,11 +134,41 @@ export default function EditTransaction(props) {
     }, [tax, tip, subtotal])
 
     useEffect(() => {
+
+        // update currentOccasion and currentPeople
+        var occasionFromId = occasions.find(o => o._id == occasion)
+        var peopleForOccasion = []
+        var peopleUnformattedForOccasion = []
+        
+        if (occasionFromId) {
+            peopleUnformattedForOccasion = occasionFromId.included_people
+        } else {
+            for (const Index in people){
+                let peopleInfo = people[Index]
+                peopleUnformattedForOccasion.push(peopleInfo._id)
+            }
+        }
+        
+        // Format personal info from table of users
+        for (const index in peopleUnformattedForOccasion) {
+            let personId = peopleUnformattedForOccasion[index]
+            let personInfo = people.find(user => user._id === personId)
+            
+            if (personInfo) {
+                let info = {
+                    "id": personId,
+                    "name": personInfo.name,
+                }
+                peopleForOccasion.push(info)
+            }
+        }
+        
         // make sure everyone in amounts is actually in the occasion
-        if (occasion !== "None" && Object.keys(amounts).length > 0) {
+        if (occasionFromId && Object.keys(amounts).length > 0) {
+
             var newKeys = []
             for (const personId of Object.keys(amounts)) {
-                if (!occasions.find(o => o._id === occasion).included_people.includes(personId)) {
+                if (!occasionFromId.included_people.includes(personId)) {
                     newKeys.push(personId)
                 }
             }
@@ -145,6 +183,13 @@ export default function EditTransaction(props) {
                 })
             }
         }
+
+        // Set at
+        setCurrentOccasion(occasionFromId)
+        setCurrentPeople(peopleForOccasion)
+
+        console.log(currentPeople)
+        
     }, [occasion])
 
     function submit() {
@@ -158,8 +203,8 @@ export default function EditTransaction(props) {
 
         let data = {
             reason: reason,
-            date: date.format("YYYY-MM-DD"),
-            payer: "648e4ce5943894b71a1c60a3", // change this to whoever the current user is via a context eventually
+            date: date.utc(),
+            payer: userPaying, 
             occasion: occasion,
             type: "split",
             type_attrs: {
@@ -214,9 +259,10 @@ export default function EditTransaction(props) {
         setReason("")
         setDate(dayjs())
         setAmounts({})
-        setOccasion("")
+        setOccasion("None")
         setTax("")
         setTip("")
+        setUserPaying("")
         setTotal(0)
         setSubtotal(0)
         setSaving(false)
@@ -232,6 +278,7 @@ export default function EditTransaction(props) {
             setTax(editData.type_attrs.tax)
             setTip(editData.type_attrs.tip)
             setAmounts(editData.type_attrs.people_items)
+            setUserPaying(editData.userPaying)
         }
     }, [editData])
 
@@ -254,13 +301,33 @@ export default function EditTransaction(props) {
                 </Tooltip>
             </ClickAwayListener> : null} >
 
-            <TextField label="Reason" variant="outlined" size="medium" fullWidth value={reason} onChange={(e) => setReason(e.target.value)} />
             <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
-                <DateTimePicker slotProps={{ textField: { size: "medium", autoWidth: true } }} label="Date" value={date} onChange={(v) => { setDate(v) }} sx={{ flexBasis: "50%" }} />
+                <TextField label="Description" variant="outlined" size="medium" fullWidth value={reason} onChange={(e) => setReason(e.target.value)} sx={{flexBasis: "60%"}}/>
+                
+                <FormControl sx={{ flexBasis: "40%" }}>
+                    <InputLabel id="payer-label">Whos Paying?</InputLabel>
+                    <Select variant="outlined" size="medium" label="Buyer" value={userPaying} onChange={(selectionEntry) => {
+                        var userPaying = selectionEntry.target.value
+                        setUserPaying(userPaying)
+                    }}>
+                        {currentPeople.map(personInfo => {
+                            return (
+                                <MenuItem key={personInfo.id} value={personInfo.id}>{personInfo.name}</MenuItem>
+                            )
+                        })}
+                    </Select>
+                </FormControl>
+            </HorizontalGroup>
+
+            <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
+                <DateTimePicker slotProps={{ textField: { size: "medium", autoWidth: true } }} label="Time" value={date} onChange={(v) => { setDate(v) }} sx={{ flexBasis: "50%" }} />
 
                 <FormControl sx={{ flexBasis: "50%" }}>
                     <InputLabel id="transaction-type-label">Occasion</InputLabel>
-                    <Select variant="outlined" size="medium" label="Occasion" value={occasion} onChange={(e) => setOccasion(e.target.value)}>
+                    <Select variant="outlined" size="medium" label="Occasion" value={occasion} onChange={(selectionEntry) => {
+                        var selectionValue = selectionEntry.target.value
+                        setOccasion(selectionValue)
+                    }}>
                         <MenuItem key="None" value="None">None</MenuItem>
                         {occasions.map(occasion => {
                             if (occasion.active) {
@@ -276,22 +343,12 @@ export default function EditTransaction(props) {
             </HorizontalGroup>
 
             <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px" }}>
-
-                {
-                    occasion !== "None" && occasion !== "" ? occasions.find(o => o._id === occasion).included_people.map(personId => {
-                        const name = people.find(person => person._id === personId).name
-                        return (
-                            <PersonItem key={personId} personId={personId} name={name} amounts={amounts} setAmounts={setAmounts} />
-                        )
-                    })
-                        : occasion === "None" ? people.map(person => {
-                            return (
-                                <PersonItem key={person._id} personId={person._id} name={person.name} amounts={amounts} setAmounts={setAmounts} />
-                            )
-                        })
-                            : null
-                }
-
+                {currentPeople.map(personInfo => {
+                    return (
+                        <PersonItem key={personInfo.id} personId={personInfo.id} name={personInfo.name} amounts={amounts} setAmounts={setAmounts} />
+                    )
+                })}
+                
                 <HorizontalGroup style={{ width: "100%", gap: "5px", alignSelf: "flex-end", justifyContent: "flex-end", marginTop: "10px", }}>
                     <Typography variant="h6" sx={{ flexBasis: "40%", textAlign: "center" }}>Tax</Typography>
                     <Add />
@@ -315,7 +372,7 @@ export default function EditTransaction(props) {
 
             <HorizontalGroup style={{ width: "100%", gap: "10px", justifyContent: "space-evenly", marginTop: "10px" }}>
                 <Button variant="outlined" color="secondary" size="large" onClick={close} sx={{ width: "100%" }}>Cancel</Button>
-                <LoadingButton variant="outlined" color="primary" size="large" sx={{ width: "100%" }} onClick={submit} loading={saving} disabled={reason === "" || total === 0 || subtotal === 0 || occasion === ""}>Save</LoadingButton>
+                <LoadingButton variant="outlined" color="primary" size="large" sx={{ width: "100%" }} onClick={submit} loading={saving} disabled={reason === "" || total === 0 || subtotal === 0 || occasion === "" || userPaying === ""}>Save</LoadingButton>
             </HorizontalGroup>
 
         </Drawer >

@@ -23,6 +23,7 @@ export default function Occasions(props) {
     const [editData, setEditData] = useState(null)
 
     const [payoutsOpen, setPayoutsOpen] = useState(false)
+    const [payoutsOccasion, setPayoutsOccasion] = useState(null)
 
     const { occasions } = useContext(OccasionsContext)
     const { people } = useContext(PeopleContext)
@@ -33,10 +34,15 @@ export default function Occasions(props) {
         setEditData(occasion)
     }
 
+    function showPayouts(occasion){
+        setPayoutsOpen(true)
+        setPayoutsOccasion(occasion)
+    }
+
     return (
         <>
-            <EditOccasion open={editorOpen} onClose={() => { setEditorOpen(false) }} isNew={editIsNew} editData={editData} people={people} />
-            <Payouts open={payoutsOpen} onClose={() => { setPayoutsOpen(false) }} />
+            <EditOccasion open={editorOpen} onClose={() => { setEditorOpen(false) }} isNew={editIsNew} editData={editData} people={people}  />
+            <Payouts onClose={() => { setPayoutsOccasion(null) }} occasion={payoutsOccasion} people={people} open={payoutsOpen} setOpen={setPayoutsOpen}/>
 
             <Fab color="secondary" sx={{ position: "fixed", bottom: 96, right: 16, zIndex: 2 }} onClick={() => { setEditorOpen(true); setEditIsNew(true); setEditData(null) }}>
                 <Add />
@@ -53,9 +59,9 @@ export default function Occasions(props) {
 
                     {occasions.length !== 0 && people.length !== 0 ?
                         occasions.map(occasion => {
-                            
-                            return <OccasionCard key={occasion._id} occasion={occasion} people={people} />
-                            
+
+                            return <OccasionCard key={occasion._id} occasion={occasion} people={people} editCallback={editOccasion} payoutsCallback={showPayouts} />
+
                         })
                         : null}
 

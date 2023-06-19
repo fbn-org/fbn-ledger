@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 
-import { Chip, IconButton, Typography, Fab } from "@mui/material"
+import { Chip, IconButton, Typography, Fab, Avatar, Icon } from "@mui/material"
 import { Edit, LocalAtm, ReceiptLong, Add } from "@mui/icons-material"
 
 import Card from "../Card"
@@ -8,54 +8,30 @@ import HorizontalGroup from "../HorizontalGroup"
 import VerticalGroup from "../VerticalGroup"
 import EditTransaction from "./EditTransaction"
 
+import { OccasionsContext } from "@/contexts/OccasionsContext"
+import { PeopleContext } from "@/contexts/PeopleContext"
+import { LedgerContext } from "@/contexts/LedgerContext"
+
 export default function Ledger(props) {
 
     const [editorOpen, setEditorOpen] = useState(false)
     const [editIsNew, setEditIsNew] = useState(false)
     const [editData, setEditData] = useState(null)
 
-    const [transactions, setTransactions] = useState([])
-    const [people, setPeople] = useState([])
+    const { occasions } = useContext(OccasionsContext)
+    const { people } = useContext(PeopleContext)
+    const { ledger } = useContext(LedgerContext)
 
-    useEffect(() => {
-        refreshTransactions()
-        fetch("/api/fetchPeople")
-            .then(res => res.json())
-            .then(data => {
-                setPeople(data)
-            })
-
-        const refresh = setInterval(() => {
-            refreshTransactions()
-        }, 1000)
-
-        return () => {
-            clearInterval(refresh)
-        }
-    }, [])
-
-    function refreshTransactions() {
-        fetch("/api/occasions/fetchOccasions")
-            .then(res => res.json())
-            .then(data => {
-                // maybe come up with a better way to sort these
-                data.sort((a, b) => {
-                    if (a.start_date < b.start_date) {
-                        return 1
-                    }
-                    if (a.start_date > b.start_date) {
-                        return -1
-                    }
-                    return 0
-                })
-                setTransactions(data)
-            })
+    function editTransaction(transaction) {
+        setEditorOpen(true)
+        setEditIsNew(false)
+        setEditData(transaction)
     }
 
     return (
         <>
 
-            <EditTransaction open={editorOpen} onClose={() => { setEditorOpen(false) }} isNew={editIsNew} editData={editData}/>
+            <EditTransaction open={editorOpen} onClose={() => { setEditorOpen(false) }} isNew={editIsNew} editData={editData} people={people} occasions={occasions} />
 
             <Fab color="secondary" sx={{ position: "fixed", bottom: 96, right: 16, zIndex: 2 }} onClick={() => { setEditorOpen(true); setEditIsNew(true); setEditData(null) }}>
                 <Add />
@@ -70,17 +46,24 @@ export default function Ledger(props) {
 
                 <VerticalGroup style={{ width: "100%", gap: "15px", }}>
 
-                    <Card
-                        title="$123"
-                        subtitle="2023-06-10 12:34"
-                        titleChip={<Chip variant="outlined" size="small" label="Colin" color="colin" />}
-                        actions={<IconButton color="primary"><Edit /></IconButton>}
-                        style={{ width: "100%" }}
-                    >
-                        <Typography variant="body1">
-                            for Asian Court on Philly Trip
-                        </Typography>
-                    </Card>
+                    {ledger.map(transaction => {
+                        const payer = people.find(person => person._id === transaction.payer).name
+                        return (
+                            <Card
+                                key={transaction._id}
+                                title={`$${transaction.total}`}
+                                subtitle={transaction.date}
+                                icon={<Avatar sx={{ bgcolor: `${payer.toLowerCase()}.main`, height: 20, width: 20 }}><Icon /></Avatar>}
+                                actions={<IconButton color="primary" onClick={() => { editTransaction(transaction) }}><Edit /></IconButton>}
+                                style={{ width: "100%" }}
+                            >
+                                <Typography variant="body1">
+                                    {transaction.reason}
+                                </Typography>
+                            </Card>
+
+                        )
+                    })}
 
                 </VerticalGroup>
 

@@ -70,7 +70,6 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
     const [ledger, setLedger] = useState([])
 
     function refresh() {
-        console.log("refreshing")
         fetch("/api/occasions/fetchOccasions")
             .then(res => res.json())
             .then(data => {
@@ -84,13 +83,22 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                     }
                     return 0
                 })
+                
+                // check if each occasion is active or past
+                data.forEach(occasion => {
+                    occasion.active = new Date(occasion.start_date) < new Date() && new Date(occasion.end_date) >= new Date()
+                    occasion.past = new Date(occasion.end_date) < new Date()
+                })
+
                 setOccasions(data)
             })
+
         fetch("/api/fetchPeople")
             .then(res => res.json())
             .then(data => {
                 setPeople(data)
             })
+            
         fetch("/api/ledger/fetchLedger")
             .then(res => res.json())
             .then(data => {

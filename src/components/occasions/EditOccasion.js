@@ -138,7 +138,7 @@ export default function EditOccasion(props) {
 
                 <HorizontalGroup style={{ width: "100%", gap: "10px", justifyContent: "space-evenly", marginTop: "10px" }}>
                     <Button variant="outlined" color="secondary" size="large" onClick={close} sx={{ width: "100%" }}>Cancel</Button>
-                    <LoadingButton variant="outlined" color="primary" size="large" sx={{ width: "100%" }} onClick={submit} loading={saving}>Save</LoadingButton>
+                    <LoadingButton variant="outlined" color="primary" size="large" sx={{ width: "100%" }} onClick={submit} loading={saving} disabled={name === "" || included.length === 0}>Save</LoadingButton>
                 </HorizontalGroup>
 
             </VerticalGroup>

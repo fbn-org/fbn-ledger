@@ -4,11 +4,14 @@
         "date": "2019-01-01",
         "payer": "",
         "occasion": "",
-        "people_price": {
-            "colin": 100
+        "type": "",
+        "type_attrs": {
+            "tax": 0,
+            "tip": 0,
+            "people_items": {
+                "id_1": []
+            }
         },
-        "tax": 0,
-        "tip": 0,
         "total": 100
     }
 ]

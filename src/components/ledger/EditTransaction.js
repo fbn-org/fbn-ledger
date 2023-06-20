@@ -77,6 +77,70 @@ function PersonItem(props) {
     )
 }
 
+function ComplexPersonItem(props) {
+
+    const personId = props.personId
+    const name = props.name
+    const amounts = props.amounts
+    const setAmounts = props.setAmounts
+
+    // useEffect(() => {
+    //     if (amounts[personId] === undefined) {
+    //         setAmounts(amounts => ({ ...amounts, [personId]: [""] }))
+    //     }
+    // }, [])
+
+    useEffect(() => {
+        if (amounts[personId] !== undefined) {
+
+            if (amounts[personId].every(amount => amount !== "")) {
+                setAmounts(amounts => ({ ...amounts, [personId]: [...amounts[personId], ""] }))
+            }
+
+            if (amounts[personId].some(amount => amount === "")) {
+                const emptyIndex = amounts[personId].findIndex(amount => amount === "")
+                if (emptyIndex !== amounts[personId].length - 1) {
+                    setAmounts(amounts => ({ ...amounts, [personId]: [...amounts[personId].slice(0, emptyIndex), ...amounts[personId].slice(emptyIndex + 1)] }))
+                }
+            }
+        }
+    }, [amounts[personId]])
+
+    return (
+        <>
+            {amounts[personId] !== undefined ?
+                <VerticalGroup key={personId} style={{ width: " 100%", gap: "10px" }}>
+
+                    <HorizontalGroup key={0} style={{ width: "100%", gap: "5px" }}>
+                        <Chip label={name} color={name.toLowerCase()} variant="outlined" sx={{ flexBasis: "40%" }} />
+                        <KeyboardDoubleArrowRight />
+                        <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={amounts[personId][0]} onChange={(e) => { setAmounts(amounts => ({ ...amounts, [personId]: [e.target.value, ...amounts[personId].slice(1)] })) }} />
+                    </HorizontalGroup>
+
+                    {amounts[personId].slice(1).map((amount, index) => {
+                        const id = index + 1
+                        return (
+                            <HorizontalGroup key={id} style={{ width: "100%", gap: "5px" }}>
+                                <div style={{ flexBasis: "40%" }}>
+                                    {/* {id === 1 ?
+                                <>
+                                    <Typography variant="subtitle2" color={`${name.toLowerCase()}.main`} sx={{ textAlign: "center" }} >${total}</Typography>
+                                </>
+                                : null} */}
+                                </div>
+                                <Add />
+                                <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={amounts[personId][id]} onChange={(e) => { console.log(amounts[personId].slice(0, id)); setAmounts(amounts => ({ ...amounts, [personId]: [...amounts[personId].slice(0, id), e.target.value, ...amounts[personId].slice(id + 1)] })) }} />
+                            </HorizontalGroup>
+                        )
+                    })}
+
+
+                </VerticalGroup>
+                : null}
+        </>
+    )
+}
+
 export default function EditTransaction(props) {
 
     const isNew = props.isNew
@@ -86,6 +150,8 @@ export default function EditTransaction(props) {
 
     const [saving, setSaving] = useState(false)
     const [confirmationOpen, setConfirmationOpen] = useState(false)
+
+    const [useComplexMode, setComplexMode] = useState(false)
 
     const [total, setTotal] = useState(0)
     const [subtotal, setSubtotal] = useState(0)
@@ -270,7 +336,7 @@ export default function EditTransaction(props) {
         setSubtotal(0)
         setConfirmationOpen(false)
         setSaving(false)
-        
+
         presetValues("None")
     }
 
@@ -346,13 +412,31 @@ export default function EditTransaction(props) {
                 </FormControl>
             </HorizontalGroup>
 
-            <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px" }}>
+            {/* Complex container group */}
+            <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px", visibility: useComplexMode && "visible"  || "hidden"}}>
+                hey there
                 {amounts ? currentPeople.map(personInfo => {
                     return (
                         <PersonItem key={personInfo.id} personId={personInfo.id} name={personInfo.name} amounts={amounts} setAmounts={setAmounts} />
                     )
-                }) : null}
+                })
+                    : null}
 
+            </VerticalGroup>
+
+            {/* Simple container group */}
+            <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px", visibility: useComplexMode && "hidden"  || "visible" }}>
+
+                {amounts ? currentPeople.map(personInfo => {
+                    return (
+                        <PersonItem key={personInfo.id} personId={personInfo.id} name={personInfo.name} amounts={amounts} setAmounts={setAmounts} />
+                    )
+                })
+                    : null}
+
+            </VerticalGroup>
+
+            <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "5px" }}>
                 <HorizontalGroup style={{ width: "100%", gap: "5px", alignSelf: "flex-end", justifyContent: "flex-end", marginTop: "10px", }}>
                     <Typography variant="h6" sx={{ flexBasis: "40%", textAlign: "center" }}>Tax</Typography>
                     <Add />

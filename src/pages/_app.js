@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { BottomNavigation, CssBaseline, BottomNavigationAction, Container, useTheme } from "@mui/material";
+import { BottomNavigation, CssBaseline, BottomNavigationAction, Container, useTheme, Typography } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Celebration, Home, ReceiptLong } from "@mui/icons-material";
+import { Celebration, Home, Lock, ReceiptLong } from "@mui/icons-material";
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
@@ -18,6 +18,7 @@ import { OccasionsContext } from '@/contexts/OccasionsContext.js';
 import { LedgerContext } from '@/contexts/LedgerContext.js';
 
 import VerticalGroup from '@/components/VerticalGroup';
+import HorizontalGroup from '@/components/HorizontalGroup';
 
 const theme = createTheme({
     palette: {
@@ -146,6 +147,13 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                                 <CssBaseline />
 
                                 <Container maxWidth="sm" sx={{ position: "fixed", height: "100vh", width: "100%", display: "flex", padding: "0px", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", WebkitOverflowScrolling: "touch" }}>
+                                    <VerticalGroup style={{ width: "100%", height: "100%", flexGrow: 1, position: "fixed", justifyContent: "center", background: theme.palette.background.default, zIndex: 100000 }}>
+                                        <HorizontalGroup >
+                                            <Lock fontSize="large" />
+
+                                        </HorizontalGroup>
+                                    </VerticalGroup>
+
                                     <div style={{ width: "100%", height: "auto", position: "relative", padding: "15px", flexGrow: 1, overflowY: "scroll" }}>
                                         <Component {...pageProps} selectedPage={selectedPage} />
                                     </div>

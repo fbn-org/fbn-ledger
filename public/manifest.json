@@ -1,8 +1,0 @@
-{
-    "name": "FBN Ledger",
-    "short_name": "FBN",
-    "start_url": "/",
-    "display": "standalone",
-    "theme_color": "#C2DEDC",
-    "orientation": "portrait-primary"
-}

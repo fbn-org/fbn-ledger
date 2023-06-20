@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 
-import { Typography, Grid, Chip, IconButton, Button, Fab, AvatarGroup, Avatar, Icon, useTheme } from '@mui/material'
-import { Add, Celebration, Delete, Edit, Done, HourglassTop } from '@mui/icons-material'
+import { Typography, Grid, Chip, IconButton, Button, Fab, AvatarGroup, Avatar, Collapse, useTheme } from '@mui/material'
+import { Add, Celebration, Delete, Edit, Done, HourglassTop, AccessTime, ExpandMore, ExpandLess } from '@mui/icons-material'
 
 import { OccasionsContext } from '@/contexts/OccasionsContext'
 import { PeopleContext } from '@/contexts/PeopleContext'
@@ -34,15 +34,21 @@ export default function Occasions(props) {
         setEditData(occasion)
     }
 
-    function showPayouts(occasion){
+    function showPayouts(occasion) {
         setPayoutsOpen(true)
         setPayoutsOccasion(occasion)
     }
 
+    const typeIcons = {
+        "active": <HourglassTop fontSize='medium' sx={{ color: theme.palette.text.secondary }} />,
+        "past": <Done fontSize='medium' sx={{ color: theme.palette.text.secondary }} />,
+        "upcoming": <AccessTime fontSize='medium' sx={{ color: theme.palette.text.secondary }} />
+    }
+
     return (
         <>
-            <EditOccasion open={editorOpen} onClose={() => { setEditorOpen(false) }} isNew={editIsNew} editData={editData} people={people}  />
-            <Payouts onClose={() => { setPayoutsOccasion(null) }} occasion={payoutsOccasion} people={people} open={payoutsOpen} setOpen={setPayoutsOpen}/>
+            <EditOccasion open={editorOpen} onClose={() => { setEditorOpen(false) }} isNew={editIsNew} editData={editData} people={people} />
+            <Payouts onClose={() => { setPayoutsOccasion(null) }} occasion={payoutsOccasion} people={people} open={payoutsOpen} setOpen={setPayoutsOpen} />
 
             <Fab color="secondary" sx={{ position: "fixed", bottom: 96, right: 16, zIndex: 2 }} onClick={() => { setEditorOpen(true); setEditIsNew(true); setEditData(null) }}>
                 <Add />
@@ -57,17 +63,52 @@ export default function Occasions(props) {
 
                 <VerticalGroup style={{ width: "100%", gap: "15px", }}>
 
-                    {occasions.length !== 0 && people.length !== 0 ?
-                        occasions.map(occasion => {
-
-                            return <OccasionCard key={occasion._id} occasion={occasion} people={people} editCallback={editOccasion} payoutsCallback={showPayouts} />
-
-                        })
-                        : null}
+                    <OccasionGroup occasionsType="active" icon={typeIcons["active"]} occasions={occasions.filter(occasion => occasion.timeState === "active")} people={people} editCallback={editOccasion} payoutsCallback={showPayouts} defaultOpen={true} />
+                    <OccasionGroup occasionsType="upcoming" icon={typeIcons["upcoming"]} occasions={occasions.filter(occasion => occasion.timeState === "upcoming")} people={people} editCallback={editOccasion} payoutsCallback={showPayouts} defaultOpen={false} />
+                    <OccasionGroup occasionsType="past" icon={typeIcons["past"]} occasions={occasions.filter(occasion => occasion.timeState === "past")} people={people} editCallback={editOccasion} payoutsCallback={showPayouts} defaultOpen={false} />
 
                 </VerticalGroup>
 
             </div>
         </>
     )
-} 
+}
+
+function OccasionGroup(props) {
+
+    const occasionsType = props.occasionsType
+    const occasions = props.occasions;
+    const people = props.people;
+    const editOccasion = props.editCallback;
+    const showPayouts = props.payoutsCallback;
+    const icon = props.icon
+
+    const [open, setOpen] = useState(props.defaultOpen)
+
+    return (
+        <VerticalGroup style={{ width: "100%", }}>
+            <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
+                {icon}
+                <Typography variant="h5">{occasionsType.charAt(0).toUpperCase() + occasionsType.slice(1)}</Typography>
+                <HorizontalGroup style={{ width: "auto", flexGrow: 1, justifyContent: "flex-end" }}>
+                    <IconButton color="secondary" size="medium" onClick={() => { setOpen(open => !open) }}>
+                        {!open ? <ExpandMore /> : <ExpandLess />}
+                    </IconButton>
+                </HorizontalGroup>
+            </HorizontalGroup>
+            <Collapse in={open} style={{ width: "100%" }} unmountOnExit mountOnEnter>
+                <VerticalGroup style={{ marginTop: "15px", width: "100%", gap: "15px", marginBottom: occasionsType === "past" ? "80px" : 0 }}>
+
+                    {occasions.length !== 0 && people.length !== 0 ?
+                        occasions.map(occasion => {
+
+                            return <OccasionCard key={occasion._id} occasion={occasion} people={people} editCallback={editOccasion} payoutsCallback={showPayouts} showPayouts={occasionsType === "past"} />
+
+                        })
+                        : null}
+
+                </VerticalGroup>
+            </Collapse>
+        </VerticalGroup>
+    )
+}

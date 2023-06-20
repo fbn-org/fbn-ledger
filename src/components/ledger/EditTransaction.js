@@ -20,11 +20,11 @@ function PersonItem(props) {
     const amounts = props.amounts
     const setAmounts = props.setAmounts
 
-    useEffect(() => {
-        if (amounts[personId] === undefined) {
-            setAmounts(amounts => ({ ...amounts, [personId]: [""] }))
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (amounts[personId] === undefined) {
+    //         setAmounts(amounts => ({ ...amounts, [personId]: [""] }))
+    //     }
+    // }, [])
 
     useEffect(() => {
         if (amounts[personId] !== undefined) {
@@ -102,98 +102,6 @@ export default function EditTransaction(props) {
     const [currentOccasion, setCurrentOccasion] = useState(null)
     const [currentPeople, setCurrentPeople] = useState([])
 
-
-    useEffect(() => {
-        // add up all amounts
-        if (amounts !== null) {
-            if (Object.keys(amounts).length > 0) {
-                let subtotal = 0
-                Object.keys(amounts).forEach(personId => {
-                    amounts[personId].forEach(amount => {
-                        if (amount !== "") {
-                            subtotal += parseFloat(amount)
-                        }
-                    })
-                })
-
-                setSubtotal(subtotal)
-            }
-        }
-    }, [amounts])
-
-    useEffect(() => {
-        let total = subtotal
-
-        if (tax !== "") {
-            total += parseFloat(tax)
-        }
-        if (tip !== "") {
-            total += parseFloat(tip)
-        }
-
-        setTotal(total)
-    }, [tax, tip, subtotal])
-
-
-    useEffect(() => {
-        // update currentOccasion and currentPeople
-        var occasionFromId = occasions.find(o => o._id == occasion)
-        var peopleForOccasion = []
-        var peopleUnformattedForOccasion = []
-
-        if (occasionFromId) {
-            peopleUnformattedForOccasion = occasionFromId.included_people
-        } else {
-            for (const index in people) {
-                let peopleInfo = people[index]
-                peopleUnformattedForOccasion.push(peopleInfo._id)
-            }
-        }
-
-        // Format personal info from table of users
-        for (const index in peopleUnformattedForOccasion) {
-            let personId = peopleUnformattedForOccasion[index]
-            let personInfo = people.find(user => user._id === personId)
-
-            if (personInfo) {
-                let info = {
-                    "id": personId,
-                    "name": personInfo.name,
-                }
-                peopleForOccasion.push(info)
-            }
-        }
-
-        setCurrentOccasion(occasionFromId)
-        setCurrentPeople(peopleForOccasion)
-
-    }, [occasion])
-
-    useEffect(() => {
-        // make sure everyone in amounts is actually in the occasion
-        if (currentPeople !== null && amounts !== null) {
-            if (Object.keys(amounts).length > 0) {
-                var newKeys = []
-                for (const personId of Object.keys(amounts)) {
-                    let targetPerson = currentPeople.find(user => user.id === personId)
-                    if (!targetPerson) {
-                        newKeys.push(personId)
-                    }
-                }
-
-                if (newKeys.length > 0) {
-                    setAmounts(amounts => {
-                        const newAmounts = { ...amounts }
-                        newKeys.forEach(key => {
-                            delete newAmounts[key]
-                        })
-                        return newAmounts
-                    })
-                }
-            }
-        }
-    }, [currentPeople])
-
     function submit() {
         setSaving(true)
 
@@ -257,12 +165,106 @@ export default function EditTransaction(props) {
             })
     }
 
+    useEffect(() => {
+        // add up all amounts
+        if (amounts) {
+            console.log(amounts)
+            if (Object.keys(amounts).length > 0) {
+                let subtotal = 0
+                Object.keys(amounts).forEach(personId => {
+                    amounts[personId].forEach(amount => {
+                        if (amount !== "") {
+                            subtotal += parseFloat(amount)
+                        }
+                    })
+                })
+
+                setSubtotal(subtotal)
+            }
+        }
+    }, [amounts])
+
+    useEffect(() => {
+        let total = subtotal
+
+        if (tax !== "") {
+            total += parseFloat(tax)
+        }
+        if (tip !== "") {
+            total += parseFloat(tip)
+        }
+
+        setTotal(total)
+    }, [tax, tip, subtotal])
+
+    useEffect(() => {
+        presetValues(occasion)
+    }, [occasion])
+
+    function presetValues(occasion, unfixedAmounts) {
+        console.log(occasion, unfixedAmounts)
+        // update currentOccasion and currentPeople
+        var occasionFromId = occasions.find(o => o._id == occasion)
+        var peopleForOccasion = []
+        var peopleUnformattedForOccasion = []
+
+        if (occasionFromId) {
+            peopleUnformattedForOccasion = occasionFromId.included_people
+        } else {
+            for (const index in people) {
+                let peopleInfo = people[index]
+                peopleUnformattedForOccasion.push(peopleInfo._id)
+            }
+        }
+
+        // Format personal info from table of users
+        for (const index in peopleUnformattedForOccasion) {
+            let personId = peopleUnformattedForOccasion[index]
+            let personInfo = people.find(user => user._id === personId)
+
+            if (personInfo) {
+                let info = {
+                    "id": personId,
+                    "name": personInfo.name,
+                }
+                peopleForOccasion.push(info)
+            }
+        }
+
+        var newAmounts = {}
+
+        if (peopleForOccasion.length !== 0) {
+            // make sure everyone in amounts is actually in the occasion
+            if (peopleForOccasion !== null) {
+                peopleForOccasion.forEach(person => {
+                    newAmounts[person.id] = [""]
+                })
+
+                if (unfixedAmounts) {
+                    for (const personId of Object.keys(unfixedAmounts)) {
+                        let targetPerson = peopleForOccasion.find(user => user.id === personId)
+                        if (targetPerson) {
+                            newAmounts[personId] = unfixedAmounts[personId]
+                        }
+                    }
+                }
+            }
+        }
+
+        console.log(newAmounts)
+
+        setOccasion(occasion)
+        setAmounts(newAmounts)
+        setCurrentOccasion(occasionFromId)
+        setCurrentPeople(peopleForOccasion)
+    }
+
     function close() {
         props.onClose()
         setReason("")
         setDate(dayjs())
         setAmounts(null)
-        setOccasion("")
+        setOccasion("None")
         setTax("")
         setTip("")
         setUserPaying("")
@@ -280,9 +282,9 @@ export default function EditTransaction(props) {
             setDate(dayjs(editData.date))
             setTax(editData.type_attrs.tax)
             setTip(editData.type_attrs.tip)
-            setAmounts(editData.type_attrs.people_items)
             setUserPaying(editData.payer)
-            setOccasion(editData.occasion)
+
+            presetValues(editData.occasion, editData.type_attrs.people_items)
         }
     }, [editData])
 
@@ -334,7 +336,7 @@ export default function EditTransaction(props) {
                     }}>
                         <MenuItem key="None" value="None">None</MenuItem>
                         {occasions.map(occasion => {
-                            if (occasion.active) {
+                            if (occasion.timeState === "active") {
                                 return (
                                     <MenuItem key={occasion._id} value={occasion._id}>{occasion.name}</MenuItem>
                                 )
@@ -347,7 +349,7 @@ export default function EditTransaction(props) {
             </HorizontalGroup>
 
             <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px" }}>
-                {amounts !== null ? currentPeople.map(personInfo => {
+                {amounts ? currentPeople.map(personInfo => {
                     return (
                         <PersonItem key={personInfo.id} personId={personInfo.id} name={personInfo.name} amounts={amounts} setAmounts={setAmounts} />
                     )

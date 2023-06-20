@@ -87,11 +87,16 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                     }
                     return 0
                 })
-                
+
                 // check if each occasion is active or past
                 data.forEach(occasion => {
-                    occasion.active = new Date(occasion.start_date) < new Date() && new Date(occasion.end_date) >= new Date()
-                    occasion.past = new Date(occasion.end_date) < new Date()
+                    if (new Date(occasion.start_date) <= new Date() && new Date(occasion.end_date) >= new Date()) {
+                        occasion.timeState = "active"
+                    } else if (new Date(occasion.end_date) < new Date()) {
+                        occasion.timeState = "past"
+                    } else {
+                        occasion.timeState = "upcoming"
+                    }
                 })
 
                 setOccasions(data)
@@ -134,9 +139,9 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
         <CacheProvider value={emotionCache}>
             <ThemeProvider theme={theme}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <OccasionsContext.Provider value={{occasions, refresh}}>
-                        <PeopleContext.Provider value={{people, refresh}}>
-                            <LedgerContext.Provider value={{ledger, refresh}}>
+                    <OccasionsContext.Provider value={{ occasions, refresh }}>
+                        <PeopleContext.Provider value={{ people, refresh }}>
+                            <LedgerContext.Provider value={{ ledger, refresh }}>
 
                                 <CssBaseline />
 

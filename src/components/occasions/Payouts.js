@@ -99,7 +99,7 @@ export default function Payouts(props) {
     }
 
     return (
-        <Drawer title="Payouts" subtitle="Philly trip" open={open && owes !== null} actions={<IconButton onClick={close} color="secondary"><Close /></IconButton>} >
+        <Drawer title="Payouts" subtitle={occasion ? occasion.name : ""} open={open && owes !== null} actions={<IconButton onClick={close} color="secondary"><Close /></IconButton>} >
 
             <VerticalGroup style={{ width: "100%", alignItems: "flex-start", gap: "15px" }}>
 

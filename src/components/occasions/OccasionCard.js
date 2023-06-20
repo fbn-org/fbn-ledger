@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { Avatar, AvatarGroup, Typography, IconButton, Grid, Button, Icon, useTheme } from '@mui/material'
-import { Edit, Done, HourglassTop } from '@mui/icons-material'
+import { Edit, Done, HourglassTop, AccessTime } from '@mui/icons-material'
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -20,12 +20,12 @@ export default function OccasionCard(props) {
     const people = props.people
     const occasion = props.occasion
     const editCallback = props.editCallback
+    const showPayouts = props.showPayouts
 
     const startDate = dayjs.utc(occasion.start_date).local().format("MMMM Do, YYYY")
     const endDate = dayjs.utc(occasion.end_date).local().format("MMMM Do, YYYY")
 
-    const active = new Date(occasion.start_date) < new Date() && new Date(occasion.end_date) >= new Date()
-    const past = new Date(occasion.start_date) < new Date()
+    const timeState = occasion.timeState
 
     const [transactions, setTransactions] = useState([])
 
@@ -54,11 +54,12 @@ export default function OccasionCard(props) {
             }
             title={occasion.name}
             subtitle={`${startDate} - ${endDate}`}
-            subtitleIcon={
-                active ? <HourglassTop fontSize='small' sx={{ color: theme.palette.text.secondary }} /> : (past ? <Done fontSize='small' sx={{ color: theme.palette.text.secondary }} /> : null)
-            }
+            // subtitleIcon={
+            //     subtitleIcons[timeState]
+            // }
             //titleChip={<Chip label="Active" color="primary" variant="outlined" size="small" />}
-            actions={<IconButton color="primary" onClick={() => { editCallback(occasion) }}><Edit /></IconButton>} style={{ width: "100%" }}
+            actions={<IconButton color="primary" onClick={() => { editCallback(occasion) }}><Edit /></IconButton>}
+            style={{ width: "100%" }}
         >
 
             <VerticalGroup style={{ width: "100%", gap: "15px", }}>
@@ -88,7 +89,10 @@ export default function OccasionCard(props) {
 
                 </Grid>
 
-                <Button variant="outlined" color="primary" onClick={() => { props.payoutsCallback(occasion) }} sx={{ borderRadius: "5px", width: "100%", height: "auto", }}>Payouts</Button>
+                {showPayouts ?
+                    <Button variant="outlined" color="primary" onClick={() => { props.payoutsCallback(occasion) }} sx={{ borderRadius: "5px", width: "100%", height: "auto", }}>Payouts</Button>
+                    : null
+                }
             </VerticalGroup>
         </Card>
     )

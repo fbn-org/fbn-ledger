@@ -33,8 +33,8 @@ export default function EditOccasion(props) {
         setSaving(true)
         let data = {
             name: name,
-            start_date: startDate.utc(),
-            end_date: endDate.utc(),
+            start_date: startDate.startOf('day').utc(),
+            end_date: endDate.endOf('day').utc(),
             included_people: included
         }
 

@@ -413,7 +413,7 @@ export default function EditTransaction(props) {
             </HorizontalGroup>
 
             {/* Complex container group */}
-            <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px", visibility: useComplexMode && "visible"  || "hidden"}}>
+            {/* <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px", visibility: useComplexMode && "visible"  || "hidden"}}>
                 hey there
                 {amounts ? currentPeople.map(personInfo => {
                     return (
@@ -422,7 +422,7 @@ export default function EditTransaction(props) {
                 })
                     : null}
 
-            </VerticalGroup>
+            </VerticalGroup> */}
 
             {/* Simple container group */}
             <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px", visibility: useComplexMode && "hidden"  || "visible" }}>

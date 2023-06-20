@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { BottomNavigation, CssBaseline, BottomNavigationAction, Container, useTheme, Typography } from "@mui/material";
+import { BottomNavigation, CssBaseline, BottomNavigationAction, Container, InputAdornment, Typography, TextField } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Celebration, Home, Lock, ReceiptLong } from "@mui/icons-material";
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -16,6 +16,7 @@ dayjs.extend(utc);
 import { PeopleContext } from '@/contexts/PeopleContext.js';
 import { OccasionsContext } from '@/contexts/OccasionsContext.js';
 import { LedgerContext } from '@/contexts/LedgerContext.js';
+import useLocalStorage from '@/util/useLocalStorage.js'
 
 import VerticalGroup from '@/components/VerticalGroup';
 import HorizontalGroup from '@/components/HorizontalGroup';
@@ -69,6 +70,8 @@ const clientSideEmotionCache = createEmotionCache();
 export default function App({ Component, emotionCache = clientSideEmotionCache, pageProps }) {
 
     const [selectedPage, setSelectedPage] = useState(0)
+    const [savedPassword, setSavedPassword] = useLocalStorage("password", "")
+    const [password, setPassword] = useState(savedPassword)
 
     const [occasions, setOccasions] = useState([])
     const [people, setPeople] = useState([])
@@ -135,6 +138,12 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
         return () => clearInterval(interval)
     }, [])
 
+    useEffect(() => {
+        if (password) {
+            setSavedPassword(password)
+        }
+    }, [password])
+
 
     return (
         <CacheProvider value={emotionCache}>
@@ -147,12 +156,14 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                                 <CssBaseline />
 
                                 <Container maxWidth="sm" sx={{ position: "fixed", height: "100vh", width: "100%", display: "flex", padding: "0px", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", WebkitOverflowScrolling: "touch" }}>
-                                    <VerticalGroup style={{ width: "100%", height: "100%", flexGrow: 1, position: "fixed", justifyContent: "center", background: theme.palette.background.default, zIndex: 100000 }}>
-                                        <HorizontalGroup >
-                                            <Lock fontSize="large" />
 
-                                        </HorizontalGroup>
-                                    </VerticalGroup>
+                                    {savedPassword !== "cum" ?
+                                        <VerticalGroup style={{ width: "100%", height: "100%", flexGrow: 1, position: "fixed", justifyContent: "center", background: theme.palette.background.default, zIndex: 100000 }}>
+                                            <HorizontalGroup >
+                                                <TextField variant="outlined" type="password" value={password} InputProps={{ startAdornment: <InputAdornment position="start"><Lock /></InputAdornment> }} onChange={(e) => setPassword(e.target.value)} />
+                                            </HorizontalGroup>
+                                        </VerticalGroup>
+                                        : null}
 
                                     <div style={{ width: "100%", height: "auto", position: "relative", padding: "15px", flexGrow: 1, overflowY: "scroll" }}>
                                         <Component {...pageProps} selectedPage={selectedPage} />

@@ -263,17 +263,15 @@ export default function EditTransaction(props) {
         props.onClose()
         setReason("")
         setDate(dayjs())
-        setAmounts(null)
-        setOccasion("None")
         setTax("")
         setTip("")
         setUserPaying("")
         setTotal(0)
         setSubtotal(0)
-        setSaving(false)
         setConfirmationOpen(false)
-        setCurrentOccasion(null)
-        setCurrentPeople([])
+        setSaving(false)
+        
+        presetValues("None")
     }
 
     useEffect(() => {

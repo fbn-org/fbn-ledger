@@ -43,7 +43,7 @@ export default function Dashboard() {
         } else if (upcomingOccasions.length > 0) {
             setFeaturedOccasion(upcomingOccasions[0])
         } else {
-            setFeaturedOccasion(null)
+            setFeaturedOccasion(null) 
         }
 
         // calculate people stats

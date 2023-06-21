@@ -373,9 +373,9 @@ export default function EditTransaction(props) {
             </ClickAwayListener> : null} >
 
             <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
-                <TextField label="Description" variant="outlined" size="medium" fullWidth value={reason} onChange={(e) => setReason(e.target.value)} sx={{ flexBasis: "60%" }} />
+                <TextField label="Description" variant="outlined" size="medium" fullWidth value={reason} onChange={(e) => setReason(e.target.value)} sx={{ flexBasis: "50%" }} />
 
-                <FormControl sx={{ flexBasis: "40%" }}>
+                <FormControl sx={{ flexBasis: "50%" }}>
                     <InputLabel id="payer-label">Whos Paying?</InputLabel>
                     <Select variant="outlined" size="medium" label="Buyer" value={userPaying} onChange={(selectionEntry) => {
                         var userPaying = selectionEntry.target.value

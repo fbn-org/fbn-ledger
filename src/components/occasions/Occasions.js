@@ -27,6 +27,7 @@ export default function Occasions(props) {
 
     const { occasions } = useContext(OccasionsContext)
     const { people } = useContext(PeopleContext)
+    const { ledger } = useContext(LedgerContext)
 
     function editOccasion(occasion) {
         setEditorOpen(true)
@@ -63,9 +64,9 @@ export default function Occasions(props) {
 
                 <VerticalGroup style={{ width: "100%", gap: "15px", }}>
 
-                    <OccasionGroup occasionsType="active" icon={typeIcons["active"]} occasions={occasions.filter(occasion => occasion.timeState === "active")} people={people} editCallback={editOccasion} payoutsCallback={showPayouts} defaultOpen={true} />
-                    <OccasionGroup occasionsType="upcoming" icon={typeIcons["upcoming"]} occasions={occasions.filter(occasion => occasion.timeState === "upcoming")} people={people} editCallback={editOccasion} payoutsCallback={showPayouts} defaultOpen={false} />
-                    <OccasionGroup occasionsType="past" icon={typeIcons["past"]} occasions={occasions.filter(occasion => occasion.timeState === "past")} people={people} editCallback={editOccasion} payoutsCallback={showPayouts} defaultOpen={false} />
+                    <OccasionGroup occasionsType="active" icon={typeIcons["active"]} occasions={occasions.filter(occasion => occasion.timeState === "active")} people={people} ledger={ledger} editCallback={editOccasion} payoutsCallback={showPayouts} defaultOpen={true} />
+                    <OccasionGroup occasionsType="upcoming" icon={typeIcons["upcoming"]} occasions={occasions.filter(occasion => occasion.timeState === "upcoming")} people={people} ledger={ledger} editCallback={editOccasion} payoutsCallback={showPayouts} defaultOpen={occasions.filter(occasion => occasion.timeState === "active").length === 0} />
+                    <OccasionGroup occasionsType="past" icon={typeIcons["past"]} occasions={occasions.filter(occasion => occasion.timeState === "past")} people={people} ledger={ledger} editCallback={editOccasion} payoutsCallback={showPayouts} defaultOpen={false} />
 
                 </VerticalGroup>
 
@@ -79,6 +80,7 @@ function OccasionGroup(props) {
     const occasionsType = props.occasionsType
     const occasions = props.occasions;
     const people = props.people;
+    const ledger = props.ledger
     const editOccasion = props.editCallback;
     const showPayouts = props.payoutsCallback;
     const icon = props.icon
@@ -102,7 +104,7 @@ function OccasionGroup(props) {
                     {occasions.length !== 0 && people.length !== 0 ?
                         occasions.map(occasion => {
 
-                            return <OccasionCard key={occasion._id} occasion={occasion} people={people} editCallback={editOccasion} payoutsCallback={showPayouts} showPayoutsButton={occasionsType === "past"} disableStats={occasionsType === "upcoming"} />
+                            return <OccasionCard key={occasion._id} occasion={occasion} people={people} ledger={ledger} editCallback={editOccasion} payoutsCallback={showPayouts} showPayoutsButton={occasionsType === "past"} disableStats={occasionsType === "upcoming"} />
 
                         })
                         : null}

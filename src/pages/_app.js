@@ -158,7 +158,7 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                                 <CssBaseline />
 
                                 {occasions && people && ledger ?
-                                    <Container maxWidth="sm" sx={{ position: "fixed", height: "100vh", width: "100%", display: "flex", padding: "0px", margin: "auto", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", WebkitOverflowScrolling: "touch" }}>
+                                    <Container maxWidth="sm" sx={{ height: "100vh", width: "100%", display: "flex", padding: "0px", margin: "auto", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", WebkitOverflowScrolling: "touch" }}>
 
                                         {savedPassword !== targetPassword ?
                                             <VerticalGroup style={{ width: "100%", height: "100%", flexGrow: 1, position: "fixed", justifyContent: "center", background: theme.palette.background.default, zIndex: 100000 }}>

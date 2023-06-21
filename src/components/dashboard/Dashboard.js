@@ -101,73 +101,76 @@ export default function Dashboard() {
                 </HorizontalGroup>
 
                 {recentTransactions ?
-                    <Card style={{ gap: "10px" }} title="Recent Transactions" icon={<AttachMoney />}>
+                    // <Card style={{ gap: "10px" }} title="Recent Transactions" icon={<AttachMoney />}>
 
-                        <Grid container spacing={2}>
+                    <Grid container spacing={2}>
 
-                            {recentTransactions.map(transaction => {
+                        {recentTransactions.map(transaction => {
 
-                                const date = dayjs.utc(transaction.date).local().format("MM-DD-YYYY")
-                                const payer = people.find(person => person._id === transaction.payer).name
+                            const date = dayjs.utc(transaction.date).local().format("MM-DD-YYYY")
+                            const payer = people.find(person => person._id === transaction.payer).name
 
-                                return (
-                                    <Grid key={transaction._id} item xs={6}>
-                                        <Card
-                                            title={`$${transaction.total}`}
-                                            subtitle={date}
-                                            icon={<Avatar sx={{ bgcolor: `${payer.toLowerCase()}.main`, height: 20, width: 20 }}><Icon /></Avatar>}
-                                            style={{ borderRadius: "10px", padding: "10px" }}
-                                        />
-                                    </Grid>
-                                )
-                            })
-                            }
+                            return (
+                                <Grid key={transaction._id} item xs={6}>
+                                    <Card
+                                        title={`$${transaction.total}`}
+                                        subtitle={date}
+                                        icon={<Avatar sx={{ bgcolor: `${payer.toLowerCase()}.main`, height: 20, width: 20 }}><Icon /></Avatar>}
+                                        style={{}}
+                                    />
+                                </Grid>
+                            )
+                        })
+                        }
 
-                        </Grid>
+                    </Grid>
 
-                    </Card>
+                    // </Card>
                     : null}
 
                 {featuredOccasion ?
-                    <OccasionCard occasion={featuredOccasion} people={people} showPayoutsButton={false} disableStats={featuredOccasion.timeState === "upcoming"} />
+                    <OccasionCard occasion={featuredOccasion} people={people} ledger={ledger} showPayoutsButton={false} disableStats={featuredOccasion.timeState === "upcoming"} />
                     : null}
 
                 {peopleStats ?
-                    <Card style={{ gap: "10px" }} title="People" icon={<Person />}>
+                    // <Card style={{ gap: "10px" }} title="People" icon={<Person />}>
 
-                        <Grid container spacing={2}>
-                            {Object.keys(peopleStats).map(person => {
+                    <Grid container spacing={2}>
+                        {Object.keys(peopleStats).map(person => {
 
-                                const data = peopleStats[person]
+                            const data = peopleStats[person]
 
-                                return (
-                                    <Grid key={data.name} item xs={6}>
-                                        <Card style={{ borderRadius: "10px", padding: "10px", borderColor: theme.palette[data.name.toLowerCase()].main }}>
-                                            <Typography variant="body1">
-                                                {data.name}
-                                            </Typography>
+                            return (
+                                <Grid key={data.name} item xs={6}>
+                                    <Card style={{ padding: "15px"}}>
+                                        <VerticalGroup style={{ alignItems: "flex-start" }}>
+                                            <Typography variant="h6" style={{color: theme.palette[data.name.toLowerCase()].main}}>{data.name}</Typography>
+                                            {/* <Chip label={data.name} color={data.name.toLowerCase()} variant="outlined" size="medium" /> */}
+
                                             <div style={{ width: "auto", height: "auto", display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
-                                                <Typography variant="h6">
+                                                <Typography variant="h5">
                                                     ${data.totalSpend.toFixed(2)}
                                                 </Typography>
                                             </div>
-                                            <div style={{ width: "auto", height: "auto", display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", marginTop: "5px" }}>
+
+                                            <HorizontalGroup style={{ justifyContent: "flex-start", alignItems: "center", marginTop: "8px" }}>
                                                 {data.offset > 0 ?
                                                     <KeyboardDoubleArrowUp fontSize="small" color="success" />
                                                     :
                                                     <KeyboardDoubleArrowDown fontSize="small" color="error" />
                                                 }
-                                                <Typography variant="caption" color={data.offset > 0 ? "success.light" : "error.light"}>{data.offset > 0 ? "+" : "-"}${data.offset.toFixed(2).replace("-", "")}</Typography>
-                                            </div>
-                                        </Card>
-                                    </Grid>
-                                )
-                            })}
+                                                <Typography variant="body2" color={data.offset > 0 ? "success.light" : "error.light"}>{data.offset > 0 ? "+" : "-"}${data.offset.toFixed(2).replace("-", "")}</Typography>
+                                            </HorizontalGroup>
+                                        </VerticalGroup>
+                                    </Card>
+                                </Grid>
+                            )
+                        })}
 
 
-                        </Grid>
+                    </Grid>
 
-                    </Card>
+                    // </Card>
                     : null}
 
             </div >

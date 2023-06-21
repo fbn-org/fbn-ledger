@@ -19,6 +19,7 @@ export default function OccasionCard(props) {
 
     const people = props.people
     const occasion = props.occasion
+    const ledger = props.ledger
     const editCallback = props.editCallback
     const payoutsCallback = props.payoutsCallback
     const showPayoutsButton = props.showPayoutsButton
@@ -33,13 +34,7 @@ export default function OccasionCard(props) {
     const [timeLeft, setTimeLeft] = useState(0)
 
     useEffect(() => {
-        fetch(`/api/ledger/fetchTransactions/${occasion._id}`, {
-            method: 'GET',
-        })
-            .then(res => res.json())
-            .then(data => {
-                setTransactions(data)
-            })
+        setTransactions(ledger.filter(transaction => transaction.occasion === occasion._id))
     }, [occasion])
 
     useEffect(() => {
@@ -92,7 +87,7 @@ export default function OccasionCard(props) {
                         <Grid item xs={6}>
                             <VerticalGroup style={{ alignItems: "flex-start" }}>
                                 <Typography variant="h6">
-                                    ${transactions.reduce((total, transaction) => total + transaction.total, 0)}
+                                    ${transactions.reduce((total, transaction) => total + transaction.total, 0).toFixed(2)}
                                 </Typography>
                                 <Typography variant="body2">
                                     total spend
@@ -104,7 +99,7 @@ export default function OccasionCard(props) {
                     :
                     <VerticalGroup style={{ width: "100%", alignItems: "flex-start", }}>
                         <Typography variant="h6">
-                            {timeLeft} hours
+                            {timeLeft > 0 ? `${timeLeft} hours` : "< 1 hour"}
                         </Typography>
                         <Typography variant="body2">
                             until start

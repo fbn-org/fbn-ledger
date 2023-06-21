@@ -232,6 +232,10 @@ export default function EditTransaction(props) {
     }
 
     useEffect(() => {
+        presetValues("None")
+    }, [])
+
+    useEffect(() => {
         // add up all amounts
         if (amounts) {
             console.log(amounts)
@@ -263,9 +267,6 @@ export default function EditTransaction(props) {
         setTotal(total)
     }, [tax, tip, subtotal])
 
-    useEffect(() => {
-        presetValues(occasion)
-    }, [occasion])
 
     function presetValues(occasion, unfixedAmounts) {
         console.log(occasion, unfixedAmounts)
@@ -316,8 +317,6 @@ export default function EditTransaction(props) {
                 }
             }
         }
-
-        console.log(newAmounts)
 
         setOccasion(occasion)
         setAmounts(newAmounts)
@@ -396,7 +395,7 @@ export default function EditTransaction(props) {
                     <InputLabel id="transaction-type-label">Occasion</InputLabel>
                     <Select variant="outlined" size="medium" label="Occasion" value={occasion} onChange={(selectionEntry) => {
                         var selectionValue = selectionEntry.target.value
-                        setOccasion(selectionValue)
+                        presetValues(selectionValue)
                     }}>
                         <MenuItem key="None" value="None">None</MenuItem>
                         {occasions.map(occasion => {
@@ -412,19 +411,6 @@ export default function EditTransaction(props) {
                 </FormControl>
             </HorizontalGroup>
 
-            {/* Complex container group */}
-            {/* <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px", visibility: useComplexMode && "visible"  || "hidden"}}>
-                hey there
-                {amounts ? currentPeople.map(personInfo => {
-                    return (
-                        <PersonItem key={personInfo.id} personId={personInfo.id} name={personInfo.name} amounts={amounts} setAmounts={setAmounts} />
-                    )
-                })
-                    : null}
-
-            </VerticalGroup> */}
-
-            {/* Simple container group */}
             <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px", visibility: useComplexMode && "hidden"  || "visible" }}>
 
                 {amounts ? currentPeople.map(personInfo => {

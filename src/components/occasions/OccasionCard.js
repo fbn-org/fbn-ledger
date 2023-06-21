@@ -20,7 +20,9 @@ export default function OccasionCard(props) {
     const people = props.people
     const occasion = props.occasion
     const editCallback = props.editCallback
-    const showPayouts = props.showPayouts
+    const payoutsCallback = props.payoutsCallback
+    const showPayoutsButton = props.showPayoutsButton
+    const disableStats = props.disableStats
 
     const startDate = dayjs.utc(occasion.start_date).local().format("MMMM Do, YYYY")
     const endDate = dayjs.utc(occasion.end_date).local().format("MMMM Do, YYYY")
@@ -28,6 +30,7 @@ export default function OccasionCard(props) {
     const timeState = occasion.timeState
 
     const [transactions, setTransactions] = useState([])
+    const [timeLeft, setTimeLeft] = useState(0)
 
     useEffect(() => {
         fetch(`/api/ledger/fetchTransactions/${occasion._id}`, {
@@ -39,11 +42,20 @@ export default function OccasionCard(props) {
             })
     }, [occasion])
 
+    useEffect(() => {
+        // calculate time until event starts
+        if (timeState === "upcoming") {
+            const now = dayjs().utc()
+            const start = dayjs.utc(occasion.start_date)
+            setTimeLeft(start.diff(now, 'hour'))
+        }
+    }, [])
+
     return (
         <Card
             key={occasion._id}
             icon={
-                <AvatarGroup spacing="small">
+                <AvatarGroup spacing="small" onClick={() => {timeState === "active" && payoutsCallback ? payoutsCallback(occasion) : null}}>
                     {occasion.included_people.map(personId => {
                         const personName = people.find(person => person._id === personId).name
                         return (
@@ -58,39 +70,50 @@ export default function OccasionCard(props) {
             //     subtitleIcons[timeState]
             // }
             //titleChip={<Chip label="Active" color="primary" variant="outlined" size="small" />}
-            actions={<IconButton color="primary" onClick={() => { editCallback(occasion) }}><Edit /></IconButton>}
+            actions={editCallback ? <IconButton color="primary" onClick={() => { editCallback(occasion) }}><Edit /></IconButton> : null}
             style={{ width: "100%" }}
         >
 
             <VerticalGroup style={{ width: "100%", gap: "15px", }}>
-                <Grid container spacing={2}>
+                {!disableStats ?
+                    <Grid container spacing={2}>
 
-                    <Grid item xs={6}>
-                        <VerticalGroup style={{ alignItems: "flex-start" }}>
-                            <Typography variant="h6">
-                                {transactions.length}
-                            </Typography>
-                            <Typography variant="body2">
-                                transactions
-                            </Typography>
-                        </VerticalGroup>
+                        <Grid item xs={6}>
+                            <VerticalGroup style={{ alignItems: "flex-start" }}>
+                                <Typography variant="h6">
+                                    {transactions.length}
+                                </Typography>
+                                <Typography variant="body2">
+                                    transactions 
+                                </Typography>
+                            </VerticalGroup>
+                        </Grid>
+
+                        <Grid item xs={6}>
+                            <VerticalGroup style={{ alignItems: "flex-start" }}>
+                                <Typography variant="h6">
+                                    ${transactions.reduce((total, transaction) => total + transaction.total, 0)}
+                                </Typography>
+                                <Typography variant="body2">
+                                    total spend
+                                </Typography>
+                            </VerticalGroup>
+                        </Grid>
+
                     </Grid>
+                    :
+                    <VerticalGroup style={{ width: "100%", alignItems: "flex-start", }}>
+                        <Typography variant="h6">
+                            {timeLeft} hours
+                        </Typography>
+                        <Typography variant="body2">
+                            until start
+                        </Typography>
+                    </VerticalGroup>
+                }
 
-                    <Grid item xs={6}>
-                        <VerticalGroup style={{ alignItems: "flex-start" }}>
-                            <Typography variant="h6">
-                                ${transactions.reduce((total, transaction) => total + transaction.total, 0)}
-                            </Typography>
-                            <Typography variant="body2">
-                                total spend
-                            </Typography>
-                        </VerticalGroup>
-                    </Grid>
-
-                </Grid>
-
-                {showPayouts ?
-                    <Button variant="outlined" color="primary" onClick={() => { props.payoutsCallback(occasion) }} sx={{ borderRadius: "5px", width: "100%", height: "auto", }}>Payouts</Button>
+                {showPayoutsButton ?
+                    <Button variant="outlined" color="primary" onClick={() => { payoutsCallback(occasion) }} sx={{ borderRadius: "5px", width: "100%", height: "auto", }}>Payouts</Button>
                     : null
                 }
             </VerticalGroup>

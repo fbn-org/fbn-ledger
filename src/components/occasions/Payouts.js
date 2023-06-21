@@ -50,6 +50,7 @@ export default function Payouts(props) {
             if (transaction.type_attrs.tip !== "") {
                 extra += parseFloat(transaction.type_attrs.tip)
             }
+            fullTotal -= extra
 
             Object.keys(transaction.type_attrs.people_items).forEach(personId => {
                 let total = transaction.type_attrs.people_items[personId].reduce((a, b) => parseFloat(a) + parseFloat(b), 0)

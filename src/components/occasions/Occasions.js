@@ -83,7 +83,7 @@ function OccasionGroup(props) {
     const showPayouts = props.payoutsCallback;
     const icon = props.icon
 
-    const [open, setOpen] = useState(props.defaultOpen)
+    const [open, setOpen] = useState(occasions.length !== 0 ? props.defaultOpen : false)
 
     return (
         <VerticalGroup style={{ width: "100%", }}>
@@ -91,7 +91,7 @@ function OccasionGroup(props) {
                 {icon}
                 <Typography variant="h5">{occasionsType.charAt(0).toUpperCase() + occasionsType.slice(1)}</Typography>
                 <HorizontalGroup style={{ width: "auto", flexGrow: 1, justifyContent: "flex-end" }}>
-                    <IconButton color="secondary" size="medium" onClick={() => { setOpen(open => !open) }}>
+                    <IconButton color="secondary" size="medium" onClick={() => { setOpen(open => !open) }} disabled={occasions.length === 0}>
                         {!open ? <ExpandMore /> : <ExpandLess />}
                     </IconButton>
                 </HorizontalGroup>
@@ -102,7 +102,7 @@ function OccasionGroup(props) {
                     {occasions.length !== 0 && people.length !== 0 ?
                         occasions.map(occasion => {
 
-                            return <OccasionCard key={occasion._id} occasion={occasion} people={people} editCallback={editOccasion} payoutsCallback={showPayouts} showPayouts={occasionsType === "past"} />
+                            return <OccasionCard key={occasion._id} occasion={occasion} people={people} editCallback={editOccasion} payoutsCallback={showPayouts} showPayoutsButton={occasionsType === "past"} disableStats={occasionsType === "upcoming"} />
 
                         })
                         : null}

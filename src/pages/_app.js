@@ -73,6 +73,8 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
     const [savedPassword, setSavedPassword] = useLocalStorage("password", "")
     const [password, setPassword] = useState(savedPassword)
 
+    const targetPassword = process.env.PASSWORD
+
     const [occasions, setOccasions] = useState([])
     const [people, setPeople] = useState([])
     const [ledger, setLedger] = useState([])
@@ -157,7 +159,7 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
 
                                 <Container maxWidth="sm" sx={{ position: "fixed", height: "100vh", width: "100%", display: "flex", padding: "0px", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", WebkitOverflowScrolling: "touch" }}>
 
-                                    {savedPassword !== "cum" ?
+                                    {savedPassword !== targetPassword ?
                                         <VerticalGroup style={{ width: "100%", height: "100%", flexGrow: 1, position: "fixed", justifyContent: "center", background: theme.palette.background.default, zIndex: 100000 }}>
                                             <HorizontalGroup >
                                                 <TextField variant="outlined" type="password" value={password} InputProps={{ startAdornment: <InputAdornment position="start"><Lock /></InputAdornment> }} onChange={(e) => setPassword(e.target.value)} />

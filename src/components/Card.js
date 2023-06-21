@@ -4,10 +4,10 @@ import VerticalGroup from './VerticalGroup.js'
 
 function Card(props) {
     return (
-        <Paper variant="outlined" sx={{ height: "auto", width: "100%", padding: "15px", borderRadius: "15px", display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", ...props.style }}>
+        <Paper variant="outlined" sx={{ height: "auto", width: "100%", padding: "15px", borderRadius: "20px", display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", ...props.style }}>
 
             {props.title || props.icon || props.actions ?
-                <HorizontalGroup style={{ marginBottom: "10px", width: "100%", alignItems: "flex-start" }}>
+                <HorizontalGroup style={{ marginBottom: props.children ? "10px" : 0, width: "100%", alignItems: "flex-start" }}>
                     {props.title || props.icon ?
                         <HorizontalGroup style={{ gap: "10px" }}>
 

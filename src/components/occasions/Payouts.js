@@ -102,35 +102,38 @@ export default function Payouts(props) {
     return (
         <Drawer title="Payouts" subtitle={occasion ? occasion.name : ""} open={open && owes !== null} actions={<IconButton onClick={close} color="secondary"><Close /></IconButton>} >
 
-            <VerticalGroup style={{ width: "100%", alignItems: "flex-start", gap: "15px" }}>
+            <VerticalGroup style={{ width: "100%", alignItems: "flex-start" }}>
 
                 {
                     owes ? Object.keys(owes).map(fromId => {
 
-                        return (
-                            <VerticalGroup key={fromId} style={{ width: "100%", gap: "15px" }}>
-                                {
-                                    Object.keys(owes[fromId]).map(toId => {
+                        if (Object.keys(owes[fromId]).length > 0) {
 
-                                        const fromName = people.find(person => person._id === fromId).name
-                                        const toName = people.find(person => person._id === toId).name
+                            return (
+                                <VerticalGroup key={fromId} style={{ width: "100%", gap: "15px", marginBottom: "15px" }}>
+                                    {
+                                        Object.keys(owes[fromId]).map(toId => {
 
-                                        return (
-                                            owes[fromId][toId] > 0 ?
-                                                <HorizontalGroup key={toId} style={{ width: "100%", gap: "5px", justifyContent: "center" }}>
-                                                    <Chip label={fromName} color={fromName.toLowerCase()} variant="outlined" sx={{ flexBasis: "35%" }} />
-                                                    <KeyboardDoubleArrowRight />
-                                                    <Typography variant="h6" sx={{ flexBasis: "30%", textAlign: "center" }}>${owes[fromId][toId].toFixed(2)}</Typography>
-                                                    <KeyboardDoubleArrowRight />
-                                                    <Chip label={toName} color={toName.toLowerCase()} variant="outlined" sx={{ flexBasis: "35%" }} />
-                                                </HorizontalGroup>
-                                                : null
+                                            const fromName = people.find(person => person._id === fromId).name
+                                            const toName = people.find(person => person._id === toId).name
 
-                                        )
-                                    })
-                                }
-                            </VerticalGroup>
-                        )
+                                            return (
+                                                owes[fromId][toId] > 0 ?
+                                                    <HorizontalGroup key={toId} style={{ width: "100%", gap: "5px", justifyContent: "center" }}>
+                                                        <Chip label={fromName} color={fromName.toLowerCase()} variant="outlined" sx={{ flexBasis: "35%" }} />
+                                                        <KeyboardDoubleArrowRight />
+                                                        <Typography variant="h6" sx={{ flexBasis: "30%", textAlign: "center" }}>${owes[fromId][toId].toFixed(2)}</Typography>
+                                                        <KeyboardDoubleArrowRight />
+                                                        <Chip label={toName} color={toName.toLowerCase()} variant="outlined" sx={{ flexBasis: "35%" }} />
+                                                    </HorizontalGroup>
+                                                    : null
+
+                                            )
+                                        })
+                                    }
+                                </VerticalGroup>
+                            )
+                        } else return null
 
                     })
                         : null}

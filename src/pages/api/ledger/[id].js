@@ -10,7 +10,7 @@ export default async function handler(req, res) {
         const body = req.body
 
         const data = await mongoClient.db("ledger").collection("transactions").updateOne({
-            _id: new ObjectId(body._id)
+            _id: new ObjectId(id)
         }, {
             $set: {
                 ...body

@@ -191,6 +191,8 @@ export default function EditTransaction(props) {
             total: total,
         }
 
+        console.log(data)
+
         if (isNew) {
             fetch("/api/ledger/createTransaction", {
                 method: "POST",

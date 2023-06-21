@@ -29,7 +29,7 @@ export default function Dashboard() {
 
     const [recentTransactions, setRecentTransactions] = useState([])
     const [featuredOccasion, setFeaturedOccasion] = useState(null)
-    const [peopleStats, setPeopleStats] = useState({})
+    const [peopleStats, setPeopleStats] = useState(null)
 
     useEffect(() => {
         setRecentTransactions(ledger.slice(0, 3))
@@ -125,41 +125,43 @@ export default function Dashboard() {
                     <OccasionCard occasion={featuredOccasion} people={people} showPayoutsButton={false} disableStats={featuredOccasion.timeState === "upcoming"} />
                     : null}
 
-                <Card style={{ gap: "10px" }} title="People" icon={<Person />}>
+                {peopleStats ?
+                    <Card style={{ gap: "10px" }} title="People" icon={<Person />}>
 
-                    <Grid container spacing={2}>
-                        {Object.keys(peopleStats).map(person => {
+                        <Grid container spacing={2}>
+                            {Object.keys(peopleStats).map(person => {
 
-                            const data = peopleStats[person]
+                                const data = peopleStats[person]
 
-                            return (
-                                <Grid key={data.name} item xs={6}>
-                                    <Card style={{ borderRadius: "10px", padding: "10px", borderColor: theme.palette[data.name.toLowerCase()].main }}>
-                                        <Typography variant="body1">
-                                            {data.name}
-                                        </Typography>
-                                        <div style={{ width: "auto", height: "auto", display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
-                                            <Typography variant="h6">
-                                                ${data.totalSpend.toFixed(2)}
+                                return (
+                                    <Grid key={data.name} item xs={6}>
+                                        <Card style={{ borderRadius: "10px", padding: "10px", borderColor: theme.palette[data.name.toLowerCase()].main }}>
+                                            <Typography variant="body1">
+                                                {data.name}
                                             </Typography>
-                                        </div>
-                                        <div style={{ width: "auto", height: "auto", display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", marginTop: "5px" }}>
-                                            {data.offset > 0 ?
-                                                <KeyboardDoubleArrowUp fontSize="small" color="success" />
-                                                :
-                                                <KeyboardDoubleArrowDown fontSize="small" color="error" />
-                                            }
-                                            <Typography variant="caption" color={data.offset > 0 ? "success.light" : "error.light"}>{data.offset > 0 ? "+" : "-"}${data.offset.toFixed(2).replace("-","")}</Typography>
-                                        </div>
-                                    </Card>
-                                </Grid>
-                            )
-                        })}
+                                            <div style={{ width: "auto", height: "auto", display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
+                                                <Typography variant="h6">
+                                                    ${data.totalSpend.toFixed(2)}
+                                                </Typography>
+                                            </div>
+                                            <div style={{ width: "auto", height: "auto", display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", marginTop: "5px" }}>
+                                                {data.offset > 0 ?
+                                                    <KeyboardDoubleArrowUp fontSize="small" color="success" />
+                                                    :
+                                                    <KeyboardDoubleArrowDown fontSize="small" color="error" />
+                                                }
+                                                <Typography variant="caption" color={data.offset > 0 ? "success.light" : "error.light"}>{data.offset > 0 ? "+" : "-"}${data.offset.toFixed(2).replace("-", "")}</Typography>
+                                            </div>
+                                        </Card>
+                                    </Grid>
+                                )
+                            })}
 
 
-                    </Grid>
+                        </Grid>
 
-                </Card>
+                    </Card>
+                    : null}
 
             </div >
         </>

@@ -27,13 +27,15 @@ export default function Dashboard() {
     const { people } = useContext(PeopleContext)
     const { ledger } = useContext(LedgerContext)
 
-    const [recentTransactions, setRecentTransactions] = useState([])
+    const [recentTransactions, setRecentTransactions] = useState(null)
     const [featuredOccasion, setFeaturedOccasion] = useState(null)
     const [peopleStats, setPeopleStats] = useState(null)
 
     useEffect(() => {
         if (!ledger) return
-        setRecentTransactions(ledger.slice(0, 3))
+        if (ledger.length !== 0) {
+            setRecentTransactions(ledger.slice(0, 3))
+        }
     }, [ledger])
 
     useEffect(() => {
@@ -98,7 +100,7 @@ export default function Dashboard() {
                     <Typography variant="h4">FBN Ledger</Typography>
                 </HorizontalGroup>
 
-                {recentTransactions && recentTransactions.length > 0 ?
+                {recentTransactions ?
                     <Card style={{ gap: "10px" }} title="Recent Transactions" icon={<AttachMoney />}>
 
                         <Grid container spacing={2}>

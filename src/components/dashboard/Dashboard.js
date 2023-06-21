@@ -32,8 +32,12 @@ export default function Dashboard() {
     const [peopleStats, setPeopleStats] = useState(null)
 
     useEffect(() => {
+        if (!ledger) return
         setRecentTransactions(ledger.slice(0, 3))
+    }, [ledger])
 
+    useEffect(() => {
+        if (!occasions) return
         // find the most recent active occasion, and if there isn't find the next upcoming occasion
         let activeOccasions = occasions.filter(occasion => occasion.timeState === "active")
         let upcomingOccasions = occasions.filter(occasion => occasion.timeState === "upcoming")
@@ -43,9 +47,12 @@ export default function Dashboard() {
         } else if (upcomingOccasions.length > 0) {
             setFeaturedOccasion(upcomingOccasions[0])
         } else {
-            setFeaturedOccasion(null) 
+            setFeaturedOccasion(null)
         }
+    }, [occasions])
 
+    useEffect(() => {
+        if (!ledger || !people) return
         // calculate people stats
         let stats = {}
         people.forEach(person => {
@@ -80,9 +87,7 @@ export default function Dashboard() {
         })
 
         setPeopleStats(stats)
-
-
-    }, [occasions, people, ledger])
+    }, [people])
 
     return (
         <>

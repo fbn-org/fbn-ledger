@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback} from 'react';
 
 import { Divider, Avatar, Button, TextField, Select, MenuItem, FormControl, InputLabel, Chip, InputAdornment, Typography, IconButton, ClickAwayListener, Tooltip } from "@mui/material";
 import { LoadingButton } from '@mui/lab';
@@ -27,6 +27,7 @@ function PersonItem(props) {
     // }, [])
 
     useEffect(() => {
+        console.log(amounts)
         if (amounts[personId] !== undefined) {
 
             if (amounts[personId].every(amount => amount !== "")) {
@@ -40,71 +41,7 @@ function PersonItem(props) {
                 }
             }
         }
-    }, [amounts[personId]])
-
-    return (
-        <>
-            {amounts[personId] !== undefined ?
-                <VerticalGroup key={personId} style={{ width: " 100%", gap: "10px" }}>
-
-                    <HorizontalGroup key={0} style={{ width: "100%", gap: "5px" }}>
-                        <Chip label={name} color={name.toLowerCase()} variant="outlined" sx={{ flexBasis: "40%" }} />
-                        <KeyboardDoubleArrowRight />
-                        <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={amounts[personId][0]} onChange={(e) => { setAmounts(amounts => ({ ...amounts, [personId]: [e.target.value, ...amounts[personId].slice(1)] })) }} />
-                    </HorizontalGroup>
-
-                    {amounts[personId].slice(1).map((amount, index) => {
-                        const id = index + 1
-                        return (
-                            <HorizontalGroup key={id} style={{ width: "100%", gap: "5px" }}>
-                                <div style={{ flexBasis: "40%" }}>
-                                    {/* {id === 1 ?
-                                <>
-                                    <Typography variant="subtitle2" color={`${name.toLowerCase()}.main`} sx={{ textAlign: "center" }} >${total}</Typography>
-                                </>
-                                : null} */}
-                                </div>
-                                <Add />
-                                <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={amounts[personId][id]} onChange={(e) => { console.log(amounts[personId].slice(0, id)); setAmounts(amounts => ({ ...amounts, [personId]: [...amounts[personId].slice(0, id), e.target.value, ...amounts[personId].slice(id + 1)] })) }} />
-                            </HorizontalGroup>
-                        )
-                    })}
-
-
-                </VerticalGroup>
-                : null}
-        </>
-    )
-}
-
-function ComplexPersonItem(props) {
-
-    const personId = props.personId
-    const name = props.name
-    const amounts = props.amounts
-    const setAmounts = props.setAmounts
-
-    // useEffect(() => {
-    //     if (amounts[personId] === undefined) {
-    //         setAmounts(amounts => ({ ...amounts, [personId]: [""] }))
-    //     }
-    // }, [])
-
-    useEffect(() => {
-        if (amounts[personId] !== undefined) {
-
-            if (amounts[personId].every(amount => amount !== "")) {
-                setAmounts(amounts => ({ ...amounts, [personId]: [...amounts[personId], ""] }))
-            }
-
-            if (amounts[personId].some(amount => amount === "")) {
-                const emptyIndex = amounts[personId].findIndex(amount => amount === "")
-                if (emptyIndex !== amounts[personId].length - 1) {
-                    setAmounts(amounts => ({ ...amounts, [personId]: [...amounts[personId].slice(0, emptyIndex), ...amounts[personId].slice(emptyIndex + 1)] }))
-                }
-            }
-        }
-    }, [amounts[personId]])
+    }, [amounts, personId, setAmounts])
 
     return (
         <>
@@ -233,9 +170,7 @@ export default function EditTransaction(props) {
             })
     }
 
-    useEffect(() => {
-        presetValues("None")
-    }, [])
+
 
     useEffect(() => {
         // add up all amounts
@@ -270,8 +205,7 @@ export default function EditTransaction(props) {
     }, [tax, tip, subtotal])
 
 
-    function presetValues(occasion, unfixedAmounts) {
-        console.log(occasion, unfixedAmounts)
+    const presetValues = useCallback((occasion, unfixedAmounts) => {
         // update currentOccasion and currentPeople
         var occasionFromId = occasions.find(o => o._id == occasion)
         var peopleForOccasion = []
@@ -324,7 +258,7 @@ export default function EditTransaction(props) {
         setAmounts(newAmounts)
         setCurrentOccasion(occasionFromId)
         setCurrentPeople(peopleForOccasion)
-    }
+    }, [occasions, people])
 
     function close() {
         props.onClose()
@@ -342,6 +276,10 @@ export default function EditTransaction(props) {
     }
 
     useEffect(() => {
+        presetValues("None")
+    }, [presetValues])
+
+    useEffect(() => {
         if (editData) {
             setReason(editData.reason)
             setDate(dayjs(editData.date))
@@ -351,7 +289,7 @@ export default function EditTransaction(props) {
 
             presetValues(editData.occasion, editData.type_attrs.people_items)
         }
-    }, [editData])
+    }, [editData, presetValues])
 
     return (
         <Drawer open={props.open} title={isNew ? "New Transaction" : "Edit Transaction"} actions={!isNew ?

@@ -34,7 +34,7 @@ export default function Dashboard() {
     useEffect(() => {
         if (!ledger) return
         if (ledger.length !== 0) {
-            setRecentTransactions(ledger.slice(0, 3))
+            setRecentTransactions(ledger.slice(0, 4))
         }
     }, [ledger])
 
@@ -89,7 +89,7 @@ export default function Dashboard() {
         })
 
         setPeopleStats(stats)
-    }, [people])
+    }, [people, ledger])
 
     return (
         <>

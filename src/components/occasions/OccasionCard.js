@@ -35,7 +35,7 @@ export default function OccasionCard(props) {
 
     useEffect(() => {
         setTransactions(ledger.filter(transaction => transaction.occasion === occasion._id))
-    }, [occasion])
+    }, [occasion, ledger])
 
     useEffect(() => {
         // calculate time until event starts
@@ -44,7 +44,7 @@ export default function OccasionCard(props) {
             const start = dayjs.utc(occasion.start_date)
             setTimeLeft(start.diff(now, 'hour'))
         }
-    }, [])
+    }, [occasion.start_date, timeState])
 
     return (
         <Card

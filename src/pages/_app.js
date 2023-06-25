@@ -105,13 +105,25 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                     }
                 })
 
-                setOccasions(data)
+                setOccasions(old => {
+                    if (JSON.stringify(old) !== JSON.stringify(data)) {
+                        return data
+                    } else {
+                        return old
+                    }
+                })
             })
 
         fetch("/api/fetchPeople")
             .then(res => res.json())
             .then(data => {
-                setPeople(data)
+                setPeople(old => {
+                    if (JSON.stringify(old) !== JSON.stringify(data)) {
+                        return data
+                    } else {
+                        return old
+                    }
+                })
             })
 
         fetch("/api/ledger/fetchLedger")
@@ -126,9 +138,14 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                     }
                     return 0
                 })
-                setLedger(data)
+                setLedger(old => {
+                    if (JSON.stringify(old) !== JSON.stringify(data)) {
+                        return data
+                    } else {
+                        return old
+                    }
+                })
             })
-
     }
 
     useEffect(() => {
@@ -144,7 +161,7 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
         if (password) {
             setSavedPassword(password)
         }
-    }, [password])
+    }, [password, setSavedPassword])
 
 
     return (

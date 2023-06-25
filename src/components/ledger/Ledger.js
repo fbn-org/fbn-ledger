@@ -37,7 +37,7 @@ export default function Ledger(props) {
     return (
         <>
 
-            <EditTransaction open={editorOpen} onClose={() => { setEditorOpen(false) }} isNew={editIsNew} editData={editData} people={people} occasions={occasions} />
+            <EditTransaction open={editorOpen} onClose={() => { setEditorOpen(false); setEditData(null) }} isNew={editIsNew} editData={editData} people={people} occasions={occasions} />
 
             <Fab color="secondary" sx={{ position: "fixed", bottom: 96, right: 16, zIndex: 2 }} onClick={() => { setEditorOpen(true); setEditIsNew(true); setEditData(null) }}>
                 <Add />

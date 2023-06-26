@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { BottomNavigation, CssBaseline, BottomNavigationAction, Container, InputAdornment, Typography, TextField } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -21,7 +21,7 @@ import useLocalStorage from '@/util/useLocalStorage.js'
 import VerticalGroup from '@/components/VerticalGroup';
 import HorizontalGroup from '@/components/HorizontalGroup';
 
-const theme = createTheme({
+const baseTheme = {
     palette: {
         mode: 'dark',
         primary: {
@@ -30,22 +30,22 @@ const theme = createTheme({
         secondary: {
             main: '#ECE5C7'
         },
-        colin: {
-            main: '#ffd6a5',
-            contrastText: '#000000',
-        },
-        eric: {
-            main: '#ffadad',
-            contrastText: '#000000',
-        },
-        matty: {
-            main: '#a0c4ff',
-            contrastText: '#000000',
-        },
-        hudson: {
-            main: '#6e78ff',
-            contrastText: '#000000',
-        }
+        // colin: {
+        //     main: '#ffd6a5',
+        //     contrastText: '#000000',
+        // },
+        // eric: {
+        //     main: '#ffadad',
+        //     contrastText: '#000000',
+        // },
+        // matty: {
+        //     main: '#a0c4ff',
+        //     contrastText: '#000000',
+        // },
+        // hudson: {
+        //     main: '#6e78ff',
+        //     contrastText: '#000000',
+        // }
     },
     shape: {
         borderRadius: 5,
@@ -63,7 +63,7 @@ const theme = createTheme({
             '"Segoe UI Symbol"',
         ].join(','),
     },
-})
+}
 
 const clientSideEmotionCache = createEmotionCache();
 
@@ -78,6 +78,24 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
     const [occasions, setOccasions] = useState(null)
     const [people, setPeople] = useState(null)
     const [ledger, setLedger] = useState(null)
+
+    const theme = useMemo(() => generateTheme(people), [people])
+
+    function generateTheme(people) {
+        if (people) {
+            let newTheme = { ...baseTheme }
+            people.forEach(person => {
+                newTheme.palette[person.name.toLowerCase()] = {
+                    main: person.color,
+                    contrastText: "#000000"
+                }
+            })
+            return createTheme(newTheme)
+        }
+        else {
+            return createTheme(baseTheme)
+        }
+    }
 
     function refresh() {
         fetch("/api/occasions/fetchOccasions")
@@ -166,46 +184,48 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
 
     return (
         <CacheProvider value={emotionCache}>
-            <ThemeProvider theme={theme}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <OccasionsContext.Provider value={{ occasions, refresh }}>
-                        <PeopleContext.Provider value={{ people, refresh }}>
-                            <LedgerContext.Provider value={{ ledger, refresh }}>
+            {theme ?
+                <ThemeProvider theme={theme}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <OccasionsContext.Provider value={{ occasions, refresh }}>
+                            <PeopleContext.Provider value={{ people, refresh }}>
+                                <LedgerContext.Provider value={{ ledger, refresh }}>
 
-                                <CssBaseline />
+                                    <CssBaseline />
 
-                                {occasions && people && ledger ?
-                                    <Container maxWidth="sm" sx={{ height: "100vh", width: "100%", display: "flex", padding: "0px", margin: "auto", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", WebkitOverflowScrolling: "touch" }}>
+                                    {occasions && people && ledger ?
+                                        <Container maxWidth="sm" sx={{ height: "100vh", width: "100%", display: "flex", padding: "0px", margin: "auto", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", WebkitOverflowScrolling: "touch" }}>
 
-                                        {savedPassword !== targetPassword ?
-                                            <VerticalGroup style={{ width: "100%", height: "100%", flexGrow: 1, position: "fixed", justifyContent: "center", background: theme.palette.background.default, zIndex: 100000 }}>
-                                                <HorizontalGroup >
-                                                    <TextField variant="outlined" type="password" value={password} InputProps={{ startAdornment: <InputAdornment position="start"><Lock /></InputAdornment> }} onChange={(e) => setPassword(e.target.value)} />
-                                                </HorizontalGroup>
+                                            {savedPassword !== targetPassword ?
+                                                <VerticalGroup style={{ width: "100%", height: "100%", flexGrow: 1, position: "fixed", justifyContent: "center", background: theme.palette.background.default, zIndex: 100000 }}>
+                                                    <HorizontalGroup >
+                                                        <TextField variant="outlined" type="password" value={password} InputProps={{ startAdornment: <InputAdornment position="start"><Lock /></InputAdornment> }} onChange={(e) => setPassword(e.target.value)} />
+                                                    </HorizontalGroup>
+                                                </VerticalGroup>
+                                                : null}
+
+                                            <div style={{ width: "100%", height: "auto", position: "relative", padding: "15px", flexGrow: 1, overflowY: "scroll" }}>
+                                                <Component {...pageProps} selectedPage={selectedPage} />
+                                            </div>
+
+
+                                            <VerticalGroup style={{ width: "100vw", height: "80px", bottom: 0, zIndex: 100 }}>
+                                                <BottomNavigation value={selectedPage} onChange={(e, newValue) => setSelectedPage(newValue)} sx={{ width: "100%" }}>
+                                                    <BottomNavigationAction label="Home" icon={<Home />} />
+                                                    <BottomNavigationAction label="Occasions" icon={<Celebration />} />
+                                                    <BottomNavigationAction label="Ledger" icon={<ReceiptLong />} />
+                                                </BottomNavigation>
+                                                <div style={{ width: "100%", height: "24px", backgroundColor: theme.palette.background.default }} />
                                             </VerticalGroup>
-                                            : null}
+                                        </Container>
+                                        : null}
 
-                                        <div style={{ width: "100%", height: "auto", position: "relative", padding: "15px", flexGrow: 1, overflowY: "scroll" }}>
-                                            <Component {...pageProps} selectedPage={selectedPage} />
-                                        </div>
-
-
-                                        <VerticalGroup style={{ width: "100vw", height: "80px", bottom: 0, zIndex: 100 }}>
-                                            <BottomNavigation value={selectedPage} onChange={(e, newValue) => setSelectedPage(newValue)} sx={{ width: "100%" }}>
-                                                <BottomNavigationAction label="Home" icon={<Home />} />
-                                                <BottomNavigationAction label="Occasions" icon={<Celebration />} />
-                                                <BottomNavigationAction label="Ledger" icon={<ReceiptLong />} />
-                                            </BottomNavigation>
-                                            <div style={{ width: "100%", height: "24px", backgroundColor: theme.palette.background.default }} />
-                                        </VerticalGroup>
-                                    </Container>
-                                    : null}
-
-                            </LedgerContext.Provider>
-                        </PeopleContext.Provider >
-                    </OccasionsContext.Provider>
-                </LocalizationProvider>
-            </ThemeProvider>
+                                </LedgerContext.Provider>
+                            </PeopleContext.Provider >
+                        </OccasionsContext.Provider>
+                    </LocalizationProvider>
+                </ThemeProvider>
+                : null}
         </CacheProvider>
     )
 }

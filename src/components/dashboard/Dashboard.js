@@ -69,16 +69,16 @@ export default function Dashboard() {
             let total = transaction.total
             stats[transaction.payer].offset += total
             let extra = 0
-            if (transaction.type_attrs.tax !== "") {
-                extra += parseFloat(transaction.type_attrs.tax)
+            if (transaction.tax !== "") {
+                extra += parseFloat(transaction.tax)
             }
-            if (transaction.type_attrs.tip !== "") {
-                extra += parseFloat(transaction.type_attrs.tip)
+            if (transaction.tip !== "") {
+                extra += parseFloat(transaction.tip)
             }
             total -= extra
 
-            Object.keys(transaction.type_attrs.people_items).forEach(p => {
-                let personTotal = transaction.type_attrs.people_items[p].reduce((acc, item) => acc + parseFloat(item), 0)
+            Object.keys(transaction.individual_items).forEach(p => {
+                let personTotal = transaction.individual_items[p].reduce((acc, item) => acc + parseFloat(item), 0)
                 let weight = personTotal / total
                 stats[p].totalSpend += (personTotal + (extra * weight))
             })

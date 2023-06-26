@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback} from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-import { Divider, Avatar, Button, TextField, Select, MenuItem, FormControl, InputLabel, Chip, InputAdornment, Typography, IconButton, ClickAwayListener, Tooltip } from "@mui/material";
+import { Divider, Avatar, Button, TextField, Select, MenuItem, FormControl, InputLabel, Chip, Icon, InputAdornment, Typography, IconButton, ClickAwayListener, Tooltip, Collapse, OutlinedInput, AvatarGroup } from "@mui/material";
 import { LoadingButton } from '@mui/lab';
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { Add, Delete, ExpandLess, ExpandMore, KeyboardDoubleArrowRight } from "@mui/icons-material";
@@ -17,44 +17,44 @@ function PersonItem(props) {
 
     const personId = props.personId
     const name = props.name
-    const amounts = props.amounts
-    const setAmounts = props.setAmounts
+    const individualAmounts = props.individualAmounts
+    const setIndividualAmounts = props.setIndividualAmounts
 
     // useEffect(() => {
-    //     if (amounts[personId] === undefined) {
-    //         setAmounts(amounts => ({ ...amounts, [personId]: [""] }))
+    //     if (individualAmounts[personId] === undefined) {
+    //         setIndividualAmounts(individualAmounts => ({ ...individualAmounts, [personId]: [""] }))
     //     }
     // }, [])
 
     useEffect(() => {
-        console.log(amounts)
-        if (amounts[personId] !== undefined) {
+        console.log(individualAmounts)
+        if (individualAmounts[personId] !== undefined) {
 
-            if (amounts[personId].every(amount => amount !== "")) {
-                setAmounts(amounts => ({ ...amounts, [personId]: [...amounts[personId], ""] }))
+            if (individualAmounts[personId].every(amount => amount !== "")) {
+                setIndividualAmounts(individualAmounts => ({ ...individualAmounts, [personId]: [...individualAmounts[personId], ""] }))
             }
 
-            if (amounts[personId].some(amount => amount === "")) {
-                const emptyIndex = amounts[personId].findIndex(amount => amount === "")
-                if (emptyIndex !== amounts[personId].length - 1) {
-                    setAmounts(amounts => ({ ...amounts, [personId]: [...amounts[personId].slice(0, emptyIndex), ...amounts[personId].slice(emptyIndex + 1)] }))
+            if (individualAmounts[personId].some(amount => amount === "")) {
+                const emptyIndex = individualAmounts[personId].findIndex(amount => amount === "")
+                if (emptyIndex !== individualAmounts[personId].length - 1) {
+                    setIndividualAmounts(individualAmounts => ({ ...individualAmounts, [personId]: [...individualAmounts[personId].slice(0, emptyIndex), ...individualAmounts[personId].slice(emptyIndex + 1)] }))
                 }
             }
         }
-    }, [amounts, personId, setAmounts])
+    }, [individualAmounts, personId, setIndividualAmounts])
 
     return (
         <>
-            {amounts[personId] !== undefined ?
+            {individualAmounts[personId] !== undefined ?
                 <VerticalGroup key={personId} style={{ width: " 100%", gap: "10px" }}>
 
-                    <HorizontalGroup key={0} style={{ width: "100%", gap: "5px" }}>
+                    <HorizontalGroup style={{ width: "100%", gap: "5px" }}>
                         <Chip label={name} color={name.toLowerCase()} variant="outlined" sx={{ flexBasis: "40%" }} />
                         <KeyboardDoubleArrowRight />
-                        <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={amounts[personId][0]} onChange={(e) => { setAmounts(amounts => ({ ...amounts, [personId]: [e.target.value, ...amounts[personId].slice(1)] })) }} />
+                        <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={individualAmounts[personId][0]} onChange={(e) => { setIndividualAmounts(individualAmounts => ({ ...individualAmounts, [personId]: [e.target.value, ...individualAmounts[personId].slice(1)] })) }} />
                     </HorizontalGroup>
 
-                    {amounts[personId].slice(1).map((amount, index) => {
+                    {individualAmounts[personId].slice(1).map((amount, index) => {
                         const id = index + 1
                         return (
                             <HorizontalGroup key={id} style={{ width: "100%", gap: "5px" }}>
@@ -66,7 +66,7 @@ function PersonItem(props) {
                                 : null} */}
                                 </div>
                                 <Add />
-                                <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={amounts[personId][id]} onChange={(e) => { console.log(amounts[personId].slice(0, id)); setAmounts(amounts => ({ ...amounts, [personId]: [...amounts[personId].slice(0, id), e.target.value, ...amounts[personId].slice(id + 1)] })) }} />
+                                <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={individualAmounts[personId][id]} onChange={(e) => { console.log(individualAmounts[personId].slice(0, id)); setIndividualAmounts(individualAmounts => ({ ...individualAmounts, [personId]: [...individualAmounts[personId].slice(0, id), e.target.value, ...individualAmounts[personId].slice(id + 1)] })) }} />
                             </HorizontalGroup>
                         )
                     })}
@@ -75,6 +75,89 @@ function PersonItem(props) {
                 </VerticalGroup>
                 : null}
         </>
+    )
+}
+
+function SharedItem(props) {
+
+    const people = props.people
+    const sharedAmounts = props.sharedAmounts
+    const setSharedAmounts = props.setSharedAmounts
+    const index = props.index
+
+    const [selectedPeople, setSelectedPeople] = useState(sharedAmounts[index].people)
+    const [amount, setAmount] = useState(sharedAmounts[index].amount)
+
+    useEffect(() => {
+        setSelectedPeople(selectedPeople => selectedPeople.filter(person => people.some(p => p.id === person)))
+    }, [people])
+
+    useEffect(() => {
+        setSharedAmounts(old => {
+            let o = [...old]
+            o[index] = { people: selectedPeople, amount: amount }
+            return o
+        })
+    }, [amount, index, selectedPeople, setSharedAmounts])
+
+    const handleChange = (event) => {
+        const {
+            target: { value },
+        } = event;
+        setSelectedPeople(
+            // On autofill we get a stringified value.
+            typeof value === 'string' ? value.split(',') : value,
+        );
+    };
+
+    useEffect(() => {
+        let data = sharedAmounts[index]
+        if (JSON.stringify(data.people) !== JSON.stringify(selectedPeople)) {
+            setSelectedPeople(data.people)
+        }
+        if (data.amount !== amount) {
+            setAmount(data.amount)
+        }
+    }, [sharedAmounts, index, selectedPeople, amount])
+
+    return (
+        <HorizontalGroup style={{ width: "100%", gap: "5px" }}>
+            <FormControl size="small" sx={{ flexBasis: "40%" }}>
+                <InputLabel id="demo-multiple-name-label">People</InputLabel>
+                <Select
+                    labelId="demo-multiple-name-label"
+                    id="demo-multiple-name"
+                    label="People"
+                    multiple
+                    value={selectedPeople}
+                    onChange={handleChange}
+                    size="small"
+                    renderValue={(selected) => (
+                        <HorizontalGroup style={{ justifyContent: "flex-start", width: "100%" }}>
+                            <AvatarGroup spacing="small">
+                                {selected.map((value) => {
+                                    let person = people.find(p => p.id === value)
+                                    return person ? <Avatar sx={{ bgcolor: `${person.name.toLowerCase()}.main`, width: 18, height: 18 }} key={value}><Icon /></Avatar> : null
+                                })}
+                            </AvatarGroup>
+                        </HorizontalGroup>
+                    )}
+                >
+                    {people.map(person => {
+                        return (
+                            <MenuItem key={person.id} value={person.id} sx={{ gap: "5px" }}>
+                                <Avatar sx={{ bgcolor: `${person.name.toLowerCase()}.main`, width: 20, height: 20 }}><Icon /></Avatar>
+                                {person.name}
+                            </MenuItem>
+                        )
+                    })}
+
+                </Select>
+            </FormControl>
+            <KeyboardDoubleArrowRight />
+            <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={amount} onChange={(e) => { setAmount(e.target.value) }} />
+
+        </HorizontalGroup>
     )
 }
 
@@ -88,12 +171,11 @@ export default function EditTransaction(props) {
     const [saving, setSaving] = useState(false)
     const [confirmationOpen, setConfirmationOpen] = useState(false)
 
-    const [useComplexMode, setComplexMode] = useState(false)
-
     const [total, setTotal] = useState(0)
     const [subtotal, setSubtotal] = useState(0)
 
-    const [amounts, setAmounts] = useState(null)
+    const [individualAmounts, setIndividualAmounts] = useState({})
+    const [sharedAmounts, setSharedAmounts] = useState([])
     const [reason, setReason] = useState("")
     const [userPaying, setUserPaying] = useState("")
 
@@ -108,23 +190,24 @@ export default function EditTransaction(props) {
     function submit() {
         setSaving(true)
 
-        let amountsFinal = amounts
+        let amountsFinal = individualAmounts
+        let sharedFinal = sharedAmounts
         //delete the empty item in each person's array
         Object.keys(amountsFinal).forEach(personId => {
             amountsFinal[personId] = amountsFinal[personId].filter(amount => amount !== "")
         })
+        //delete the empty item in each shared array
+        sharedFinal = sharedFinal.filter(item => item.amount !== "" && item.people.length !== 0)
 
         let data = {
             reason: reason,
             date: date.utc(),
             payer: userPaying,
             occasion: occasion,
-            type: "split",
-            type_attrs: {
-                tax: tax,
-                tip: tip,
-                people_items: amountsFinal,
-            },
+            tax: tax,
+            tip: tip,
+            individual_items: amountsFinal,
+            shared_items: sharedFinal,
             total: total,
         }
 
@@ -170,26 +253,42 @@ export default function EditTransaction(props) {
             })
     }
 
-
-
     useEffect(() => {
-        // add up all amounts
-        if (amounts) {
-            console.log(amounts)
-            if (Object.keys(amounts).length > 0) {
+        // add up all individualAmounts
+        let newTotal = 0
+
+        if (individualAmounts) {
+            console.log(individualAmounts)
+            if (Object.keys(individualAmounts).length > 0) {
                 let subtotal = 0
-                Object.keys(amounts).forEach(personId => {
-                    amounts[personId].forEach(amount => {
+                Object.keys(individualAmounts).forEach(personId => {
+                    individualAmounts[personId].forEach(amount => {
                         if (amount !== "") {
                             subtotal += parseFloat(amount)
                         }
                     })
                 })
 
-                setSubtotal(subtotal)
+                newTotal += subtotal
             }
         }
-    }, [amounts])
+
+        if (sharedAmounts) {
+            console.log(sharedAmounts)
+            if (sharedAmounts.length > 0) {
+                let subtotal = 0
+                sharedAmounts.forEach(item => {
+                    if (item.amount !== "") {
+                        subtotal += parseFloat(item.amount)
+                    }
+                })
+
+                newTotal += subtotal
+            }
+        }
+
+        setSubtotal(newTotal)
+    }, [individualAmounts, sharedAmounts])
 
     useEffect(() => {
         let total = subtotal
@@ -204,9 +303,7 @@ export default function EditTransaction(props) {
         setTotal(total)
     }, [tax, tip, subtotal])
 
-
-    const presetValues = useCallback((occasion, unfixedAmounts) => {
-        // update currentOccasion and currentPeople
+    const presetValues = useCallback((occasion, unfixedIndividualAmounts, unfixedSharedAmounts) => {
         var occasionFromId = occasions.find(o => o._id == occasion)
         var peopleForOccasion = []
         var peopleUnformattedForOccasion = []
@@ -234,31 +331,73 @@ export default function EditTransaction(props) {
             }
         }
 
-        var newAmounts = {}
+        var newIndividualAmounts = {}
+        var newSharedAmounts = []
 
         if (peopleForOccasion.length !== 0) {
-            // make sure everyone in amounts is actually in the occasion
+            // make sure everyone in individualAmounts is actually in the occasion
             if (peopleForOccasion !== null) {
                 peopleForOccasion.forEach(person => {
-                    newAmounts[person.id] = [""]
+                    newIndividualAmounts[person.id] = [""]
                 })
 
-                if (unfixedAmounts) {
-                    for (const personId of Object.keys(unfixedAmounts)) {
+                if (unfixedIndividualAmounts) {
+                    for (const personId of Object.keys(unfixedIndividualAmounts)) {
                         let targetPerson = peopleForOccasion.find(user => user.id === personId)
                         if (targetPerson) {
-                            newAmounts[personId] = unfixedAmounts[personId]
+                            newIndividualAmounts[personId] = unfixedIndividualAmounts[personId]
                         }
                     }
+                }
+
+                if (unfixedSharedAmounts) {
+                    for (const item of unfixedSharedAmounts) {
+                        let newSharedItem = {
+                            "people": [],
+                            "amount": ""
+                        }
+                        for (const personId of item.people) {
+                            let targetPerson = peopleForOccasion.find(user => user.id === personId)
+                            if (targetPerson) {
+                                newSharedItem.people.push(personId)
+                            }
+                        }
+                        newSharedItem.amount = item.amount
+                        newSharedAmounts.push(newSharedItem)
+                    }
+                } else {
+                    newSharedAmounts = [{
+                        "people": [],
+                        "amount": ""
+                    }]
                 }
             }
         }
 
+        console.log(newSharedAmounts)
+
         setOccasion(occasion)
-        setAmounts(newAmounts)
+        setIndividualAmounts(newIndividualAmounts)
+        setSharedAmounts(newSharedAmounts)
         setCurrentOccasion(occasionFromId)
         setCurrentPeople(peopleForOccasion)
     }, [occasions, people])
+
+    useEffect(() => {
+        if (sharedAmounts.length > 0) {
+            if (sharedAmounts.every(item => item.amount !== "" && item.people.length !== 0)) {
+                setSharedAmounts(old => [...old, { "people": [], "amount": "" }])
+            }
+
+            if (sharedAmounts.some(item => item.amount === "" && item.people.length === 0)) {
+                const emptyIndex = sharedAmounts.findIndex(item => item.amount === "" && item.people.length === 0)
+                console.log(sharedAmounts)
+                if (emptyIndex !== sharedAmounts.length - 1) {
+                    setSharedAmounts(old => [...old.slice(0, emptyIndex), ...old.slice(emptyIndex + 1)])
+                }
+            }
+        }
+    }, [sharedAmounts])
 
     function close() {
         props.onClose()
@@ -283,11 +422,11 @@ export default function EditTransaction(props) {
         if (editData) {
             setReason(editData.reason)
             setDate(dayjs(editData.date))
-            setTax(editData.type_attrs.tax)
-            setTip(editData.type_attrs.tip)
+            setTax(editData.tax)
+            setTip(editData.tip)
             setUserPaying(editData.payer)
 
-            presetValues(editData.occasion, editData.type_attrs.people_items)
+            presetValues(editData.occasion, editData.individual_items, editData.shared_items)
         }
     }, [editData, presetValues])
 
@@ -310,60 +449,81 @@ export default function EditTransaction(props) {
                 </Tooltip>
             </ClickAwayListener> : null} >
 
-            <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
-                <TextField label="Description" variant="outlined" size="medium" fullWidth value={reason} onChange={(e) => setReason(e.target.value)} sx={{ flexBasis: "50%" }} />
 
-                <FormControl sx={{ flexBasis: "50%" }}>
-                    <InputLabel id="payer-label">Whos Paying?</InputLabel>
-                    <Select variant="outlined" size="medium" label="Buyer" value={userPaying} onChange={(selectionEntry) => {
-                        var userPaying = selectionEntry.target.value
-                        setUserPaying(userPaying)
-                    }}>
-                        {currentPeople.map(personInfo => {
-                            return (
-                                <MenuItem key={personInfo.id} value={personInfo.id}>{personInfo.name}</MenuItem>
-                            )
-                        })}
-                    </Select>
-                </FormControl>
-            </HorizontalGroup>
+            <TransactionSection title="Metadata" open>
+                <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "5px" }}>
+                    <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
+                        <TextField label="Description" variant="outlined" size="medium" fullWidth value={reason} onChange={(e) => setReason(e.target.value)} sx={{ flexBasis: "50%" }} />
 
-            <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
-                <DateTimePicker slotProps={{ textField: { size: "medium" } }} label="Time" value={date} onChange={(v) => { setDate(v) }} sx={{ flexBasis: "50%" }} />
+                        <FormControl sx={{ flexBasis: "50%" }}>
+                            <InputLabel id="payer-label">Payer</InputLabel>
+                            <Select variant="outlined" size="medium" label="Buyer" value={userPaying} onChange={(selectionEntry) => {
+                                var userPaying = selectionEntry.target.value
+                                setUserPaying(userPaying)
+                            }}>
+                                {currentPeople.map(personInfo => {
+                                    return (
+                                        <MenuItem key={personInfo.id} value={personInfo.id}>{personInfo.name}</MenuItem>
+                                    )
+                                })}
+                            </Select>
+                        </FormControl>
+                    </HorizontalGroup>
 
-                <FormControl sx={{ flexBasis: "50%" }}>
-                    <InputLabel id="transaction-type-label">Occasion</InputLabel>
-                    <Select variant="outlined" size="medium" label="Occasion" value={occasion} onChange={(selectionEntry) => {
-                        var selectionValue = selectionEntry.target.value
-                        presetValues(selectionValue)
-                    }}>
-                        <MenuItem key="None" value="None">None</MenuItem>
-                        {occasions.map(occasion => {
-                            if (occasion.timeState === "active") {
-                                return (
-                                    <MenuItem key={occasion._id} value={occasion._id}>{occasion.name}</MenuItem>
-                                )
-                            } else {
-                                return null
-                            }
-                        })}
-                    </Select>
-                </FormControl>
-            </HorizontalGroup>
+                    <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
+                        <DateTimePicker slotProps={{ textField: { size: "medium" } }} label="Time" value={date} onChange={(v) => { setDate(v) }} sx={{ flexBasis: "50%" }} />
 
-            <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px", visibility: useComplexMode && "hidden"  || "visible" }}>
+                        <FormControl sx={{ flexBasis: "50%" }}>
+                            <InputLabel id="transaction-type-label">Occasion</InputLabel>
+                            <Select variant="outlined" size="medium" label="Occasion" value={occasion} onChange={(selectionEntry) => {
+                                var selectionValue = selectionEntry.target.value
+                                presetValues(selectionValue, individualAmounts, sharedAmounts)
+                            }}>
+                                <MenuItem key="None" value="None">None</MenuItem>
+                                {editData?.occasion ? <MenuItem key={editData.occasion} value={editData.occasion}>{occasions.find(o => o._id === editData.occasion).name}</MenuItem> : null}
+                                {occasions.map(occasion => {
+                                    if (occasion.timeState === "active") {
+                                        return (
+                                            <MenuItem key={occasion._id} value={occasion._id}>{occasion.name}</MenuItem>
+                                        )
+                                    } else {
+                                        return null
+                                    }
+                                })}
+                            </Select>
+                        </FormControl>
+                    </HorizontalGroup>
+                </VerticalGroup>
+            </TransactionSection>
 
-                {amounts ? currentPeople.map(personInfo => {
-                    return (
-                        <PersonItem key={personInfo.id} personId={personInfo.id} name={personInfo.name} amounts={amounts} setAmounts={setAmounts} />
-                    )
-                })
-                    : null}
 
-            </VerticalGroup>
+            <TransactionSection title="Individual items">
+                <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "5px" }}>
 
-            <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "5px" }}>
-                <HorizontalGroup style={{ width: "100%", gap: "5px", alignSelf: "flex-end", justifyContent: "flex-end", marginTop: "10px", }}>
+                    {individualAmounts ? currentPeople.map(personInfo => {
+                        return (
+                            <PersonItem key={personInfo.id} personId={personInfo.id} name={personInfo.name} individualAmounts={individualAmounts} setIndividualAmounts={setIndividualAmounts} />
+                        )
+                    })
+                        : null}
+
+                </VerticalGroup>
+            </TransactionSection>
+
+            <TransactionSection title="Group items">
+                <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "5px" }}>
+                    {sharedAmounts ? sharedAmounts.map((sharedItem, index) => {
+                        return (
+                            <SharedItem key={index} index={index} people={currentPeople} sharedAmounts={sharedAmounts} setSharedAmounts={setSharedAmounts} />
+                        )
+                    })
+                        : null}
+                </VerticalGroup>
+            </TransactionSection>
+
+            {/* <TransactionSection title="Tax and tip"> */}
+            <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px" }}>
+                <HorizontalGroup style={{ width: "100%", gap: "5px", alignSelf: "flex-end", justifyContent: "flex-end" }}>
                     <Typography variant="h6" sx={{ flexBasis: "40%", textAlign: "center" }}>Tax</Typography>
                     <Add />
                     <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={tax} onChange={(e) => { setTax(e.target.value) }} />
@@ -375,6 +535,7 @@ export default function EditTransaction(props) {
                     <TextField label={`18%: $${(subtotal * .18).toFixed(2)}, 20%: $${(subtotal * .2).toFixed(2)}`} variant="outlined" size="small" type="number" value={tip} onChange={(e) => { setTip(e.target.value) }} InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} />
                 </HorizontalGroup>
             </VerticalGroup>
+            {/* </TransactionSection> */}
 
             <Divider sx={{ width: "60%", alignSelf: "flex-end" }} />
 
@@ -390,5 +551,29 @@ export default function EditTransaction(props) {
             </HorizontalGroup>
 
         </Drawer >
+    )
+}
+
+function TransactionSection(props) {
+
+    const [open, setOpen] = useState(props.open || false)
+
+    return (
+        <VerticalGroup style={{ width: "100%", }}>
+            <HorizontalGroup style={{ width: "100%", gap: "10px", marginBottom: "10px" }}>
+                {props.icon}
+                <Typography variant="h5">{props.title}</Typography>
+                <HorizontalGroup style={{ width: "auto", flexGrow: 1, justifyContent: "flex-end" }}>
+                    <IconButton color="secondary" size="medium" onClick={() => { setOpen(a => !a) }}>
+                        {!open ? <ExpandMore /> : <ExpandLess />}
+                    </IconButton>
+                </HorizontalGroup>
+            </HorizontalGroup>
+            <Collapse in={open} style={{ width: "100%" }}>
+
+                {props.children}
+
+            </Collapse>
+        </VerticalGroup>
     )
 }

@@ -44,16 +44,16 @@ export default function Payouts(props) {
             let payer = transaction.payer
             let fullTotal = transaction.total
             let extra = 0
-            if (transaction.type_attrs.tax !== "") {
-                extra += parseFloat(transaction.type_attrs.tax)
+            if (transaction.tax !== "") {
+                extra += parseFloat(transaction.tax)
             }
-            if (transaction.type_attrs.tip !== "") {
-                extra += parseFloat(transaction.type_attrs.tip)
+            if (transaction.tip !== "") {
+                extra += parseFloat(transaction.tip)
             }
             fullTotal -= extra
 
-            Object.keys(transaction.type_attrs.people_items).forEach(personId => {
-                let total = transaction.type_attrs.people_items[personId].reduce((a, b) => parseFloat(a) + parseFloat(b), 0)
+            Object.keys(transaction.individual_items).forEach(personId => {
+                let total = transaction.individual_items[personId].reduce((a, b) => parseFloat(a) + parseFloat(b), 0)
                 let weight = total / fullTotal
                 totals[personId] = (total + (extra * weight)).toFixed(2)
             })

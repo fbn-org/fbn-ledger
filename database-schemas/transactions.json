@@ -8,7 +8,7 @@
         "type_attrs": {
             "tax": 0,
             "tip": 0,
-            "people_items": {
+            "individual_items": {
                 "id_1": []
             }
         },

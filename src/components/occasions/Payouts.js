@@ -54,6 +54,26 @@ export default function Payouts(props) {
 
             Object.keys(transaction.individual_items).forEach(personId => {
                 let total = transaction.individual_items[personId].reduce((a, b) => parseFloat(a) + parseFloat(b), 0)
+                totals[personId] = total
+            })
+
+            transaction.shared_items.forEach(item => {
+                let people = item.people 
+                let amountPerPerson = parseFloat(item.amount)/people.length
+
+                people.forEach(personId => {
+                    if (totals[personId]) {
+                        totals[personId] += amountPerPerson
+                    } else {
+                        totals[personId] = amountPerPerson
+                    }
+                })
+            })
+
+            console.log(totals)
+
+            Object.keys(totals).forEach(personId => {
+                let total = totals[personId]
                 let weight = total / fullTotal
                 totals[personId] = (total + (extra * weight)).toFixed(2)
             })

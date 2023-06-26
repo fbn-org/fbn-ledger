@@ -27,7 +27,6 @@ function PersonItem(props) {
     // }, [])
 
     useEffect(() => {
-        console.log(individualAmounts)
         if (individualAmounts[personId] !== undefined) {
 
             if (individualAmounts[personId].every(amount => amount !== "")) {
@@ -83,43 +82,28 @@ function SharedItem(props) {
     const people = props.people
     const sharedAmounts = props.sharedAmounts
     const setSharedAmounts = props.setSharedAmounts
+    const sharedItem = props.sharedItem
     const index = props.index
 
-    const [selectedPeople, setSelectedPeople] = useState(sharedAmounts[index].people)
-    const [amount, setAmount] = useState(sharedAmounts[index].amount)
-
-    useEffect(() => {
-        setSelectedPeople(selectedPeople => selectedPeople.filter(person => people.some(p => p.id === person)))
-    }, [people])
-
-    useEffect(() => {
-        setSharedAmounts(old => {
-            let o = [...old]
-            o[index] = { people: selectedPeople, amount: amount }
-            return o
-        })
-    }, [amount, index, selectedPeople, setSharedAmounts])
-
-    const handleChange = (event) => {
+    function updatePeople(event) {
         const {
             target: { value },
-        } = event;
-        setSelectedPeople(
-            // On autofill we get a stringified value.
-            typeof value === 'string' ? value.split(',') : value,
-        );
-    };
+        } = event
+        let selectedPeople = typeof value === 'string' ? value.split(',') : value
+        setSharedAmounts(old => {
+            let o = [...old]
+            o[index] = { people: selectedPeople, amount: sharedAmounts[index].amount }
+            return o
+        })
+    }
 
-    useEffect(() => {
-        let data = sharedAmounts[index]
-        if (JSON.stringify(data.people) !== JSON.stringify(selectedPeople)) {
-            setSelectedPeople(data.people)
-        }
-        if (data.amount !== amount) {
-            setAmount(data.amount)
-        }
-    }, [sharedAmounts, index])
-    //TODO: fix this when proper deps are used
+    function updateAmount(e) {
+        setSharedAmounts(old => {
+            let o = [...old]
+            o[index] = { people: sharedAmounts[index].people, amount: e.target.value }
+            return o   
+        })
+    }
 
     return (
         <HorizontalGroup style={{ width: "100%", gap: "5px" }}>
@@ -130,8 +114,8 @@ function SharedItem(props) {
                     id="demo-multiple-name"
                     label="People"
                     multiple
-                    value={selectedPeople}
-                    onChange={handleChange}
+                    value={sharedAmounts[index].people}
+                    onChange={updatePeople}
                     size="small"
                     renderValue={(selected) => (
                         <HorizontalGroup style={{ justifyContent: "flex-start", width: "100%" }}>
@@ -156,7 +140,7 @@ function SharedItem(props) {
                 </Select>
             </FormControl>
             <KeyboardDoubleArrowRight />
-            <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={amount} onChange={(e) => { setAmount(e.target.value) }} />
+            <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={sharedAmounts[index].amount} onChange={updateAmount} />
 
         </HorizontalGroup>
     )
@@ -259,7 +243,6 @@ export default function EditTransaction(props) {
         let newTotal = 0
 
         if (individualAmounts) {
-            console.log(individualAmounts)
             if (Object.keys(individualAmounts).length > 0) {
                 let subtotal = 0
                 Object.keys(individualAmounts).forEach(personId => {
@@ -275,7 +258,6 @@ export default function EditTransaction(props) {
         }
 
         if (sharedAmounts) {
-            console.log(sharedAmounts)
             if (sharedAmounts.length > 0) {
                 let subtotal = 0
                 sharedAmounts.forEach(item => {
@@ -375,7 +357,6 @@ export default function EditTransaction(props) {
             }
         }
 
-
         console.log(newSharedAmounts)
 
         setOccasion(occasion)
@@ -388,17 +369,23 @@ export default function EditTransaction(props) {
     useEffect(() => {
         if (sharedAmounts.length > 0) {
             if (sharedAmounts.every(item => item.amount !== "" && item.people.length !== 0)) {
+                console.log("extending")
                 setSharedAmounts(old => [...old, { "people": [], "amount": "" }])
             }
 
             if (sharedAmounts.some(item => item.amount === "" && item.people.length === 0)) {
                 const emptyIndex = sharedAmounts.findIndex(item => item.amount === "" && item.people.length === 0)
-                console.log(sharedAmounts)
                 if (emptyIndex !== sharedAmounts.length - 1) {
+                    console.log("Deleting")
+                    console.log(sharedAmounts)
                     setSharedAmounts(old => [...old.slice(0, emptyIndex), ...old.slice(emptyIndex + 1)])
                 }
             }
         }
+    }, [sharedAmounts])
+
+    useEffect(() => {
+        console.log(sharedAmounts)
     }, [sharedAmounts])
 
     function close() {
@@ -422,6 +409,7 @@ export default function EditTransaction(props) {
 
     useEffect(() => {
         if (editData) {
+            console.log(editData)
             setReason(editData.reason)
             setDate(dayjs(editData.date))
             setTax(editData.tax)
@@ -514,9 +502,9 @@ export default function EditTransaction(props) {
 
             <TransactionSection title="Group items">
                 <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "5px" }}>
-                    {sharedAmounts ? sharedAmounts.map((sharedItem, index) => {
+                    {sharedAmounts && sharedAmounts.length > 0 ? sharedAmounts.map((sharedItem, index) => {
                         return (
-                            <SharedItem key={index} index={index} people={currentPeople} sharedAmounts={sharedAmounts} setSharedAmounts={setSharedAmounts} />
+                            <SharedItem key={index} index={index} people={currentPeople} sharedItem={sharedItem} sharedAmounts={sharedAmounts} setSharedAmounts={setSharedAmounts} />
                         )
                     })
                         : null}

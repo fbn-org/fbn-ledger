@@ -88,7 +88,9 @@ function OccasionGroup(props) {
     const [open, setOpen] = useState(occasions.length !== 0 ? props.defaultOpen : false)
 
     useEffect(() => {
-        setOpen(occasions.length !== 0 ? props.defaultOpen : false)
+        if(props.defaultOpen){
+            setOpen(occasions.length !== 0 ? props.defaultOpen : false)
+        }
     }, [occasions, props.defaultOpen])
 
     return (

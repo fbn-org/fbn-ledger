@@ -58,8 +58,8 @@ export default function Payouts(props) {
             })
 
             transaction.shared_items.forEach(item => {
-                let people = item.people 
-                let amountPerPerson = parseFloat(item.amount)/people.length
+                let people = item.people
+                let amountPerPerson = parseFloat(item.amount) / people.length
 
                 people.forEach(personId => {
                     if (totals[personId]) {
@@ -108,8 +108,9 @@ export default function Payouts(props) {
             })
         })
 
-        console.log(owes)
-        setOwes(owes)
+        if (Object.keys(owes).length > 0) {
+            setOwes(owes)
+        }
     }
 
     function close() {
@@ -120,7 +121,7 @@ export default function Payouts(props) {
     }
 
     return (
-        <Drawer title="Payouts" subtitle={occasion ? occasion.name : ""} open={open && owes !== null} actions={<IconButton onClick={close} color="secondary"><Close /></IconButton>} >
+        <Drawer title="Payouts" subtitle={occasion ? occasion.name : ""} open={open} actions={<IconButton onClick={close} color="secondary"><Close /></IconButton>} >
 
             <VerticalGroup style={{ width: "100%", alignItems: "flex-start" }}>
 
@@ -156,7 +157,11 @@ export default function Payouts(props) {
                         } else return null
 
                     })
-                        : null}
+                        :
+                        <HorizontalGroup style={{ width: "100%", gap: "5px", justifyContent: "center" }}>
+                            <Typography variant="h6">nothing yet </Typography>
+                        </HorizontalGroup>
+                }
 
             </VerticalGroup>
 

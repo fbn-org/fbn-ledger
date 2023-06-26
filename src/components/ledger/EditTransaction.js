@@ -116,7 +116,6 @@ function SharedItem(props) {
                     multiple
                     value={sharedAmounts[index].people}
                     onChange={updatePeople}
-                    size="small"
                     renderValue={(selected) => (
                         <HorizontalGroup style={{ justifyContent: "flex-start", width: "100%" }}>
                             <AvatarGroup spacing="small">

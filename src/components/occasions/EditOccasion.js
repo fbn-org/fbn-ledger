@@ -84,7 +84,7 @@ export default function EditOccasion(props) {
     function close() {
         setName("")
         setStartDate(dayjs().local())
-        setEndDate(dayjs().set('date', dayjs().date() + 1))
+        setEndDate(dayjs().utc().local().set('date', dayjs().utc().local().date() + 1))
         setIncluded([])
         setSaving(false)
         setConfirmationOpen(false)
@@ -123,9 +123,9 @@ export default function EditOccasion(props) {
                 <TextField label="Name" variant="outlined" size="medium" fullWidth value={name} onChange={(e) => setName(e.target.value)} />
 
                 <HorizontalGroup style={{ width: "100%", alignItems: "flex-start", gap: "10px", alignItems: "center" }}>
-                    <DatePicker slotProps={{ textField: { size: "medium" } }} label="Start date" value={startDate} onChange={(v) => setStartDate(v) } />
+                    <DatePicker slotProps={{ textField: { size: "medium" } }} sx={{width: "100%"}} label="Start date" value={startDate} onChange={(v) => setStartDate(v) } />
                     <KeyboardDoubleArrowRight />
-                    <DatePicker slotProps={{ textField: { size: "medium" } }} label="End date" value={endDate} onChange={(v) => setEndDate(v)} minDate={startDate} />
+                    <DatePicker slotProps={{ textField: { size: "medium" } }} sx={{width: "100%"}} label="End date" value={endDate} onChange={(v) => setEndDate(v)} minDate={startDate} />
                 </HorizontalGroup>
 
                 <ToggleButtonGroup

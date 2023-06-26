@@ -9,8 +9,10 @@ export default async function handler(req, res) {
     if (req.method === "PUT") {
         const body = req.body
 
+        console.log(body)
+
         const data = await mongoClient.db("ledger").collection("occasions").updateOne({
-            _id: new ObjectId(body._id)
+            _id: new ObjectId(id)
         }, {
             $set: {
                 ...body

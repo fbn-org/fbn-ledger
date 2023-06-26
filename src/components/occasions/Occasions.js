@@ -48,7 +48,7 @@ export default function Occasions(props) {
 
     return (
         <>
-            <EditOccasion open={editorOpen} onClose={() => { setEditorOpen(false) }} isNew={editIsNew} editData={editData} people={people} />
+            <EditOccasion open={editorOpen} onClose={() => { setEditorOpen(false); setEditData(null) }} isNew={editIsNew} editData={editData} people={people} />
             <Payouts onClose={() => { setPayoutsOccasion(null) }} occasion={payoutsOccasion} people={people} open={payoutsOpen} setOpen={setPayoutsOpen} />
 
             <Fab color="secondary" sx={{ position: "fixed", bottom: 96, right: 16, zIndex: 2 }} onClick={() => { setEditorOpen(true); setEditIsNew(true); setEditData(null) }}>

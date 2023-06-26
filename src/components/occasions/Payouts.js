@@ -140,11 +140,11 @@ export default function Payouts(props) {
                                             return (
                                                 owes[fromId][toId] > 0 ?
                                                     <HorizontalGroup key={toId} style={{ width: "100%", gap: "5px", justifyContent: "center" }}>
-                                                        <Chip label={fromName} color={fromName.toLowerCase()} variant="outlined" sx={{ flexBasis: "35%" }} />
+                                                        <Chip label={fromName} color={fromName.toLowerCase()} variant="outlined" sx={{ flexBasis: "37.5%" }} />
                                                         <KeyboardDoubleArrowRight />
-                                                        <Typography variant="h6" sx={{ flexBasis: "30%", textAlign: "center" }}>${owes[fromId][toId].toFixed(2)}</Typography>
+                                                        <Typography variant="h6" sx={{ flexBasis: "25%", textAlign: "center" }}>${owes[fromId][toId].toFixed(2)}</Typography>
                                                         <KeyboardDoubleArrowRight />
-                                                        <Chip label={toName} color={toName.toLowerCase()} variant="outlined" sx={{ flexBasis: "35%" }} />
+                                                        <Chip label={toName} color={toName.toLowerCase()} variant="outlined" sx={{ flexBasis: "37.5%" }} />
                                                     </HorizontalGroup>
                                                     : null
 

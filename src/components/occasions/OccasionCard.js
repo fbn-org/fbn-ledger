@@ -50,11 +50,11 @@ export default function OccasionCard(props) {
         <Card
             key={occasion._id}
             icon={
-                <AvatarGroup spacing="small" onClick={() => {timeState === "active" && payoutsCallback ? payoutsCallback(occasion) : null}}>
+                <AvatarGroup spacing="small" onClick={() => { timeState === "active" && payoutsCallback ? payoutsCallback(occasion) : null }}>
                     {occasion.included_people.map(personId => {
                         const personName = people.find(person => person._id === personId).name
                         return (
-                            <Avatar key={personId} sx={{ bgcolor: `${personName.toLowerCase()}.main`, height: 20, width: 20 }}><Icon /></Avatar>
+                            <Avatar key={personId} sx={{ bgcolor: `${personName.toLowerCase()}.main`, height: 20, width: 20, fontSize: 12 }}><Icon /></Avatar>
                         )
                     })}
                 </AvatarGroup>
@@ -79,7 +79,7 @@ export default function OccasionCard(props) {
                                     {transactions.length}
                                 </Typography>
                                 <Typography variant="body2">
-                                    transactions 
+                                    transactions
                                 </Typography>
                             </VerticalGroup>
                         </Grid>
@@ -87,7 +87,7 @@ export default function OccasionCard(props) {
                         <Grid item xs={6}>
                             <VerticalGroup style={{ alignItems: "flex-start" }}>
                                 <Typography variant="h6">
-                                    ${transactions.reduce((total, transaction) => total + transaction.total, 0).toFixed(2)}
+                                    ${transactions.reduce((total, transaction) => total + parseFloat(transaction.total), 0).toFixed(2)}
                                 </Typography>
                                 <Typography variant="body2">
                                     total spend

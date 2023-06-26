@@ -180,9 +180,15 @@ export default function EditTransaction(props) {
         //delete the empty item in each person's array
         Object.keys(amountsFinal).forEach(personId => {
             amountsFinal[personId] = amountsFinal[personId].filter(amount => amount !== "")
+            amountsFinal[personId].forEach((amount, index) => {
+                amountsFinal[personId][index] = parseFloat(amount).toFixed(2)
+            })
         })
         //delete the empty item in each shared array
         sharedFinal = sharedFinal.filter(item => item.amount !== "" && item.people.length !== 0)
+        sharedFinal.forEach((item, index) => {
+            sharedFinal[index].amount = parseFloat(item.amount).toFixed(2)
+        })
 
         let data = {
             reason: reason,
@@ -193,7 +199,7 @@ export default function EditTransaction(props) {
             tip: tip,
             individual_items: amountsFinal,
             shared_items: sharedFinal,
-            total: total,
+            total: total.toFixed(2),
         }
 
         console.log(data)
@@ -500,7 +506,7 @@ export default function EditTransaction(props) {
                 </VerticalGroup>
             </TransactionSection>
 
-            <TransactionSection title="Group items">
+            <TransactionSection title="Shared items">
                 <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "5px" }}>
                     {sharedAmounts && sharedAmounts.length > 0 ? sharedAmounts.map((sharedItem, index) => {
                         return (

@@ -118,7 +118,8 @@ function SharedItem(props) {
         if (data.amount !== amount) {
             setAmount(data.amount)
         }
-    }, [sharedAmounts, index, selectedPeople, amount])
+    }, [sharedAmounts, index])
+    //TODO: fix this when proper deps are used
 
     return (
         <HorizontalGroup style={{ width: "100%", gap: "5px" }}>
@@ -373,6 +374,7 @@ export default function EditTransaction(props) {
                 }
             }
         }
+
 
         console.log(newSharedAmounts)
 

@@ -142,9 +142,12 @@ export default function Dashboard() {
 
                             return (
                                 <Grid key={data.name} item xs={6}>
-                                    <Card style={{ padding: "15px"}}>
+                                    <Card style={{ padding: "15px" }}>
                                         <VerticalGroup style={{ alignItems: "flex-start" }}>
-                                            <Typography variant="h6" style={{color: theme.palette[data.name.toLowerCase()].main}}>{data.name}</Typography>
+                                            <HorizontalGroup style={{ gap: "10px" }}>
+                                                <Avatar sx={{ bgcolor: `${data.name.toLowerCase()}.main`, height: 18, width: 18 }}><Icon /></Avatar>
+                                                <Typography variant="h6" style={{ color: theme.palette[data.name.toLowerCase()].main }}>{data.name}</Typography>
+                                            </HorizontalGroup>
                                             {/* <Chip label={data.name} color={data.name.toLowerCase()} variant="outlined" size="medium" /> */}
 
                                             <div style={{ width: "auto", height: "auto", display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
@@ -153,7 +156,7 @@ export default function Dashboard() {
                                                 </Typography>
                                             </div>
 
-                                            <HorizontalGroup style={{ justifyContent: "flex-start", alignItems: "center", marginTop: "8px" }}>
+                                            <HorizontalGroup style={{ justifyContent: "flex-start", alignItems: "center", marginTop: "10px" }}>
                                                 {data.offset > 0 ?
                                                     <KeyboardDoubleArrowUp fontSize="small" color="success" />
                                                     :

@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react'
 
-import { Typography, Grid, Chip, IconButton, Button, Fab, AvatarGroup, Avatar, Collapse, useTheme } from '@mui/material'
+import { Typography, Grid, Chip, IconButton, Button, Fab, AvatarGroup, Avatar, Collapse, useTheme, ListItemButton } from '@mui/material'
 import { Add, Celebration, Delete, Edit, Done, HourglassTop, AccessTime, ExpandMore, ExpandLess } from '@mui/icons-material'
 
 import { OccasionsContext } from '@/contexts/OccasionsContext'
@@ -62,7 +62,7 @@ export default function Occasions(props) {
                     <Typography variant="h4">Occasions</Typography>
                 </HorizontalGroup>
 
-                <VerticalGroup style={{ width: "100%", gap: "15px", }}>
+                <VerticalGroup style={{ width: "100%", gap: "5px", }}>
 
                     <OccasionGroup occasionsType="active" icon={typeIcons["active"]} occasions={occasions.filter(occasion => occasion.timeState === "active")} people={people} ledger={ledger} editCallback={editOccasion} payoutsCallback={showPayouts} defaultOpen={true} />
                     <OccasionGroup occasionsType="upcoming" icon={typeIcons["upcoming"]} occasions={occasions.filter(occasion => occasion.timeState === "upcoming")} people={people} ledger={ledger} editCallback={editOccasion} payoutsCallback={showPayouts} defaultOpen={occasions.filter(occasion => occasion.timeState === "active").length === 0} />
@@ -88,24 +88,24 @@ function OccasionGroup(props) {
     const [open, setOpen] = useState(occasions.length !== 0 ? props.defaultOpen : false)
 
     useEffect(() => {
-        if(props.defaultOpen){
+        if (props.defaultOpen) {
             setOpen(occasions.length !== 0 ? props.defaultOpen : false)
         }
     }, [occasions, props.defaultOpen])
 
     return (
         <VerticalGroup style={{ width: "100%", }}>
-            <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
-                {icon}
-                <Typography variant="h5">{occasionsType.charAt(0).toUpperCase() + occasionsType.slice(1)}</Typography>
-                <HorizontalGroup style={{ width: "auto", flexGrow: 1, justifyContent: "flex-end" }}>
-                    <IconButton color="secondary" size="medium" onClick={() => { setOpen(open => !open) }} disabled={occasions.length === 0}>
-                        {!open ? <ExpandMore /> : <ExpandLess />}
-                    </IconButton>
+            <ListItemButton sx={{ width: "100%", height: "auto", paddingX: "5px" }} onClick={() => { setOpen(open => !open) }} disabled={occasions.length === 0}>
+                <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
+                    {icon}
+                    <Typography variant="h5">{occasionsType.charAt(0).toUpperCase() + occasionsType.slice(1)}</Typography>
+                    <HorizontalGroup style={{ width: "auto", flexGrow: 1, justifyContent: "flex-end" }}>
+                        {!open ? <ExpandMore color="secondary" /> : <ExpandLess color="secondary" />}
+                    </HorizontalGroup>
                 </HorizontalGroup>
-            </HorizontalGroup>
+            </ListItemButton>
             <Collapse in={open} style={{ width: "100%" }} unmountOnExit mountOnEnter>
-                <VerticalGroup style={{ marginTop: "15px", width: "100%", gap: "15px", marginBottom: occasionsType === "past" ? "80px" : 0 }}>
+                <VerticalGroup style={{ marginTop: "5px", width: "100%", gap: "15px", marginBottom: occasionsType === "past" ? "80px" : 0 }}>
 
                     {occasions.length !== 0 && people.length !== 0 ?
                         occasions.map(occasion => {

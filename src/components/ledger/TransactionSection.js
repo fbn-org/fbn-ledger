@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Typography, IconButton, Collapse } from "@mui/material"
+import { Typography, IconButton, Collapse, ListItemButton } from "@mui/material"
 import { ExpandMore, ExpandLess } from "@mui/icons-material"
 
 import VerticalGroup from "../util/VerticalGroup"
@@ -12,19 +12,19 @@ export default function TransactionSection(props) {
 
     return (
         <VerticalGroup style={{ width: "100%", }}>
-            <HorizontalGroup style={{ width: "100%", gap: "10px", marginBottom: "10px" }}>
-                {props.icon}
-                <Typography variant="h5">{props.title}</Typography>
-                <HorizontalGroup style={{ width: "auto", flexGrow: 1, justifyContent: "flex-end" }}>
-                    <IconButton color="secondary" size="medium" onClick={() => { setOpen(a => !a) }}>
-                        {!open ? <ExpandMore /> : <ExpandLess />}
-                    </IconButton>
+            <ListItemButton sx={{ width: "100%", height: "auto", paddingX: "5px" }} onClick={() => setOpen(a => !a)} >
+                <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
+                    {props.icon}
+                    <Typography variant="h5">{props.title}</Typography>
+                    <HorizontalGroup style={{ width: "auto", flexGrow: 1, justifyContent: "flex-end" }}>
+                        {!open ? <ExpandMore color="secondary" /> : <ExpandLess color="secondary" />}
+                    </HorizontalGroup>
                 </HorizontalGroup>
-            </HorizontalGroup>
+            </ListItemButton>
             <Collapse in={open} style={{ width: "100%" }}>
-
-                {props.children}
-
+                <VerticalGroup style={{ marginTop: "10px" }}>
+                    {props.children}
+                </VerticalGroup>
             </Collapse>
         </VerticalGroup>
     )

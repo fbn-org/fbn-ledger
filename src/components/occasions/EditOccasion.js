@@ -128,7 +128,7 @@ export default function EditOccasion(props) {
                     <DatePicker slotProps={{ textField: { size: "medium" } }} sx={{ width: "100%" }} label="End date" value={endDate} onChange={(v) => setEndDate(v)} minDate={startDate} />
                 </HorizontalGroup>
 
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={{height: 65}}>
                     <InputLabel id="demo-multiple-name-label">People</InputLabel>
                     <Select
                         labelId="demo-multiple-name-label"

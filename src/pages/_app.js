@@ -181,6 +181,11 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
         }
     }, [password, setSavedPassword])
 
+    useEffect(() => {
+        // set tab name
+        document.title = "Ledger"
+    }, [])
+
 
     return (
         <CacheProvider value={emotionCache}>
@@ -202,21 +207,22 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                                                         <TextField variant="outlined" type="password" value={password} InputProps={{ startAdornment: <InputAdornment position="start"><Lock /></InputAdornment> }} onChange={(e) => setPassword(e.target.value)} />
                                                     </HorizontalGroup>
                                                 </VerticalGroup>
-                                                : null}
+                                                : <>
+                                                    <div style={{ width: "100%", height: "auto", position: "relative", padding: "15px", flexGrow: 1, overflowY: "scroll" }}>
+                                                        <Component {...pageProps} selectedPage={selectedPage} />
+                                                    </div>
 
-                                            <div style={{ width: "100%", height: "auto", position: "relative", padding: "15px", flexGrow: 1, overflowY: "scroll" }}>
-                                                <Component {...pageProps} selectedPage={selectedPage} />
-                                            </div>
 
+                                                    <VerticalGroup style={{ width: "100vw", height: "80px", bottom: 0, zIndex: 100 }}>
+                                                        <BottomNavigation value={selectedPage} onChange={(e, newValue) => setSelectedPage(newValue)} sx={{ width: "100%" }}>
+                                                            <BottomNavigationAction label="Home" icon={<Home />} />
+                                                            <BottomNavigationAction label="Occasions" icon={<Celebration />} />
+                                                            <BottomNavigationAction label="Ledger" icon={<ReceiptLong />} />
+                                                        </BottomNavigation>
+                                                        <div style={{ width: "100%", height: "24px", backgroundColor: theme.palette.background.default }} />
+                                                    </VerticalGroup>
+                                                </>}
 
-                                            <VerticalGroup style={{ width: "100vw", height: "80px", bottom: 0, zIndex: 100 }}>
-                                                <BottomNavigation value={selectedPage} onChange={(e, newValue) => setSelectedPage(newValue)} sx={{ width: "100%" }}>
-                                                    <BottomNavigationAction label="Home" icon={<Home />} />
-                                                    <BottomNavigationAction label="Occasions" icon={<Celebration />} />
-                                                    <BottomNavigationAction label="Ledger" icon={<ReceiptLong />} />
-                                                </BottomNavigation>
-                                                <div style={{ width: "100%", height: "24px", backgroundColor: theme.palette.background.default }} />
-                                            </VerticalGroup>
                                         </Container>
                                         : null}
 

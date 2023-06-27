@@ -101,7 +101,7 @@ function SharedItem(props) {
         setSharedAmounts(old => {
             let o = [...old]
             o[index] = { people: sharedAmounts[index].people, amount: e.target.value }
-            return o   
+            return o
         })
     }
 
@@ -452,13 +452,31 @@ export default function EditTransaction(props) {
 
                         <FormControl sx={{ flexBasis: "50%" }}>
                             <InputLabel id="payer-label">Payer</InputLabel>
-                            <Select variant="outlined" size="medium" label="Buyer" value={userPaying} onChange={(selectionEntry) => {
-                                var userPaying = selectionEntry.target.value
-                                setUserPaying(userPaying)
-                            }}>
-                                {currentPeople.map(personInfo => {
+                            <Select
+                                variant="outlined"
+                                size="medium"
+                                label="Buyer"
+                                value={userPaying}
+                                onChange={(selectionEntry) => { setUserPaying(selectionEntry.target.value) }}
+                                renderValue={(selected) => {
+                                    let person = currentPeople.find(p => p.id === selected)
                                     return (
-                                        <MenuItem key={personInfo.id} value={personInfo.id}>{personInfo.name}</MenuItem>
+                                        <HorizontalGroup style={{ justifyContent: "flex-start", width: "100%", gap: "5px" }}>
+                                            {person ? <>
+                                                <Avatar sx={{ bgcolor: `${person.name.toLowerCase()}.main`, width: 18, height: 18 }} key={selected}><Icon /></Avatar>
+                                                <Typography variant="body1">{person.name}</Typography>
+                                            </>
+                                                : null}
+                                        </HorizontalGroup>
+                                    )
+                                }}
+                            >
+                                {currentPeople.map(person => {
+                                    return (
+                                        <MenuItem key={person.id} value={person.id} sx={{ gap: "5px" }}>
+                                            <Avatar sx={{ bgcolor: `${person.name.toLowerCase()}.main`, width: 20, height: 20 }}><Icon /></Avatar>
+                                            {person.name}
+                                        </MenuItem>
                                     )
                                 })}
                             </Select>

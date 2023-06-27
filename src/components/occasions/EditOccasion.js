@@ -9,9 +9,9 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 
-import VerticalGroup from "../VerticalGroup";
-import HorizontalGroup from "../HorizontalGroup";
-import Drawer from '../Drawer';
+import VerticalGroup from "../util/VerticalGroup";
+import HorizontalGroup from "../util/HorizontalGroup";
+import Drawer from '../util/Drawer';
 
 export default function EditOccasion(props) {
 
@@ -128,7 +128,7 @@ export default function EditOccasion(props) {
                     <DatePicker slotProps={{ textField: { size: "medium" } }} sx={{ width: "100%" }} label="End date" value={endDate} onChange={(v) => setEndDate(v)} minDate={startDate} />
                 </HorizontalGroup>
 
-                <FormControl fullWidth sx={{height: 65}}>
+                <FormControl fullWidth sx={{ height: 65 }}>
                     <InputLabel id="demo-multiple-name-label">People</InputLabel>
                     <Select
                         labelId="demo-multiple-name-label"
@@ -144,11 +144,11 @@ export default function EditOccasion(props) {
                             <HorizontalGroup style={{ justifyContent: "flex-start", width: "100%", gap: "10px", flexWrap: "wrap" }}>
                                 {selected.map((value) => {
                                     let person = people.find(p => p._id === value)
-                                    return person ? <Chip label={person.name} color={person.name.toLowerCase()} key={value}/> : null
+                                    return person ? <Chip label={person.name} color={person.name.toLowerCase()} key={value} /> : null
                                 })}
                             </HorizontalGroup>
                         )}
-                        sx={{paddingY: "0px"}}
+                        sx={{ paddingY: "0px" }}
                     >
                         {people.map(person => {
                             return (
@@ -158,22 +158,8 @@ export default function EditOccasion(props) {
                                 </MenuItem>
                             )
                         })}
-
                     </Select>
                 </FormControl>
-
-                {/* <ToggleButtonGroup
-                    onChange={(e, v) => { setIncluded(v); console.log(v) }}
-                    value={included}
-                    fullWidth
-                    size="medium"
-                >
-                    {people.map(person => {
-                        return (
-                            <ToggleButton key={person._id} value={person._id} color={person.name.toLowerCase()}>{person.name}</ToggleButton>
-                        )
-                    })}
-                </ToggleButtonGroup> */}
 
                 <HorizontalGroup style={{ width: "100%", gap: "10px", justifyContent: "space-evenly", marginTop: "10px" }}>
                     <Button variant="outlined" color="secondary" size="large" onClick={close} sx={{ width: "100%" }}>Cancel</Button>

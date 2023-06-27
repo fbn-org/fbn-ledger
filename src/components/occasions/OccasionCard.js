@@ -9,9 +9,9 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 dayjs.extend(advancedFormat);
 dayjs.extend(utc);
 
-import VerticalGroup from '../VerticalGroup'
-import HorizontalGroup from '../HorizontalGroup'
-import Card from '../Card'
+import VerticalGroup from '../util/VerticalGroup'
+import HorizontalGroup from '../util/HorizontalGroup'
+import Card from '../util/Card'
 
 export default function OccasionCard(props) {
 

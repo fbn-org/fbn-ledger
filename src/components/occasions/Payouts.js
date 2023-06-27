@@ -3,9 +3,9 @@ import { useState, useEffect } from "react"
 import { Chip, IconButton, Typography } from "@mui/material"
 import { Close, KeyboardDoubleArrowRight } from "@mui/icons-material"
 
-import Drawer from "../Drawer.js"
-import VerticalGroup from "../VerticalGroup.js"
-import HorizontalGroup from "../HorizontalGroup.js"
+import Drawer from "../util/Drawer.js"
+import VerticalGroup from "../util/VerticalGroup.js"
+import HorizontalGroup from "../util/HorizontalGroup.js"
 
 export default function Payouts(props) {
 
@@ -13,6 +13,7 @@ export default function Payouts(props) {
     const people = props.people
     const setOpen = props.setOpen
     const open = props.open
+    const presetTransactions = props.presetTransactions
 
     const [transactions, setTransactions] = useState([])
     const [owes, setOwes] = useState(null)
@@ -32,6 +33,12 @@ export default function Payouts(props) {
     useEffect(() => {
         processPayments(transactions)
     }, [transactions])
+
+    useEffect(() => {
+        if (presetTransactions){
+            setTransactions(presetTransactions)
+        }
+    }, [presetTransactions])
 
     function processPayments(transactions) {
         var owes = {}
@@ -121,7 +128,7 @@ export default function Payouts(props) {
     }
 
     return (
-        <Drawer title="Payouts" subtitle={occasion ? occasion.name : ""} open={open} actions={<IconButton onClick={close} color="secondary"><Close /></IconButton>} >
+        <Drawer title="Payouts" subtitle={occasion ? occasion.name : null} open={open} actions={<IconButton onClick={close} color="secondary"><Close /></IconButton>} >
 
             <VerticalGroup style={{ width: "100%", alignItems: "flex-start" }}>
 

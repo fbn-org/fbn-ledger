@@ -18,10 +18,10 @@ import { OccasionsContext } from '@/contexts/OccasionsContext.js';
 import { LedgerContext } from '@/contexts/LedgerContext.js';
 import useLocalStorage from '@/util/useLocalStorage.js'
 
-import VerticalGroup from '@/components/VerticalGroup';
-import HorizontalGroup from '@/components/HorizontalGroup';
+import VerticalGroup from '@/components/util/VerticalGroup';
+import HorizontalGroup from '@/components/util/HorizontalGroup';
 
-const baseTheme = {
+const baseTheme = createTheme({
     palette: {
         mode: 'dark',
         primary: {
@@ -30,22 +30,6 @@ const baseTheme = {
         secondary: {
             main: '#ECE5C7'
         },
-        // colin: {
-        //     main: '#ffd6a5',
-        //     contrastText: '#000000',
-        // },
-        // eric: {
-        //     main: '#ffadad',
-        //     contrastText: '#000000',
-        // },
-        // matty: {
-        //     main: '#a0c4ff',
-        //     contrastText: '#000000',
-        // },
-        // hudson: {
-        //     main: '#6e78ff',
-        //     contrastText: '#000000',
-        // }
     },
     shape: {
         borderRadius: 5,
@@ -63,7 +47,7 @@ const baseTheme = {
             '"Segoe UI Symbol"',
         ].join(','),
     },
-}
+})
 
 const clientSideEmotionCache = createEmotionCache();
 
@@ -90,6 +74,9 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                     contrastText: "#000000"
                 }
             })
+            newTheme.palette.primaryText = {
+                main: newTheme.palette.text.primary,
+            }
             return createTheme(newTheme)
         }
         else {

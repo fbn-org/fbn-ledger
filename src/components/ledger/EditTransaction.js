@@ -1,151 +1,25 @@
 import { useState, useEffect, useCallback } from 'react';
 
-import { Divider, Avatar, Button, TextField, Select, MenuItem, FormControl, InputLabel, Chip, Icon, InputAdornment, Typography, IconButton, ClickAwayListener, Tooltip, Collapse, OutlinedInput, AvatarGroup } from "@mui/material";
+import { Divider, Avatar, Button, TextField, Select, MenuItem, FormControl, InputLabel, ToggleButton, Icon, InputAdornment, Typography, IconButton, ClickAwayListener, Tooltip, Collapse, useTheme, AvatarGroup, ToggleButtonGroup } from "@mui/material";
 import { LoadingButton } from '@mui/lab';
 import { DateTimePicker } from "@mui/x-date-pickers";
-import { Add, Delete, ExpandLess, ExpandMore, KeyboardDoubleArrowRight } from "@mui/icons-material";
+import { Add, Check, Delete, ExpandLess, ExpandMore, KeyboardDoubleArrowRight } from "@mui/icons-material";
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 
-import Drawer from "../Drawer";
-import HorizontalGroup from "../HorizontalGroup";
-import VerticalGroup from "../VerticalGroup";
+import Drawer from "../util/Drawer";
+import HorizontalGroup from "../util/HorizontalGroup";
+import VerticalGroup from "../util/VerticalGroup";
 
-function PersonItem(props) {
-
-    const personId = props.personId
-    const name = props.name
-    const individualAmounts = props.individualAmounts
-    const setIndividualAmounts = props.setIndividualAmounts
-
-    // useEffect(() => {
-    //     if (individualAmounts[personId] === undefined) {
-    //         setIndividualAmounts(individualAmounts => ({ ...individualAmounts, [personId]: [""] }))
-    //     }
-    // }, [])
-
-    useEffect(() => {
-        if (individualAmounts[personId] !== undefined) {
-
-            if (individualAmounts[personId].every(amount => amount !== "")) {
-                setIndividualAmounts(individualAmounts => ({ ...individualAmounts, [personId]: [...individualAmounts[personId], ""] }))
-            }
-
-            if (individualAmounts[personId].some(amount => amount === "")) {
-                const emptyIndex = individualAmounts[personId].findIndex(amount => amount === "")
-                if (emptyIndex !== individualAmounts[personId].length - 1) {
-                    setIndividualAmounts(individualAmounts => ({ ...individualAmounts, [personId]: [...individualAmounts[personId].slice(0, emptyIndex), ...individualAmounts[personId].slice(emptyIndex + 1)] }))
-                }
-            }
-        }
-    }, [individualAmounts, personId, setIndividualAmounts])
-
-    return (
-        <>
-            {individualAmounts[personId] !== undefined ?
-                <VerticalGroup key={personId} style={{ width: " 100%", gap: "10px" }}>
-
-                    <HorizontalGroup style={{ width: "100%", gap: "5px" }}>
-                        <Chip label={name} color={name.toLowerCase()} variant="outlined" sx={{ flexBasis: "40%" }} />
-                        <KeyboardDoubleArrowRight />
-                        <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={individualAmounts[personId][0]} onChange={(e) => { setIndividualAmounts(individualAmounts => ({ ...individualAmounts, [personId]: [e.target.value, ...individualAmounts[personId].slice(1)] })) }} />
-                    </HorizontalGroup>
-
-                    {individualAmounts[personId].slice(1).map((amount, index) => {
-                        const id = index + 1
-                        return (
-                            <HorizontalGroup key={id} style={{ width: "100%", gap: "5px" }}>
-                                <div style={{ flexBasis: "40%" }}>
-                                    {/* {id === 1 ?
-                                <>
-                                    <Typography variant="subtitle2" color={`${name.toLowerCase()}.main`} sx={{ textAlign: "center" }} >${total}</Typography>
-                                </>
-                                : null} */}
-                                </div>
-                                <Add />
-                                <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={individualAmounts[personId][id]} onChange={(e) => { console.log(individualAmounts[personId].slice(0, id)); setIndividualAmounts(individualAmounts => ({ ...individualAmounts, [personId]: [...individualAmounts[personId].slice(0, id), e.target.value, ...individualAmounts[personId].slice(id + 1)] })) }} />
-                            </HorizontalGroup>
-                        )
-                    })}
-
-
-                </VerticalGroup>
-                : null}
-        </>
-    )
-}
-
-function SharedItem(props) {
-
-    const people = props.people
-    const sharedAmounts = props.sharedAmounts
-    const setSharedAmounts = props.setSharedAmounts
-    const sharedItem = props.sharedItem
-    const index = props.index
-
-    function updatePeople(event) {
-        const {
-            target: { value },
-        } = event
-        let selectedPeople = typeof value === 'string' ? value.split(',') : value
-        setSharedAmounts(old => {
-            let o = [...old]
-            o[index] = { people: selectedPeople, amount: sharedAmounts[index].amount }
-            return o
-        })
-    }
-
-    function updateAmount(e) {
-        setSharedAmounts(old => {
-            let o = [...old]
-            o[index] = { people: sharedAmounts[index].people, amount: e.target.value }
-            return o
-        })
-    }
-
-    return (
-        <HorizontalGroup style={{ width: "100%", gap: "5px" }}>
-            <FormControl size="small" sx={{ flexBasis: "40%" }}>
-                <InputLabel id="demo-multiple-name-label">People</InputLabel>
-                <Select
-                    labelId="demo-multiple-name-label"
-                    id="demo-multiple-name"
-                    label="People"
-                    multiple
-                    value={sharedAmounts[index].people}
-                    onChange={updatePeople}
-                    renderValue={(selected) => (
-                        <HorizontalGroup style={{ justifyContent: "flex-start", width: "100%" }}>
-                            <AvatarGroup spacing="small">
-                                {selected.map((value) => {
-                                    let person = people.find(p => p.id === value)
-                                    return person ? <Avatar sx={{ bgcolor: `${person.name.toLowerCase()}.main`, width: 18, height: 18 }} key={value}><Icon /></Avatar> : null
-                                })}
-                            </AvatarGroup>
-                        </HorizontalGroup>
-                    )}
-                >
-                    {people.map(person => {
-                        return (
-                            <MenuItem key={person.id} value={person.id} sx={{ gap: "5px" }}>
-                                <Avatar sx={{ bgcolor: `${person.name.toLowerCase()}.main`, width: 20, height: 20 }}><Icon /></Avatar>
-                                {person.name}
-                            </MenuItem>
-                        )
-                    })}
-
-                </Select>
-            </FormControl>
-            <KeyboardDoubleArrowRight />
-            <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={sharedAmounts[index].amount} onChange={updateAmount} />
-
-        </HorizontalGroup>
-    )
-}
+import TransactionSection from './TransactionSection';
+import PersonItem from './PersonItem';
+import SharedItem from './SharedItem';
 
 export default function EditTransaction(props) {
+
+    const theme = useTheme()
 
     const isNew = props.isNew
     const editData = props.editData
@@ -167,6 +41,10 @@ export default function EditTransaction(props) {
     const [occasion, setOccasion] = useState("None")
     const [tax, setTax] = useState("")
     const [tip, setTip] = useState("")
+
+    const [tipPreview, setTipPreview] = useState("")
+    const [tipPercent, setTipPercent] = useState("15")
+    const [showTipCalculator, setShowTipCalculator] = useState(false)
 
     const [currentOccasion, setCurrentOccasion] = useState(null)
     const [currentPeople, setCurrentPeople] = useState([])
@@ -362,7 +240,6 @@ export default function EditTransaction(props) {
             }
         }
 
-        console.log(newSharedAmounts)
 
         setOccasion(occasion)
         setIndividualAmounts(newIndividualAmounts)
@@ -390,8 +267,9 @@ export default function EditTransaction(props) {
     }, [sharedAmounts])
 
     useEffect(() => {
-        console.log(sharedAmounts)
-    }, [sharedAmounts])
+        let newTipPreview = subtotal * parseFloat("." + tipPercent)
+        setTipPreview(newTipPreview.toFixed(2))
+    }, [tipPercent, subtotal])
 
     function close() {
         props.onClose()
@@ -404,6 +282,7 @@ export default function EditTransaction(props) {
         setSubtotal(0)
         setConfirmationOpen(false)
         setSaving(false)
+        setShowTipCalculator(false)
 
         presetValues("None")
     }
@@ -493,7 +372,9 @@ export default function EditTransaction(props) {
                                 presetValues(selectionValue, individualAmounts, sharedAmounts)
                             }}>
                                 <MenuItem key="None" value="None">None</MenuItem>
-                                {editData?.occasion ? <MenuItem key={editData.occasion} value={editData.occasion}>{occasions.find(o => o._id === editData.occasion).name}</MenuItem> : null}
+                                {editData ?
+                                    editData.occasion !== "None" ? <MenuItem key={editData.occasion} value={editData.occasion}>{occasions.find(o => o._id === editData.occasion).name} (inactive)</MenuItem> : null
+                                    : null}
                                 {occasions.map(occasion => {
                                     if (occasion.timeState === "active") {
                                         return (
@@ -511,7 +392,7 @@ export default function EditTransaction(props) {
 
 
             <TransactionSection title="Individual items">
-                <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "5px" }}>
+                <VerticalGroup style={{ width: "100%", gap: "15px", marginTop: "5px" }}>
 
                     {individualAmounts ? currentPeople.map(personInfo => {
                         return (
@@ -524,7 +405,7 @@ export default function EditTransaction(props) {
             </TransactionSection>
 
             <TransactionSection title="Shared items">
-                <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "5px" }}>
+                <VerticalGroup style={{ width: "100%", gap: "15px", marginTop: "5px" }}>
                     {sharedAmounts && sharedAmounts.length > 0 ? sharedAmounts.map((sharedItem, index) => {
                         return (
                             <SharedItem key={index} index={index} people={currentPeople} sharedItem={sharedItem} sharedAmounts={sharedAmounts} setSharedAmounts={setSharedAmounts} />
@@ -534,19 +415,45 @@ export default function EditTransaction(props) {
                 </VerticalGroup>
             </TransactionSection>
 
-            {/* <TransactionSection title="Tax and tip"> */}
-            <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "10px" }}>
+            <VerticalGroup style={{ width: "100%", gap: "15px", marginTop: "10px" }}>
                 <HorizontalGroup style={{ width: "100%", gap: "5px", alignSelf: "flex-end", justifyContent: "flex-end" }}>
-                    <Typography variant="h6" sx={{ flexBasis: "40%", textAlign: "center" }}>Tax</Typography>
+                    <HorizontalGroup style={{ flexBasis: "40%", justifyContent: "center" }}>
+                        {/* <Button variant="text" sx={{ textTransform: "none" }} color="primaryText"> */}
+                        <Typography variant="h6" sx={{ flexBasis: "40%", textAlign: "center" }}>Tax</Typography>
+                        {/* </Button> */}
+                    </HorizontalGroup>
                     <Add />
                     <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={tax} onChange={(e) => { setTax(e.target.value) }} />
                 </HorizontalGroup>
 
-                <HorizontalGroup style={{ width: "100%", gap: "5px", alignSelf: "flex-end", justifyContent: "flex-end" }}>
-                    <Typography variant="h6" sx={{ flexBasis: "40%", textAlign: "center" }}>Tip</Typography>
-                    <Add />
-                    <TextField label={`18%: $${(subtotal * .18).toFixed(2)}, 20%: $${(subtotal * .2).toFixed(2)}`} variant="outlined" size="small" type="number" value={tip} onChange={(e) => { setTip(e.target.value) }} InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} />
-                </HorizontalGroup>
+
+                <VerticalGroup style={{ width: "100%" }}>
+                    <HorizontalGroup style={{ width: "100%", gap: "5px", alignSelf: "flex-end", justifyContent: "flex-end" }}>
+                        <HorizontalGroup style={{ flexBasis: "40%", justifyContent: "center" }}>
+                            <Button variant="text" sx={{ textTransform: "none" }} color="primaryText" onClick={() => setShowTipCalculator(a => !a)}>
+                                <Typography variant="h6" sx={{ flexBasis: "40%", textAlign: "center" }}>Tip</Typography>
+                            </Button>
+                        </HorizontalGroup>
+                        <Add />
+                        <TextField variant="outlined" size="small" type="number" value={tip} onChange={(e) => { setTip(e.target.value) }} InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} />
+                    </HorizontalGroup>
+                    <Collapse in={showTipCalculator} sx={{ width: "100%" }}>
+                        <HorizontalGroup style={{ width: "100%", marginTop: "15px" }}>
+                            <ToggleButtonGroup exclusive size="medium" onChange={(e, newTip) => { if (newTip) { setTipPercent(newTip) } }} value={tipPercent} sx={{ width: "auto", flexBasis: "55%", justifyContent: "center" }}>
+                                <ToggleButton value="15" color="primary">15%</ToggleButton>
+                                <ToggleButton value="18" color="primary">18%</ToggleButton>
+                                <ToggleButton value="20" color="primary">20%</ToggleButton>
+                            </ToggleButtonGroup>
+                            <Typography variant="h5">=</Typography>
+                            <HorizontalGroup style={{ flexBasis: "45%", }}>
+                                <Typography variant="h6" sx={{ textAlign: "center", flexGrow: 1 }} >${tipPreview}</Typography>
+                                <IconButton onClick={() => { setTip(tipPreview); setShowTipCalculator(false) }}>
+                                    <Check color="primary" />
+                                </IconButton>
+                            </HorizontalGroup>
+                        </HorizontalGroup>
+                    </Collapse>
+                </VerticalGroup>
             </VerticalGroup>
             {/* </TransactionSection> */}
 
@@ -567,26 +474,3 @@ export default function EditTransaction(props) {
     )
 }
 
-function TransactionSection(props) {
-
-    const [open, setOpen] = useState(props.open || false)
-
-    return (
-        <VerticalGroup style={{ width: "100%", }}>
-            <HorizontalGroup style={{ width: "100%", gap: "10px", marginBottom: "10px" }}>
-                {props.icon}
-                <Typography variant="h5">{props.title}</Typography>
-                <HorizontalGroup style={{ width: "auto", flexGrow: 1, justifyContent: "flex-end" }}>
-                    <IconButton color="secondary" size="medium" onClick={() => { setOpen(a => !a) }}>
-                        {!open ? <ExpandMore /> : <ExpandLess />}
-                    </IconButton>
-                </HorizontalGroup>
-            </HorizontalGroup>
-            <Collapse in={open} style={{ width: "100%" }}>
-
-                {props.children}
-
-            </Collapse>
-        </VerticalGroup>
-    )
-}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 
 import { BottomNavigation, CssBaseline, BottomNavigationAction, Container, InputAdornment, Typography, TextField } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -86,7 +86,13 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
         }
     }
 
-    function refresh() {
+    const refresh = useCallback(() => {
+        if(!savedPassword){
+            setOccasions([])
+            setPeople([])
+            setLedger([])
+            return
+        }
         request("/api/occasions/fetchOccasions")
             .then(res => res.json())
             .then(data => {
@@ -153,7 +159,7 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                     }
                 })
             })
-    }
+    }, [savedPassword])
 
     useEffect(() => {
         refresh()
@@ -162,7 +168,7 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
         }, 1000)
 
         return () => clearInterval(interval)
-    }, [])
+    }, [refresh])
 
     useEffect(() => {
         if (password) {

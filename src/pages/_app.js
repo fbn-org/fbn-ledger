@@ -13,6 +13,8 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 
+import request from '@/components/util/API.js'
+
 import { PeopleContext } from '@/contexts/PeopleContext.js';
 import { OccasionsContext } from '@/contexts/OccasionsContext.js';
 import { LedgerContext } from '@/contexts/LedgerContext.js';
@@ -85,7 +87,7 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
     }
 
     function refresh() {
-        fetch("/api/occasions/fetchOccasions")
+        request("/api/occasions/fetchOccasions")
             .then(res => res.json())
             .then(data => {
                 // maybe come up with a better way to sort these
@@ -119,7 +121,7 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                 })
             })
 
-        fetch("/api/fetchPeople")
+        request("/api/fetchPeople")
             .then(res => res.json())
             .then(data => {
                 setPeople(old => {
@@ -131,7 +133,7 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
                 })
             })
 
-        fetch("/api/ledger/fetchLedger")
+        request("/api/ledger/fetchLedger")
             .then(res => res.json())
             .then(data => {
                 data.sort((a, b) => {
@@ -169,7 +171,6 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
     }, [password, setSavedPassword])
 
     useEffect(() => {
-        // set tab name
         document.title = "Ledger"
     }, [])
 

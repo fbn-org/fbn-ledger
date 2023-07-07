@@ -3,6 +3,8 @@ import { useState, useEffect } from "react"
 import { Chip, IconButton, Typography } from "@mui/material"
 import { Close, KeyboardDoubleArrowRight } from "@mui/icons-material"
 
+import request from '@/components/util/API.js'
+
 import Drawer from "../util/Drawer.js"
 import VerticalGroup from "../util/VerticalGroup.js"
 import HorizontalGroup from "../util/HorizontalGroup.js"
@@ -20,7 +22,7 @@ export default function Payouts(props) {
 
     useEffect(() => {
         if (occasion) {
-            fetch(`/api/ledger/fetchTransactions/${occasion._id}`, {
+            request(`/api/ledger/fetchTransactions/${occasion._id}`, {
                 method: 'GET',
             })
                 .then(res => res.json())

@@ -9,6 +9,8 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 
+import request from '@/components/util/API.js'
+
 import VerticalGroup from "../util/VerticalGroup";
 import HorizontalGroup from "../util/HorizontalGroup";
 import Drawer from '../util/Drawer';
@@ -39,7 +41,7 @@ export default function EditOccasion(props) {
         }
 
         if (isNew) {
-            fetch("/api/occasions/createOccasion", {
+            request("/api/occasions/createOccasion", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -51,7 +53,7 @@ export default function EditOccasion(props) {
                     close()
                 })
         } else {
-            fetch(`/api/occasions/${editData._id}`, {
+            request(`/api/occasions/${editData._id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -68,11 +70,11 @@ export default function EditOccasion(props) {
     }
 
     function deleteOccasion() {
-        fetch(`/api/occasions/disconnectTransactions/${editData._id}`, {
+        request(`/api/occasions/disconnectTransactions/${editData._id}`, {
             method: "PUT",
         })
 
-        fetch(`/api/occasions/${editData._id}`, {
+        request(`/api/occasions/${editData._id}`, {
             method: "DELETE",
         })
             .then(res => res.json())

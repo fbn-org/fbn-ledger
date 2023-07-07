@@ -9,6 +9,8 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 
+import request from '@/components/util/API.js'
+
 import Drawer from "../util/Drawer";
 import HorizontalGroup from "../util/HorizontalGroup";
 import VerticalGroup from "../util/VerticalGroup";
@@ -82,7 +84,7 @@ export default function EditTransaction(props) {
         console.log(data)
 
         if (isNew) {
-            fetch("/api/ledger/createTransaction", {
+            request("/api/ledger/createTransaction", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -94,7 +96,7 @@ export default function EditTransaction(props) {
                     close()
                 })
         } else {
-            fetch(`/api/ledger/${editData._id}`, {
+            request(`/api/ledger/${editData._id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -112,7 +114,7 @@ export default function EditTransaction(props) {
 
     function deleteTransaction() {
         console.log("deleting")
-        fetch(`/api/ledger/${editData._id}`, {
+        request(`/api/ledger/${editData._id}`, {
             method: "DELETE",
         })
             .then(res => res.json())

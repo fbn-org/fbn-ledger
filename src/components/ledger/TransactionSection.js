@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Collapse, IconButton, ListItemButton, Typography } from '@mui/material';
+import { Collapse, ListItemButton, Typography } from '@mui/material';
 
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 

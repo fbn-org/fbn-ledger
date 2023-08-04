@@ -13,7 +13,6 @@ import {
 import { KeyboardDoubleArrowRight } from '@mui/icons-material';
 
 import HorizontalGroup from '../util/HorizontalGroup';
-import VerticalGroup from '../util/VerticalGroup';
 
 export default function SharedItem(props) {
     const people = props.people;

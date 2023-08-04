@@ -1,10 +1,16 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-import { ThemeProvider, createTheme } from '@mui/material';
+import { InputAdornment, TextField, ThemeProvider, createTheme } from '@mui/material';
+
+import { Lock } from '@mui/icons-material';
 
 import dayjs from 'dayjs';
 
+import useLocalStorage from '@/util/useLocalStorage';
+
 import request from '@/components/util/API';
+import HorizontalGroup from '@/components/util/HorizontalGroup';
+import VerticalGroup from '@/components/util/VerticalGroup';
 
 const LedgerContext = createContext([]);
 
@@ -20,6 +26,16 @@ export function LedgerProvider({ children, baseTheme }) {
     const [occasions, setOccasions] = useState(null);
     const [people, setPeople] = useState(null);
     const [ledger, setLedger] = useState(null);
+
+    const [savedPassword, setSavedPassword] = useLocalStorage('password', '');
+    const [password, setPassword] = useState(savedPassword);
+    const targetPassword = process.env.PASSWORD;
+
+    useEffect(() => {
+        if (password) {
+            setSavedPassword(password);
+        }
+    }, [password, setSavedPassword]);
 
     const refresh = useCallback(() => {
         request('/api/occasions/fetchOccasions')
@@ -125,7 +141,37 @@ export function LedgerProvider({ children, baseTheme }) {
     return (
         <ThemeProvider theme={theme}>
             <LedgerContext.Provider value={{ occasions, people, ledger, theme, refresh }}>
-                {occasions && people && ledger ? <>{children} </> : null}
+                {password === targetPassword ? (
+                    <>{occasions && people && ledger ? <>{children}</> : null}</>
+                ) : (
+                    <VerticalGroup
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            flexGrow: 1,
+                            position: 'fixed',
+                            justifyContent: 'center',
+                            background: theme.palette.background.default,
+                            zIndex: 100000
+                        }}
+                    >
+                        <HorizontalGroup>
+                            <TextField
+                                variant="outlined"
+                                type="password"
+                                value={password}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <Lock />
+                                        </InputAdornment>
+                                    )
+                                }}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </HorizontalGroup>
+                    </VerticalGroup>
+                )}
             </LedgerContext.Provider>
         </ThemeProvider>
     );

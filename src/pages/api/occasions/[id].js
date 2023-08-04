@@ -1,8 +1,7 @@
 import { ObjectId } from 'mongodb';
 
+import clientPromise from '@/lib/mongodb';
 import validatePassword from '@/lib/validatePassword';
-
-import clientPromise from '../../../lib/mongodb';
 
 export default async function handler(req, res) {
     if (!validatePassword(req.headers.password)) {

@@ -1,6 +1,6 @@
 export default function request(url, data) {
     // fetch password from localstorage
-    const password = localStorage.getItem('password');
+    const password = localStorage.getItem('password') || '';
     data = data || {};
     data.headers = {
         ...data?.headers,

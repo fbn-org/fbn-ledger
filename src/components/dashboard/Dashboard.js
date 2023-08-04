@@ -1,14 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
 
-import { Avatar, Chip, Container, Grid, Icon, Paper, Typography, useTheme } from '@mui/material';
+import { Avatar, Grid, Icon, Typography, useTheme } from '@mui/material';
 
 import {
-    AttachMoney,
     AutoAwesome,
-    Celebration,
     KeyboardDoubleArrowDown,
-    KeyboardDoubleArrowUp,
-    Person
+    KeyboardDoubleArrowUp
 } from '@mui/icons-material';
 
 import dayjs from 'dayjs';
@@ -73,7 +70,7 @@ export default function Dashboard() {
         });
 
         ledger.forEach((transaction) => {
-            let total = transaction.total;
+            let total = parseFloat(transaction.total);
             stats[transaction.payer].offset += total;
             let extra = 0;
             if (transaction.tax !== '') {
@@ -89,6 +86,7 @@ export default function Dashboard() {
                 let weight = personTotal / total;
                 stats[p].totalSpend += personTotal + extra * weight;
             });
+
         });
 
         people.forEach((person) => {

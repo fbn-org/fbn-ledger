@@ -5,18 +5,14 @@ import {
     Button,
     Chip,
     ClickAwayListener,
-    Dialog,
     FormControl,
     Icon,
     IconButton,
     InputLabel,
     MenuItem,
     Select,
-    Slide,
     TextField,
-    ToggleButton,
     Tooltip,
-    Typography,
     useTheme
 } from '@mui/material';
 
@@ -239,8 +235,8 @@ export default function EditOccasion(props) {
                         {people.map((person) => {
                             return (
                                 <MenuItem
-                                    key={person._id}
-                                    value={person._id}
+                                    key={person.id}
+                                    value={person.id}
                                     sx={{ gap: '5px' }}
                                 >
                                     <Avatar

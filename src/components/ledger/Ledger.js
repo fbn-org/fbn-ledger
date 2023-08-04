@@ -99,7 +99,7 @@ export default function Ledger(props) {
 
                 <VerticalGroup style={{ width: '100%', gap: '15px' }}>
                     {ledger.map((transaction) => {
-                        const payer = people.find((person) => person._id === transaction.payer).name;
+                        const payer = people.find((person) => person.id === transaction.payer).name;
                         var date = dayjs.utc(transaction.date).local().format('MMMM Do, YYYY hh:mm A');
 
                         return (

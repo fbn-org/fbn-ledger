@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react';
 
 import { Avatar, AvatarGroup, Button, Grid, Icon, IconButton, Typography, useTheme } from '@mui/material';
 
-import { AccessTime, Done, Edit, HourglassTop } from '@mui/icons-material';
+import { Edit } from '@mui/icons-material';
 
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import utc from 'dayjs/plugin/utc';
 
 import Card from '../util/Card';
-import HorizontalGroup from '../util/HorizontalGroup';
 import VerticalGroup from '../util/VerticalGroup';
 
 dayjs.extend(advancedFormat);
@@ -58,7 +57,7 @@ export default function OccasionCard(props) {
                     }}
                 >
                     {occasion.included_people.map((personId) => {
-                        const personName = people.find((person) => person._id === personId).name;
+                        const personName = people.find((person) => person.id === personId).name;
                         return (
                             <Avatar
                                 key={personId}

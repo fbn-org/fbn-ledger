@@ -65,7 +65,7 @@ export default function Dashboard() {
         // calculate people stats
         let stats = {};
         people.forEach((person) => {
-            stats[person._id] = {
+            stats[person.id] = {
                 name: person.name,
                 totalSpend: 0,
                 offset: 0
@@ -92,7 +92,7 @@ export default function Dashboard() {
         });
 
         people.forEach((person) => {
-            stats[person._id].offset -= stats[person._id].totalSpend;
+            stats[person.id].offset -= stats[person.id].totalSpend;
         });
 
         setPeopleStats(stats);
@@ -129,7 +129,7 @@ export default function Dashboard() {
                     >
                         {recentTransactions.map((transaction) => {
                             const date = dayjs.utc(transaction.date).local().format('MM-DD-YYYY');
-                            const payer = people.find((person) => person._id === transaction.payer).name;
+                            const payer = people.find((person) => person.id === transaction.payer).name;
 
                             return (
                                 <Grid

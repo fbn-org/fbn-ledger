@@ -151,8 +151,8 @@ export default function Payouts(props) {
                                     style={{ width: '100%', gap: '15px', marginBottom: '15px' }}
                                 >
                                     {Object.keys(owes[fromId]).map((toId) => {
-                                        const fromName = people.find((person) => person._id === fromId).name;
-                                        const toName = people.find((person) => person._id === toId).name;
+                                        const fromName = people.find((person) => person.id === fromId).name;
+                                        const toName = people.find((person) => person.id === toId).name;
 
                                         return owes[fromId][toId] > 0 ? (
                                             <HorizontalGroup

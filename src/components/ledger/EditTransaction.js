@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 import {
     Avatar,
-    AvatarGroup,
     Button,
     ClickAwayListener,
     Collapse,
@@ -22,7 +21,7 @@ import {
     useTheme
 } from '@mui/material';
 
-import { Add, Check, Delete, ExpandLess, ExpandMore, KeyboardDoubleArrowRight } from '@mui/icons-material';
+import { Add, Check, Delete, KeyboardDoubleArrowRight } from '@mui/icons-material';
 
 import { LoadingButton } from '@mui/lab';
 import { DateTimePicker } from '@mui/x-date-pickers';
@@ -203,14 +202,14 @@ export default function EditTransaction(props) {
             } else {
                 for (const index in people) {
                     let peopleInfo = people[index];
-                    peopleUnformattedForOccasion.push(peopleInfo._id);
+                    peopleUnformattedForOccasion.push(peopleInfo.id);
                 }
             }
 
             // Format personal info from table of users
             for (const index in peopleUnformattedForOccasion) {
                 let personId = peopleUnformattedForOccasion[index];
-                let personInfo = people.find((user) => user._id === personId);
+                let personInfo = people.find((user) => user.id === personId);
 
                 if (personInfo) {
                     let info = {

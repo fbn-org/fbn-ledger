@@ -9,7 +9,6 @@ import dayjs from 'dayjs';
 import useLocalStorage from '@/util/useLocalStorage';
 
 import request from '@/components/util/API';
-import HorizontalGroup from '@/components/util/HorizontalGroup';
 import VerticalGroup from '@/components/util/VerticalGroup';
 
 const LedgerContext = createContext([]);
@@ -32,6 +31,7 @@ export function LedgerProvider({ children, baseTheme }) {
     const targetPassword = process.env.PASSWORD;
 
     useEffect(() => {
+        console.log(password, targetPassword);
         if (password) {
             setSavedPassword(password);
         }
@@ -141,37 +141,42 @@ export function LedgerProvider({ children, baseTheme }) {
     return (
         <ThemeProvider theme={theme}>
             <LedgerContext.Provider value={{ occasions, people, ledger, theme, refresh }}>
-                {password === targetPassword ? (
-                    <>{occasions && people && ledger ? <>{children}</> : null}</>
-                ) : (
-                    <VerticalGroup
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            flexGrow: 1,
-                            position: 'fixed',
-                            justifyContent: 'center',
-                            background: theme.palette.background.default,
-                            zIndex: 100000
-                        }}
-                    >
-                        <HorizontalGroup>
-                            <TextField
-                                variant="outlined"
-                                type="password"
-                                value={password}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <Lock />
-                                        </InputAdornment>
-                                    )
+                {people && occasions && ledger ? (
+                    <>
+                        {password === targetPassword ? (
+                            <>{children}</>
+                        ) : (
+                            <VerticalGroup
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    flexGrow: 1,
+                                    position: 'fixed',
+                                    justifyContent: 'center',
+                                    background: theme.palette.background.default,
+                                    zIndex: 100000
                                 }}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </HorizontalGroup>
-                    </VerticalGroup>
-                )}
+                            >
+                                <TextField
+                                    variant="outlined"
+                                    type="password"
+                                    value={password}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Lock />
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                    onChange={(e) => {
+                                        console.log(e);
+                                        setPassword(e.target.value);
+                                    }}
+                                />
+                            </VerticalGroup>
+                        )}
+                    </>
+                ) : null}
             </LedgerContext.Provider>
         </ThemeProvider>
     );

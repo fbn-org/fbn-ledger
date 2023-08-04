@@ -31,7 +31,6 @@ export function LedgerProvider({ children, baseTheme }) {
     const targetPassword = process.env.PASSWORD;
 
     useEffect(() => {
-        console.log(password, targetPassword);
         if (password) {
             setSavedPassword(password);
         }

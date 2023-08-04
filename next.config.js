@@ -2,8 +2,8 @@
 const nextConfig = {
     reactStrictMode: true,
     env: {
-        PASSWORD: process.env.PASSWORD,
+        PASSWORD: process.env.PASSWORD
     }
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

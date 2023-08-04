@@ -1,4 +1,4 @@
-import { Html, Head, Main, NextScript } from 'next/document'
+import { Head, Html, Main, NextScript } from 'next/document';
 
 export default function Document() {
     return (
@@ -8,15 +8,27 @@ export default function Document() {
                     rel="stylesheet"
                     href="https://fonts.googleapis.com/css?family=Inter:300,400,500,700&display=swap"
                 />
-                <link rel="manifest" href="/manifest.json" />
-                <meta name="apple-mobile-web-app-capable" content="yes" />
-                <meta httpEquiv="ScreenOrientation" content="autoRotate:disabled"/>
-                <preference name="DisallowOverscroll" value="true" />
+                <link
+                    rel="manifest"
+                    href="/manifest.json"
+                />
+                <meta
+                    name="apple-mobile-web-app-capable"
+                    content="yes"
+                />
+                <meta
+                    httpEquiv="ScreenOrientation"
+                    content="autoRotate:disabled"
+                />
+                <preference
+                    name="DisallowOverscroll"
+                    value="true"
+                />
             </Head>
             <body>
                 <Main />
                 <NextScript />
             </body>
         </Html>
-    )
+    );
 }

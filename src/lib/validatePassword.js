@@ -1,5 +1,5 @@
-const password = process.env.PASSWORD
+const password = process.env.PASSWORD;
 
 export default function validatePassword(p) {
-    return p === password
+    return p === password;
 }

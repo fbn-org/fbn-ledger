@@ -1,61 +1,77 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 
-import { Avatar, AvatarGroup, Typography, IconButton, Grid, Button, Icon, useTheme } from '@mui/material'
-import { Edit, Done, HourglassTop, AccessTime } from '@mui/icons-material'
+import { Avatar, AvatarGroup, Button, Grid, Icon, IconButton, Typography, useTheme } from '@mui/material';
+
+import { AccessTime, Done, Edit, HourglassTop } from '@mui/icons-material';
 
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import utc from 'dayjs/plugin/utc';
+
+import Card from '../util/Card';
+import HorizontalGroup from '../util/HorizontalGroup';
+import VerticalGroup from '../util/VerticalGroup';
+
 dayjs.extend(advancedFormat);
 dayjs.extend(utc);
 
-import VerticalGroup from '../util/VerticalGroup'
-import HorizontalGroup from '../util/HorizontalGroup'
-import Card from '../util/Card'
-
 export default function OccasionCard(props) {
+    const theme = useTheme();
 
-    const theme = useTheme()
+    const people = props.people;
+    const occasion = props.occasion;
+    const ledger = props.ledger;
+    const editCallback = props.editCallback;
+    const payoutsCallback = props.payoutsCallback;
+    const showPayoutsButton = props.showPayoutsButton;
+    const disableStats = props.disableStats;
 
-    const people = props.people
-    const occasion = props.occasion
-    const ledger = props.ledger
-    const editCallback = props.editCallback
-    const payoutsCallback = props.payoutsCallback
-    const showPayoutsButton = props.showPayoutsButton
-    const disableStats = props.disableStats
+    const startDate = dayjs.utc(occasion.start_date).local().format('MMMM Do, YYYY');
+    const endDate = dayjs.utc(occasion.end_date).local().format('MMMM Do, YYYY');
 
-    const startDate = dayjs.utc(occasion.start_date).local().format("MMMM Do, YYYY")
-    const endDate = dayjs.utc(occasion.end_date).local().format("MMMM Do, YYYY")
+    const timeState = occasion.timeState;
 
-    const timeState = occasion.timeState
-
-    const [transactions, setTransactions] = useState([])
-    const [timeLeft, setTimeLeft] = useState(0)
+    const [transactions, setTransactions] = useState([]);
+    const [timeLeft, setTimeLeft] = useState(0);
 
     useEffect(() => {
-        setTransactions(ledger.filter(transaction => transaction.occasion === occasion._id))
-    }, [occasion, ledger])
+        setTransactions(ledger.filter((transaction) => transaction.occasion === occasion._id));
+    }, [occasion, ledger]);
 
     useEffect(() => {
         // calculate time until event starts
-        if (timeState === "upcoming") {
-            const now = dayjs().utc()
-            const start = dayjs.utc(occasion.start_date)
-            setTimeLeft(start.diff(now, 'hour'))
+        if (timeState === 'upcoming') {
+            const now = dayjs().utc();
+            const start = dayjs.utc(occasion.start_date);
+            setTimeLeft(start.diff(now, 'hour'));
         }
-    }, [occasion.start_date, timeState])
+    }, [occasion.start_date, timeState]);
 
     return (
         <Card
             key={occasion._id}
             icon={
-                <AvatarGroup spacing="small" onClick={() => { timeState === "active" && payoutsCallback ? payoutsCallback(occasion) : null }}>
-                    {occasion.included_people.map(personId => {
-                        const personName = people.find(person => person._id === personId).name
+                <AvatarGroup
+                    spacing="small"
+                    onClick={() => {
+                        timeState === 'active' && payoutsCallback ? payoutsCallback(occasion) : null;
+                    }}
+                >
+                    {occasion.included_people.map((personId) => {
+                        const personName = people.find((person) => person._id === personId).name;
                         return (
-                            <Avatar key={personId} sx={{ bgcolor: `${personName.toLowerCase()}.main`, height: 20, width: 20, fontSize: 12 }}><Icon /></Avatar>
-                        )
+                            <Avatar
+                                key={personId}
+                                sx={{
+                                    bgcolor: `${personName.toLowerCase()}.main`,
+                                    height: 20,
+                                    width: 20,
+                                    fontSize: 12
+                                }}
+                            >
+                                <Icon />
+                            </Avatar>
+                        );
                     })}
                 </AvatarGroup>
             }
@@ -65,53 +81,71 @@ export default function OccasionCard(props) {
             //     subtitleIcons[timeState]
             // }
             //titleChip={<Chip label="Active" color="primary" variant="outlined" size="small" />}
-            actions={editCallback ? <IconButton color="primary" onClick={() => { editCallback(occasion) }}><Edit /></IconButton> : null}
-            style={{ width: "100%" }}
+            actions={
+                editCallback ? (
+                    <IconButton
+                        color="primary"
+                        onClick={() => {
+                            editCallback(occasion);
+                        }}
+                    >
+                        <Edit />
+                    </IconButton>
+                ) : null
+            }
+            style={{ width: '100%' }}
         >
-
-            <VerticalGroup style={{ width: "100%", gap: "15px", }}>
-                {!disableStats ?
-                    <Grid container spacing={2}>
-
-                        <Grid item xs={6}>
-                            <VerticalGroup style={{ alignItems: "flex-start" }}>
-                                <Typography variant="h6">
-                                    {transactions.length}
-                                </Typography>
-                                <Typography variant="body2">
-                                    transactions
-                                </Typography>
+            <VerticalGroup style={{ width: '100%', gap: '15px' }}>
+                {!disableStats ? (
+                    <Grid
+                        container
+                        spacing={2}
+                    >
+                        <Grid
+                            item
+                            xs={6}
+                        >
+                            <VerticalGroup style={{ alignItems: 'flex-start' }}>
+                                <Typography variant="h6">{transactions.length}</Typography>
+                                <Typography variant="body2">transactions</Typography>
                             </VerticalGroup>
                         </Grid>
 
-                        <Grid item xs={6}>
-                            <VerticalGroup style={{ alignItems: "flex-start" }}>
+                        <Grid
+                            item
+                            xs={6}
+                        >
+                            <VerticalGroup style={{ alignItems: 'flex-start' }}>
                                 <Typography variant="h6">
-                                    ${transactions.reduce((total, transaction) => total + parseFloat(transaction.total), 0).toFixed(2)}
+                                    $
+                                    {transactions
+                                        .reduce((total, transaction) => total + parseFloat(transaction.total), 0)
+                                        .toFixed(2)}
                                 </Typography>
-                                <Typography variant="body2">
-                                    total spend
-                                </Typography>
+                                <Typography variant="body2">total spend</Typography>
                             </VerticalGroup>
                         </Grid>
-
                     </Grid>
-                    :
-                    <VerticalGroup style={{ width: "100%", alignItems: "flex-start", }}>
-                        <Typography variant="h6">
-                            {timeLeft > 0 ? `${timeLeft} hours` : "< 1 hour"}
-                        </Typography>
-                        <Typography variant="body2">
-                            until start
-                        </Typography>
+                ) : (
+                    <VerticalGroup style={{ width: '100%', alignItems: 'flex-start' }}>
+                        <Typography variant="h6">{timeLeft > 0 ? `${timeLeft} hours` : '< 1 hour'}</Typography>
+                        <Typography variant="body2">until start</Typography>
                     </VerticalGroup>
-                }
+                )}
 
-                {showPayoutsButton ?
-                    <Button variant="outlined" color="primary" onClick={() => { payoutsCallback(occasion) }} sx={{ borderRadius: "5px", width: "100%", height: "auto", }}>Payouts</Button>
-                    : null
-                }
+                {showPayoutsButton ? (
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => {
+                            payoutsCallback(occasion);
+                        }}
+                        sx={{ borderRadius: '5px', width: '100%', height: 'auto' }}
+                    >
+                        Payouts
+                    </Button>
+                ) : null}
             </VerticalGroup>
         </Card>
-    )
+    );
 }

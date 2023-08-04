@@ -1,73 +1,94 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { Divider, Avatar, Button, TextField, Select, MenuItem, FormControl, InputLabel, ToggleButton, Icon, InputAdornment, Typography, IconButton, ClickAwayListener, Tooltip, Collapse, useTheme, AvatarGroup, ToggleButtonGroup } from "@mui/material";
+import {
+    Avatar,
+    AvatarGroup,
+    Button,
+    ClickAwayListener,
+    Collapse,
+    Divider,
+    FormControl,
+    Icon,
+    IconButton,
+    InputAdornment,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField,
+    ToggleButton,
+    ToggleButtonGroup,
+    Tooltip,
+    Typography,
+    useTheme
+} from '@mui/material';
+
+import { Add, Check, Delete, ExpandLess, ExpandMore, KeyboardDoubleArrowRight } from '@mui/icons-material';
+
 import { LoadingButton } from '@mui/lab';
-import { DateTimePicker } from "@mui/x-date-pickers";
-import { Add, Check, Delete, ExpandLess, ExpandMore, KeyboardDoubleArrowRight } from "@mui/icons-material";
+import { DateTimePicker } from '@mui/x-date-pickers';
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-dayjs.extend(utc);
 
-import request from '@/components/util/API.js'
+import request from '@/components/util/API.js';
 
-import Drawer from "../util/Drawer";
-import HorizontalGroup from "../util/HorizontalGroup";
-import VerticalGroup from "../util/VerticalGroup";
-
-import TransactionSection from './TransactionSection';
+import Drawer from '../util/Drawer';
+import HorizontalGroup from '../util/HorizontalGroup';
+import VerticalGroup from '../util/VerticalGroup';
 import PersonItem from './PersonItem';
 import SharedItem from './SharedItem';
+import TransactionSection from './TransactionSection';
+
+dayjs.extend(utc);
 
 export default function EditTransaction(props) {
+    const theme = useTheme();
 
-    const theme = useTheme()
+    const isNew = props.isNew;
+    const editData = props.editData;
+    const people = props.people;
+    const occasions = props.occasions;
 
-    const isNew = props.isNew
-    const editData = props.editData
-    const people = props.people
-    const occasions = props.occasions
+    const [saving, setSaving] = useState(false);
+    const [confirmationOpen, setConfirmationOpen] = useState(false);
 
-    const [saving, setSaving] = useState(false)
-    const [confirmationOpen, setConfirmationOpen] = useState(false)
+    const [total, setTotal] = useState(0);
+    const [subtotal, setSubtotal] = useState(0);
 
-    const [total, setTotal] = useState(0)
-    const [subtotal, setSubtotal] = useState(0)
+    const [individualAmounts, setIndividualAmounts] = useState({});
+    const [sharedAmounts, setSharedAmounts] = useState([]);
+    const [reason, setReason] = useState('');
+    const [userPaying, setUserPaying] = useState('');
 
-    const [individualAmounts, setIndividualAmounts] = useState({})
-    const [sharedAmounts, setSharedAmounts] = useState([])
-    const [reason, setReason] = useState("")
-    const [userPaying, setUserPaying] = useState("")
+    const [date, setDate] = useState(dayjs().utc().local());
+    const [occasion, setOccasion] = useState('None');
+    const [tax, setTax] = useState('');
+    const [tip, setTip] = useState('');
 
-    const [date, setDate] = useState(dayjs().utc().local())
-    const [occasion, setOccasion] = useState("None")
-    const [tax, setTax] = useState("")
-    const [tip, setTip] = useState("")
+    const [tipPreview, setTipPreview] = useState('');
+    const [tipPercent, setTipPercent] = useState('15');
+    const [showTipCalculator, setShowTipCalculator] = useState(false);
 
-    const [tipPreview, setTipPreview] = useState("")
-    const [tipPercent, setTipPercent] = useState("15")
-    const [showTipCalculator, setShowTipCalculator] = useState(false)
-
-    const [currentOccasion, setCurrentOccasion] = useState(null)
-    const [currentPeople, setCurrentPeople] = useState([])
+    const [currentOccasion, setCurrentOccasion] = useState(null);
+    const [currentPeople, setCurrentPeople] = useState([]);
 
     function submit() {
-        setSaving(true)
+        setSaving(true);
 
-        let amountsFinal = individualAmounts
-        let sharedFinal = sharedAmounts
+        let amountsFinal = individualAmounts;
+        let sharedFinal = sharedAmounts;
         //delete the empty item in each person's array
-        Object.keys(amountsFinal).forEach(personId => {
-            amountsFinal[personId] = amountsFinal[personId].filter(amount => amount !== "")
+        Object.keys(amountsFinal).forEach((personId) => {
+            amountsFinal[personId] = amountsFinal[personId].filter((amount) => amount !== '');
             amountsFinal[personId].forEach((amount, index) => {
-                amountsFinal[personId][index] = parseFloat(amount).toFixed(2)
-            })
-        })
+                amountsFinal[personId][index] = parseFloat(amount).toFixed(2);
+            });
+        });
         //delete the empty item in each shared array
-        sharedFinal = sharedFinal.filter(item => item.amount !== "" && item.people.length !== 0)
+        sharedFinal = sharedFinal.filter((item) => item.amount !== '' && item.people.length !== 0);
         sharedFinal.forEach((item, index) => {
-            sharedFinal[index].amount = parseFloat(item.amount).toFixed(2)
-        })
+            sharedFinal[index].amount = parseFloat(item.amount).toFixed(2);
+        });
 
         let data = {
             reason: reason,
@@ -78,312 +99,398 @@ export default function EditTransaction(props) {
             tip: tip,
             individual_items: amountsFinal,
             shared_items: sharedFinal,
-            total: total.toFixed(2),
-        }
+            total: total.toFixed(2)
+        };
 
-        console.log(data)
+        console.log(data);
 
         if (isNew) {
-            request("/api/ledger/createTransaction", {
-                method: "POST",
+            request('/api/ledger/createTransaction', {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json"
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(data)
             })
-                .then(res => res.json())
-                .then(data => {
-                    close()
-                })
+                .then((res) => res.json())
+                .then((data) => {
+                    close();
+                });
         } else {
             request(`/api/ledger/${editData._id}`, {
-                method: "PUT",
+                method: 'PUT',
                 headers: {
-                    "Content-Type": "application/json"
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    ...data,
+                    ...data
                 })
             })
-                .then(res => res.json())
-                .then(data => {
-                    close()
-                })
+                .then((res) => res.json())
+                .then((data) => {
+                    close();
+                });
         }
     }
 
     function deleteTransaction() {
-        console.log("deleting")
+        console.log('deleting');
         request(`/api/ledger/${editData._id}`, {
-            method: "DELETE",
+            method: 'DELETE'
         })
-            .then(res => res.json())
-            .then(data => {
-                close()
-            })
+            .then((res) => res.json())
+            .then((data) => {
+                close();
+            });
     }
 
     useEffect(() => {
         // add up all individualAmounts
-        let newTotal = 0
+        let newTotal = 0;
 
         if (individualAmounts) {
             if (Object.keys(individualAmounts).length > 0) {
-                let subtotal = 0
-                Object.keys(individualAmounts).forEach(personId => {
-                    individualAmounts[personId].forEach(amount => {
-                        if (amount !== "") {
-                            subtotal += parseFloat(amount)
+                let subtotal = 0;
+                Object.keys(individualAmounts).forEach((personId) => {
+                    individualAmounts[personId].forEach((amount) => {
+                        if (amount !== '') {
+                            subtotal += parseFloat(amount);
                         }
-                    })
-                })
+                    });
+                });
 
-                newTotal += subtotal
+                newTotal += subtotal;
             }
         }
 
         if (sharedAmounts) {
             if (sharedAmounts.length > 0) {
-                let subtotal = 0
-                sharedAmounts.forEach(item => {
-                    if (item.amount !== "") {
-                        subtotal += parseFloat(item.amount)
+                let subtotal = 0;
+                sharedAmounts.forEach((item) => {
+                    if (item.amount !== '') {
+                        subtotal += parseFloat(item.amount);
                     }
-                })
+                });
 
-                newTotal += subtotal
+                newTotal += subtotal;
             }
         }
 
-        setSubtotal(newTotal)
-    }, [individualAmounts, sharedAmounts])
+        setSubtotal(newTotal);
+    }, [individualAmounts, sharedAmounts]);
 
     useEffect(() => {
-        let total = subtotal
+        let total = subtotal;
 
-        if (tax !== "") {
-            total += parseFloat(tax)
+        if (tax !== '') {
+            total += parseFloat(tax);
         }
-        if (tip !== "") {
-            total += parseFloat(tip)
-        }
-
-        setTotal(total)
-    }, [tax, tip, subtotal])
-
-    const presetValues = useCallback((occasion, unfixedIndividualAmounts, unfixedSharedAmounts) => {
-        var occasionFromId = occasions.find(o => o._id == occasion)
-        var peopleForOccasion = []
-        var peopleUnformattedForOccasion = []
-
-        if (occasionFromId) {
-            peopleUnformattedForOccasion = occasionFromId.included_people
-        } else {
-            for (const index in people) {
-                let peopleInfo = people[index]
-                peopleUnformattedForOccasion.push(peopleInfo._id)
-            }
+        if (tip !== '') {
+            total += parseFloat(tip);
         }
 
-        // Format personal info from table of users
-        for (const index in peopleUnformattedForOccasion) {
-            let personId = peopleUnformattedForOccasion[index]
-            let personInfo = people.find(user => user._id === personId)
+        setTotal(total);
+    }, [tax, tip, subtotal]);
 
-            if (personInfo) {
-                let info = {
-                    "id": personId,
-                    "name": personInfo.name,
+    const presetValues = useCallback(
+        (occasion, unfixedIndividualAmounts, unfixedSharedAmounts) => {
+            var occasionFromId = occasions.find((o) => o._id == occasion);
+            var peopleForOccasion = [];
+            var peopleUnformattedForOccasion = [];
+
+            if (occasionFromId) {
+                peopleUnformattedForOccasion = occasionFromId.included_people;
+            } else {
+                for (const index in people) {
+                    let peopleInfo = people[index];
+                    peopleUnformattedForOccasion.push(peopleInfo._id);
                 }
-                peopleForOccasion.push(info)
             }
-        }
 
-        var newIndividualAmounts = {}
-        var newSharedAmounts = []
+            // Format personal info from table of users
+            for (const index in peopleUnformattedForOccasion) {
+                let personId = peopleUnformattedForOccasion[index];
+                let personInfo = people.find((user) => user._id === personId);
 
-        if (peopleForOccasion.length !== 0) {
-            // make sure everyone in individualAmounts is actually in the occasion
-            if (peopleForOccasion !== null) {
-                peopleForOccasion.forEach(person => {
-                    newIndividualAmounts[person.id] = [""]
-                })
-
-                if (unfixedIndividualAmounts) {
-                    for (const personId of Object.keys(unfixedIndividualAmounts)) {
-                        let targetPerson = peopleForOccasion.find(user => user.id === personId)
-                        if (targetPerson) {
-                            newIndividualAmounts[personId] = unfixedIndividualAmounts[personId]
-                        }
-                    }
+                if (personInfo) {
+                    let info = {
+                        id: personId,
+                        name: personInfo.name
+                    };
+                    peopleForOccasion.push(info);
                 }
+            }
 
-                if (unfixedSharedAmounts) {
-                    for (const item of unfixedSharedAmounts) {
-                        let newSharedItem = {
-                            "people": [],
-                            "amount": ""
-                        }
-                        for (const personId of item.people) {
-                            let targetPerson = peopleForOccasion.find(user => user.id === personId)
+            var newIndividualAmounts = {};
+            var newSharedAmounts = [];
+
+            if (peopleForOccasion.length !== 0) {
+                // make sure everyone in individualAmounts is actually in the occasion
+                if (peopleForOccasion !== null) {
+                    peopleForOccasion.forEach((person) => {
+                        newIndividualAmounts[person.id] = [''];
+                    });
+
+                    if (unfixedIndividualAmounts) {
+                        for (const personId of Object.keys(unfixedIndividualAmounts)) {
+                            let targetPerson = peopleForOccasion.find((user) => user.id === personId);
                             if (targetPerson) {
-                                newSharedItem.people.push(personId)
+                                newIndividualAmounts[personId] = unfixedIndividualAmounts[personId];
                             }
                         }
-                        newSharedItem.amount = item.amount
-                        newSharedAmounts.push(newSharedItem)
                     }
-                } else {
-                    newSharedAmounts = [{
-                        "people": [],
-                        "amount": ""
-                    }]
+
+                    if (unfixedSharedAmounts) {
+                        for (const item of unfixedSharedAmounts) {
+                            let newSharedItem = {
+                                people: [],
+                                amount: ''
+                            };
+                            for (const personId of item.people) {
+                                let targetPerson = peopleForOccasion.find((user) => user.id === personId);
+                                if (targetPerson) {
+                                    newSharedItem.people.push(personId);
+                                }
+                            }
+                            newSharedItem.amount = item.amount;
+                            newSharedAmounts.push(newSharedItem);
+                        }
+                    } else {
+                        newSharedAmounts = [
+                            {
+                                people: [],
+                                amount: ''
+                            }
+                        ];
+                    }
                 }
             }
-        }
 
-
-        setOccasion(occasion)
-        setIndividualAmounts(newIndividualAmounts)
-        setSharedAmounts(newSharedAmounts)
-        setCurrentOccasion(occasionFromId)
-        setCurrentPeople(peopleForOccasion)
-    }, [occasions, people])
+            setOccasion(occasion);
+            setIndividualAmounts(newIndividualAmounts);
+            setSharedAmounts(newSharedAmounts);
+            setCurrentOccasion(occasionFromId);
+            setCurrentPeople(peopleForOccasion);
+        },
+        [occasions, people]
+    );
 
     useEffect(() => {
         if (sharedAmounts.length > 0) {
-            if (sharedAmounts.every(item => item.amount !== "" && item.people.length !== 0)) {
-                console.log("extending")
-                setSharedAmounts(old => [...old, { "people": [], "amount": "" }])
+            if (sharedAmounts.every((item) => item.amount !== '' && item.people.length !== 0)) {
+                console.log('extending');
+                setSharedAmounts((old) => [...old, { people: [], amount: '' }]);
             }
 
-            if (sharedAmounts.some(item => item.amount === "" && item.people.length === 0)) {
-                const emptyIndex = sharedAmounts.findIndex(item => item.amount === "" && item.people.length === 0)
+            if (sharedAmounts.some((item) => item.amount === '' && item.people.length === 0)) {
+                const emptyIndex = sharedAmounts.findIndex((item) => item.amount === '' && item.people.length === 0);
                 if (emptyIndex !== sharedAmounts.length - 1) {
-                    console.log("Deleting")
-                    console.log(sharedAmounts)
-                    setSharedAmounts(old => [...old.slice(0, emptyIndex), ...old.slice(emptyIndex + 1)])
+                    console.log('Deleting');
+                    console.log(sharedAmounts);
+                    setSharedAmounts((old) => [...old.slice(0, emptyIndex), ...old.slice(emptyIndex + 1)]);
                 }
             }
         }
-    }, [sharedAmounts])
+    }, [sharedAmounts]);
 
     useEffect(() => {
-        let newTipPreview = subtotal * parseFloat("." + tipPercent)
-        setTipPreview(newTipPreview.toFixed(2))
-    }, [tipPercent, subtotal])
+        let newTipPreview = subtotal * parseFloat('.' + tipPercent);
+        setTipPreview(newTipPreview.toFixed(2));
+    }, [tipPercent, subtotal]);
 
     function close() {
-        props.onClose()
-        setReason("")
-        setDate(dayjs())
-        setTax("")
-        setTip("")
-        setUserPaying("")
-        setTotal(0)
-        setSubtotal(0)
-        setConfirmationOpen(false)
-        setSaving(false)
-        setShowTipCalculator(false)
+        props.onClose();
+        setReason('');
+        setDate(dayjs());
+        setTax('');
+        setTip('');
+        setUserPaying('');
+        setTotal(0);
+        setSubtotal(0);
+        setConfirmationOpen(false);
+        setSaving(false);
+        setShowTipCalculator(false);
 
-        presetValues("None")
+        presetValues('None');
     }
 
     useEffect(() => {
-        presetValues("None")
-    }, [presetValues])
+        presetValues('None');
+    }, [presetValues]);
 
     useEffect(() => {
         if (editData) {
-            console.log(editData)
-            setReason(editData.reason)
-            setDate(dayjs(editData.date))
-            setTax(editData.tax)
-            setTip(editData.tip)
-            setUserPaying(editData.payer)
+            console.log(editData);
+            setReason(editData.reason);
+            setDate(dayjs(editData.date));
+            setTax(editData.tax);
+            setTip(editData.tip);
+            setUserPaying(editData.payer);
 
-            presetValues(editData.occasion, editData.individual_items, editData.shared_items)
+            presetValues(editData.occasion, editData.individual_items, editData.shared_items);
         }
-    }, [editData, presetValues])
+    }, [editData, presetValues]);
 
     return (
-        <Drawer open={props.open} title={isNew ? "New Transaction" : "Edit Transaction"} actions={!isNew ?
-            <ClickAwayListener onClickAway={() => setConfirmationOpen(false)}>
-                <Tooltip
-                    arrow
-                    PopperProps={{
-                        disablePortal: true,
-                    }}
-                    onClose={() => setConfirmationOpen(false)}
-                    open={confirmationOpen}
-                    disableFocusListener
-                    disableHoverListener
-                    disableTouchListener
-                    title="Tap again to confirm deletion"
-                >
-                    <IconButton color="secondary" onClick={() => confirmationOpen ? deleteTransaction() : setConfirmationOpen(true)}><Delete /></IconButton>
-                </Tooltip>
-            </ClickAwayListener> : null} >
+        <Drawer
+            open={props.open}
+            title={isNew ? 'New Transaction' : 'Edit Transaction'}
+            actions={
+                !isNew ? (
+                    <ClickAwayListener onClickAway={() => setConfirmationOpen(false)}>
+                        <Tooltip
+                            arrow
+                            PopperProps={{
+                                disablePortal: true
+                            }}
+                            onClose={() => setConfirmationOpen(false)}
+                            open={confirmationOpen}
+                            disableFocusListener
+                            disableHoverListener
+                            disableTouchListener
+                            title="Tap again to confirm deletion"
+                        >
+                            <IconButton
+                                color="secondary"
+                                onClick={() => (confirmationOpen ? deleteTransaction() : setConfirmationOpen(true))}
+                            >
+                                <Delete />
+                            </IconButton>
+                        </Tooltip>
+                    </ClickAwayListener>
+                ) : null
+            }
+        >
+            <TransactionSection
+                title="Metadata"
+                open
+            >
+                <VerticalGroup style={{ width: '100%', gap: '20px', marginTop: '5px' }}>
+                    <HorizontalGroup style={{ width: '100%', gap: '10px' }}>
+                        <TextField
+                            label="Description"
+                            variant="outlined"
+                            size="medium"
+                            fullWidth
+                            value={reason}
+                            onChange={(e) => setReason(e.target.value)}
+                            sx={{ flexBasis: '50%' }}
+                        />
 
-
-            <TransactionSection title="Metadata" open>
-                <VerticalGroup style={{ width: "100%", gap: "20px", marginTop: "5px" }}>
-                    <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
-                        <TextField label="Description" variant="outlined" size="medium" fullWidth value={reason} onChange={(e) => setReason(e.target.value)} sx={{ flexBasis: "50%" }} />
-
-                        <FormControl sx={{ flexBasis: "50%" }}>
+                        <FormControl sx={{ flexBasis: '50%' }}>
                             <InputLabel id="payer-label">Payer</InputLabel>
                             <Select
                                 variant="outlined"
                                 size="medium"
                                 label="Buyer"
                                 value={userPaying}
-                                onChange={(selectionEntry) => { setUserPaying(selectionEntry.target.value) }}
+                                onChange={(selectionEntry) => {
+                                    setUserPaying(selectionEntry.target.value);
+                                }}
                                 renderValue={(selected) => {
-                                    let person = currentPeople.find(p => p.id === selected)
+                                    let person = currentPeople.find((p) => p.id === selected);
                                     return (
-                                        <HorizontalGroup style={{ justifyContent: "flex-start", width: "100%", gap: "5px" }}>
-                                            {person ? <>
-                                                <Avatar sx={{ bgcolor: `${person.name.toLowerCase()}.main`, width: 18, height: 18 }} key={selected}><Icon /></Avatar>
-                                                <Typography variant="body1">{person.name}</Typography>
-                                            </>
-                                                : null}
+                                        <HorizontalGroup
+                                            style={{
+                                                justifyContent: 'flex-start',
+                                                width: '100%',
+                                                gap: '5px'
+                                            }}
+                                        >
+                                            {person ? (
+                                                <>
+                                                    <Avatar
+                                                        sx={{
+                                                            bgcolor: `${person.name.toLowerCase()}.main`,
+                                                            width: 18,
+                                                            height: 18
+                                                        }}
+                                                        key={selected}
+                                                    >
+                                                        <Icon />
+                                                    </Avatar>
+                                                    <Typography variant="body1">{person.name}</Typography>
+                                                </>
+                                            ) : null}
                                         </HorizontalGroup>
-                                    )
+                                    );
                                 }}
                             >
-                                {currentPeople.map(person => {
+                                {currentPeople.map((person) => {
                                     return (
-                                        <MenuItem key={person.id} value={person.id} sx={{ gap: "5px" }}>
-                                            <Avatar sx={{ bgcolor: `${person.name.toLowerCase()}.main`, width: 20, height: 20 }}><Icon /></Avatar>
+                                        <MenuItem
+                                            key={person.id}
+                                            value={person.id}
+                                            sx={{ gap: '5px' }}
+                                        >
+                                            <Avatar
+                                                sx={{
+                                                    bgcolor: `${person.name.toLowerCase()}.main`,
+                                                    width: 20,
+                                                    height: 20
+                                                }}
+                                            >
+                                                <Icon />
+                                            </Avatar>
                                             {person.name}
                                         </MenuItem>
-                                    )
+                                    );
                                 })}
                             </Select>
                         </FormControl>
                     </HorizontalGroup>
 
-                    <HorizontalGroup style={{ width: "100%", gap: "10px" }}>
-                        <DateTimePicker slotProps={{ textField: { size: "medium" } }} label="Time" value={date} onChange={(v) => { setDate(v) }} sx={{ flexBasis: "50%" }} />
+                    <HorizontalGroup style={{ width: '100%', gap: '10px' }}>
+                        <DateTimePicker
+                            slotProps={{ textField: { size: 'medium' } }}
+                            label="Time"
+                            value={date}
+                            onChange={(v) => {
+                                setDate(v);
+                            }}
+                            sx={{ flexBasis: '50%' }}
+                        />
 
-                        <FormControl sx={{ flexBasis: "50%" }}>
+                        <FormControl sx={{ flexBasis: '50%' }}>
                             <InputLabel id="transaction-type-label">Occasion</InputLabel>
-                            <Select variant="outlined" size="medium" label="Occasion" value={occasion} onChange={(selectionEntry) => {
-                                var selectionValue = selectionEntry.target.value
-                                presetValues(selectionValue, individualAmounts, sharedAmounts)
-                            }}>
-                                <MenuItem key="None" value="None">None</MenuItem>
-                                {editData ?
-                                    editData.occasion !== "None" ? <MenuItem key={editData.occasion} value={editData.occasion}>{occasions.find(o => o._id === editData.occasion).name} (inactive)</MenuItem> : null
-                                    : null}
-                                {occasions.map(occasion => {
-                                    if (occasion.timeState === "active") {
+                            <Select
+                                variant="outlined"
+                                size="medium"
+                                label="Occasion"
+                                value={occasion}
+                                onChange={(selectionEntry) => {
+                                    var selectionValue = selectionEntry.target.value;
+                                    presetValues(selectionValue, individualAmounts, sharedAmounts);
+                                }}
+                            >
+                                <MenuItem
+                                    key="None"
+                                    value="None"
+                                >
+                                    None
+                                </MenuItem>
+                                {editData ? (
+                                    editData.occasion !== 'None' ? (
+                                        <MenuItem
+                                            key={editData.occasion}
+                                            value={editData.occasion}
+                                        >
+                                            {occasions.find((o) => o._id === editData.occasion).name} (inactive)
+                                        </MenuItem>
+                                    ) : null
+                                ) : null}
+                                {occasions.map((occasion) => {
+                                    if (occasion.timeState === 'active') {
                                         return (
-                                            <MenuItem key={occasion._id} value={occasion._id}>{occasion.name}</MenuItem>
-                                        )
+                                            <MenuItem
+                                                key={occasion._id}
+                                                value={occasion._id}
+                                            >
+                                                {occasion.name}
+                                            </MenuItem>
+                                        );
                                     } else {
-                                        return null
+                                        return null;
                                     }
                                 })}
                             </Select>
@@ -392,64 +499,170 @@ export default function EditTransaction(props) {
                 </VerticalGroup>
             </TransactionSection>
 
-
             <TransactionSection title="Individual items">
-                <VerticalGroup style={{ width: "100%", gap: "15px", marginTop: "5px" }}>
-
-                    {individualAmounts ? currentPeople.map(personInfo => {
-                        return (
-                            <PersonItem key={personInfo.id} personId={personInfo.id} name={personInfo.name} individualAmounts={individualAmounts} setIndividualAmounts={setIndividualAmounts} />
-                        )
-                    })
+                <VerticalGroup style={{ width: '100%', gap: '15px', marginTop: '5px' }}>
+                    {individualAmounts
+                        ? currentPeople.map((personInfo) => {
+                              return (
+                                  <PersonItem
+                                      key={personInfo.id}
+                                      personId={personInfo.id}
+                                      name={personInfo.name}
+                                      individualAmounts={individualAmounts}
+                                      setIndividualAmounts={setIndividualAmounts}
+                                  />
+                              );
+                          })
                         : null}
-
                 </VerticalGroup>
             </TransactionSection>
 
             <TransactionSection title="Shared items">
-                <VerticalGroup style={{ width: "100%", gap: "15px", marginTop: "5px" }}>
-                    {sharedAmounts && sharedAmounts.length > 0 ? sharedAmounts.map((sharedItem, index) => {
-                        return (
-                            <SharedItem key={index} index={index} people={currentPeople} sharedItem={sharedItem} sharedAmounts={sharedAmounts} setSharedAmounts={setSharedAmounts} />
-                        )
-                    })
+                <VerticalGroup style={{ width: '100%', gap: '15px', marginTop: '5px' }}>
+                    {sharedAmounts && sharedAmounts.length > 0
+                        ? sharedAmounts.map((sharedItem, index) => {
+                              return (
+                                  <SharedItem
+                                      key={index}
+                                      index={index}
+                                      people={currentPeople}
+                                      sharedItem={sharedItem}
+                                      sharedAmounts={sharedAmounts}
+                                      setSharedAmounts={setSharedAmounts}
+                                  />
+                              );
+                          })
                         : null}
                 </VerticalGroup>
             </TransactionSection>
 
-            <VerticalGroup style={{ width: "100%", gap: "15px", marginTop: "10px" }}>
-                <HorizontalGroup style={{ width: "100%", gap: "5px", alignSelf: "flex-end", justifyContent: "flex-end" }}>
-                    <HorizontalGroup style={{ flexBasis: "40%", justifyContent: "center" }}>
+            <VerticalGroup style={{ width: '100%', gap: '15px', marginTop: '10px' }}>
+                <HorizontalGroup
+                    style={{
+                        width: '100%',
+                        gap: '5px',
+                        alignSelf: 'flex-end',
+                        justifyContent: 'flex-end'
+                    }}
+                >
+                    <HorizontalGroup style={{ flexBasis: '40%', justifyContent: 'center' }}>
                         {/* <Button variant="text" sx={{ textTransform: "none" }} color="primaryText"> */}
-                        <Typography variant="h6" sx={{ flexBasis: "40%", textAlign: "center" }}>Tax</Typography>
+                        <Typography
+                            variant="h6"
+                            sx={{ flexBasis: '40%', textAlign: 'center' }}
+                        >
+                            Tax
+                        </Typography>
                         {/* </Button> */}
                     </HorizontalGroup>
                     <Add />
-                    <TextField variant="outlined" size="small" type="number" InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} value={tax} onChange={(e) => { setTax(e.target.value) }} />
+                    <TextField
+                        variant="outlined"
+                        size="small"
+                        type="number"
+                        InputProps={{
+                            startAdornment: <InputAdornment position="start">$</InputAdornment>
+                        }}
+                        sx={{ flexBasis: '60%' }}
+                        value={tax}
+                        onChange={(e) => {
+                            setTax(e.target.value);
+                        }}
+                    />
                 </HorizontalGroup>
 
-
-                <VerticalGroup style={{ width: "100%" }}>
-                    <HorizontalGroup style={{ width: "100%", gap: "5px", alignSelf: "flex-end", justifyContent: "flex-end" }}>
-                        <HorizontalGroup style={{ flexBasis: "40%", justifyContent: "center" }}>
-                            <Button variant="text" sx={{ textTransform: "none" }} color="primaryText" onClick={() => setShowTipCalculator(a => !a)}>
-                                <Typography variant="h6" sx={{ flexBasis: "40%", textAlign: "center" }}>Tip</Typography>
+                <VerticalGroup style={{ width: '100%' }}>
+                    <HorizontalGroup
+                        style={{
+                            width: '100%',
+                            gap: '5px',
+                            alignSelf: 'flex-end',
+                            justifyContent: 'flex-end'
+                        }}
+                    >
+                        <HorizontalGroup style={{ flexBasis: '40%', justifyContent: 'center' }}>
+                            <Button
+                                variant="text"
+                                sx={{ textTransform: 'none' }}
+                                color="primaryText"
+                                onClick={() => setShowTipCalculator((a) => !a)}
+                            >
+                                <Typography
+                                    variant="h6"
+                                    sx={{ flexBasis: '40%', textAlign: 'center' }}
+                                >
+                                    Tip
+                                </Typography>
                             </Button>
                         </HorizontalGroup>
                         <Add />
-                        <TextField variant="outlined" size="small" type="number" value={tip} onChange={(e) => { setTip(e.target.value) }} InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} sx={{ flexBasis: "60%" }} />
+                        <TextField
+                            variant="outlined"
+                            size="small"
+                            type="number"
+                            value={tip}
+                            onChange={(e) => {
+                                setTip(e.target.value);
+                            }}
+                            InputProps={{
+                                startAdornment: <InputAdornment position="start">$</InputAdornment>
+                            }}
+                            sx={{ flexBasis: '60%' }}
+                        />
                     </HorizontalGroup>
-                    <Collapse in={showTipCalculator} sx={{ width: "100%" }}>
-                        <HorizontalGroup style={{ width: "100%", marginTop: "15px" }}>
-                            <ToggleButtonGroup exclusive size="medium" onChange={(e, newTip) => { if (newTip) { setTipPercent(newTip) } }} value={tipPercent} sx={{ width: "auto", flexBasis: "55%", justifyContent: "center" }}>
-                                <ToggleButton value="15" color="primary">15%</ToggleButton>
-                                <ToggleButton value="18" color="primary">18%</ToggleButton>
-                                <ToggleButton value="20" color="primary">20%</ToggleButton>
+                    <Collapse
+                        in={showTipCalculator}
+                        sx={{ width: '100%' }}
+                    >
+                        <HorizontalGroup style={{ width: '100%', marginTop: '15px' }}>
+                            <ToggleButtonGroup
+                                exclusive
+                                size="medium"
+                                onChange={(e, newTip) => {
+                                    if (newTip) {
+                                        setTipPercent(newTip);
+                                    }
+                                }}
+                                value={tipPercent}
+                                sx={{
+                                    width: 'auto',
+                                    flexBasis: '55%',
+                                    justifyContent: 'center'
+                                }}
+                            >
+                                <ToggleButton
+                                    value="15"
+                                    color="primary"
+                                >
+                                    15%
+                                </ToggleButton>
+                                <ToggleButton
+                                    value="18"
+                                    color="primary"
+                                >
+                                    18%
+                                </ToggleButton>
+                                <ToggleButton
+                                    value="20"
+                                    color="primary"
+                                >
+                                    20%
+                                </ToggleButton>
                             </ToggleButtonGroup>
                             <Typography variant="h5">=</Typography>
-                            <HorizontalGroup style={{ flexBasis: "45%", }}>
-                                <Typography variant="h6" sx={{ textAlign: "center", flexGrow: 1 }} >${tipPreview}</Typography>
-                                <IconButton onClick={() => { setTip(tipPreview); setShowTipCalculator(false) }}>
+                            <HorizontalGroup style={{ flexBasis: '45%' }}>
+                                <Typography
+                                    variant="h6"
+                                    sx={{ textAlign: 'center', flexGrow: 1 }}
+                                >
+                                    ${tipPreview}
+                                </Typography>
+                                <IconButton
+                                    onClick={() => {
+                                        setTip(tipPreview);
+                                        setShowTipCalculator(false);
+                                    }}
+                                >
                                     <Check color="primary" />
                                 </IconButton>
                             </HorizontalGroup>
@@ -459,20 +672,60 @@ export default function EditTransaction(props) {
             </VerticalGroup>
             {/* </TransactionSection> */}
 
-            <Divider sx={{ width: "60%", alignSelf: "flex-end" }} />
+            <Divider sx={{ width: '60%', alignSelf: 'flex-end' }} />
 
-            <HorizontalGroup style={{ width: "100%", gap: "5px", alignSelf: "flex-end", justifyContent: "flex-end" }}>
-                <Typography variant="h6" sx={{ flexBasis: "40%", textAlign: "center" }}>Total</Typography>
+            <HorizontalGroup
+                style={{
+                    width: '100%',
+                    gap: '5px',
+                    alignSelf: 'flex-end',
+                    justifyContent: 'flex-end'
+                }}
+            >
+                <Typography
+                    variant="h6"
+                    sx={{ flexBasis: '40%', textAlign: 'center' }}
+                >
+                    Total
+                </Typography>
                 <KeyboardDoubleArrowRight />
-                <Typography variant="h5" sx={{ flexBasis: "60%", textAlign: "left", paddingLeft: "5px" }}>${total.toFixed(2)}</Typography>
+                <Typography
+                    variant="h5"
+                    sx={{ flexBasis: '60%', textAlign: 'left', paddingLeft: '5px' }}
+                >
+                    ${total.toFixed(2)}
+                </Typography>
             </HorizontalGroup>
 
-            <HorizontalGroup style={{ width: "100%", gap: "10px", justifyContent: "space-evenly", marginTop: "10px" }}>
-                <Button variant="outlined" color="secondary" size="large" onClick={close} sx={{ width: "100%" }}>Cancel</Button>
-                <LoadingButton variant="outlined" color="primary" size="large" sx={{ width: "100%" }} onClick={submit} loading={saving} disabled={reason === "" || total === 0 || subtotal === 0 || occasion === "" || userPaying === ""}>Save</LoadingButton>
+            <HorizontalGroup
+                style={{
+                    width: '100%',
+                    gap: '10px',
+                    justifyContent: 'space-evenly',
+                    marginTop: '10px'
+                }}
+            >
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    size="large"
+                    onClick={close}
+                    sx={{ width: '100%' }}
+                >
+                    Cancel
+                </Button>
+                <LoadingButton
+                    variant="outlined"
+                    color="primary"
+                    size="large"
+                    sx={{ width: '100%' }}
+                    onClick={submit}
+                    loading={saving}
+                    disabled={reason === '' || total === 0 || subtotal === 0 || occasion === '' || userPaying === ''}
+                >
+                    Save
+                </LoadingButton>
             </HorizontalGroup>
-
-        </Drawer >
-    )
+        </Drawer>
+    );
 }
-

@@ -219,7 +219,7 @@ export default function EditOccasion(props) {
                                 }}
                             >
                                 {selected.map((value) => {
-                                    let person = people.find((p) => p._id === value);
+                                    let person = people.find((p) => p.id === value);
                                     return person ? (
                                         <Chip
                                             label={person.name}

@@ -1,41 +1,18 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import {
-    Avatar,
-    AvatarGroup,
-    Button,
-    Chip,
-    Collapse,
-    Fab,
-    Grid,
-    IconButton,
-    ListItemButton,
-    Typography,
-    useTheme
-} from '@mui/material';
+import { Collapse, Fab, ListItemButton, Typography, useTheme } from '@mui/material';
 
-import {
-    AccessTime,
-    Add,
-    Celebration,
-    Delete,
-    Done,
-    Edit,
-    ExpandLess,
-    ExpandMore,
-    HourglassTop
-} from '@mui/icons-material';
+import { AccessTime, Add, Celebration, Done, ExpandLess, ExpandMore, HourglassTop } from '@mui/icons-material';
 
-import { LedgerContext } from '@/contexts/LedgerContext.js';
-import { OccasionsContext } from '@/contexts/OccasionsContext';
-import { PeopleContext } from '@/contexts/PeopleContext';
+import useLedger from '@/contexts/LedgerContext.js';
 
-import Card from '../util/Card.js';
-import HorizontalGroup from '../util/HorizontalGroup.js';
-import VerticalGroup from '../util/VerticalGroup.js';
-import EditOccasion from './EditOccasion.js';
-import OccasionCard from './OccasionCard.js';
-import Payouts from './Payouts.js';
+import PrimaryLayout from '@/layouts/PrimaryLayout';
+
+import EditOccasion from '@/components/occasions/EditOccasion.js';
+import OccasionCard from '@/components/occasions/OccasionCard.js';
+import Payouts from '@/components/occasions/Payouts.js';
+import HorizontalGroup from '@/components/util/HorizontalGroup.js';
+import VerticalGroup from '@/components/util/VerticalGroup.js';
 
 export default function Occasions(props) {
     const theme = useTheme();
@@ -47,9 +24,7 @@ export default function Occasions(props) {
     const [payoutsOpen, setPayoutsOpen] = useState(false);
     const [payoutsOccasion, setPayoutsOccasion] = useState(null);
 
-    const { occasions } = useContext(OccasionsContext);
-    const { people } = useContext(PeopleContext);
-    const { ledger } = useContext(LedgerContext);
+    const { occasions, people, ledger } = useLedger();
 
     function editOccasion(occasion) {
         setEditorOpen(true);
@@ -242,3 +217,5 @@ function OccasionGroup(props) {
         </VerticalGroup>
     );
 }
+
+Occasions.getLayout = (page) => <PrimaryLayout>{page}</PrimaryLayout>;

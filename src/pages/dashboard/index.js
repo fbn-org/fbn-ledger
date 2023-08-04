@@ -1,25 +1,21 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Avatar, Grid, Icon, Typography, useTheme } from '@mui/material';
 
-import {
-    AutoAwesome,
-    KeyboardDoubleArrowDown,
-    KeyboardDoubleArrowUp
-} from '@mui/icons-material';
+import { AutoAwesome, KeyboardDoubleArrowDown, KeyboardDoubleArrowUp } from '@mui/icons-material';
 
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import utc from 'dayjs/plugin/utc';
 
-import { LedgerContext } from '@/contexts/LedgerContext.js';
-import { OccasionsContext } from '@/contexts/OccasionsContext';
-import { PeopleContext } from '@/contexts/PeopleContext';
+import useLedger from '@/contexts/LedgerContext.js';
 
-import OccasionCard from '../occasions/OccasionCard.js';
-import Card from '../util/Card.js';
-import HorizontalGroup from '../util/HorizontalGroup.js';
-import VerticalGroup from '../util/VerticalGroup.js';
+import PrimaryLayout from '@/layouts/PrimaryLayout.js';
+
+import OccasionCard from '@/components/occasions/OccasionCard.js';
+import Card from '@/components/util/Card.js';
+import HorizontalGroup from '@/components/util/HorizontalGroup.js';
+import VerticalGroup from '@/components/util/VerticalGroup.js';
 
 dayjs.extend(advancedFormat);
 dayjs.extend(utc);
@@ -27,9 +23,7 @@ dayjs.extend(utc);
 export default function Dashboard() {
     const theme = useTheme();
 
-    const { occasions } = useContext(OccasionsContext);
-    const { people } = useContext(PeopleContext);
-    const { ledger } = useContext(LedgerContext);
+    const { occasions, people, ledger } = useLedger();
 
     const [recentTransactions, setRecentTransactions] = useState(null);
     const [featuredOccasion, setFeaturedOccasion] = useState(null);
@@ -86,7 +80,6 @@ export default function Dashboard() {
                 let weight = personTotal / total;
                 stats[p].totalSpend += personTotal + extra * weight;
             });
-
         });
 
         people.forEach((person) => {
@@ -258,3 +251,5 @@ export default function Dashboard() {
         </>
     );
 }
+
+Dashboard.getLayout = (page) => <PrimaryLayout>{page}</PrimaryLayout>;

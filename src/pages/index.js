@@ -1,22 +1,9 @@
-import { Chip, Container, Grid, Paper, Typography, useTheme } from '@mui/material';
+import { useRouter } from 'next/router';
 
-import {
-    AttachMoney,
-    Celebration,
-    KeyboardDoubleArrowDown,
-    KeyboardDoubleArrowUp,
-    Person,
-    Receipt
-} from '@mui/icons-material';
-
-import Dashboard from '@/components/dashboard/Dashboard.js';
-import Ledger from '@/components/ledger/Ledger.js';
-import Occasions from '@/components/occasions/Occasions.js';
-
-export default function Index(props) {
-    const selectedPage = props.selectedPage;
-
-    const pages = [<Dashboard key="dash" />, <Occasions key="occasions" />, <Ledger key="ledger" />];
-
-    return <>{pages[selectedPage]}</>;
+export default function Printing(props) {
+    const router = useRouter();
+    // Make sure we're in the browser
+    if (typeof window !== 'undefined') {
+        router.push('/dashboard');
+    }
 }

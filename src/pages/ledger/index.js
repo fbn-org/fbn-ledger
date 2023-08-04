@@ -1,30 +1,28 @@
-import { useContext, useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { Avatar, Chip, Fab, Icon, IconButton, Typography } from '@mui/material';
+import { Avatar, Fab, Icon, IconButton, Typography } from '@mui/material';
 
-import { Add, Edit, LocalAtm, Receipt, ReceiptLong } from '@mui/icons-material';
+import { Add, Edit, Receipt, ReceiptLong } from '@mui/icons-material';
 
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import utc from 'dayjs/plugin/utc';
 
-import { LedgerContext } from '@/contexts/LedgerContext';
-import { OccasionsContext } from '@/contexts/OccasionsContext';
-import { PeopleContext } from '@/contexts/PeopleContext';
+import useLedger from '@/contexts/LedgerContext';
 
-import Payouts from '../occasions/Payouts';
-import Card from '../util/Card';
-import HorizontalGroup from '../util/HorizontalGroup';
-import VerticalGroup from '../util/VerticalGroup';
-import EditTransaction from './EditTransaction';
+import PrimaryLayout from '@/layouts/PrimaryLayout';
+
+import EditTransaction from '@/components/ledger/EditTransaction';
+import Payouts from '@/components/occasions/Payouts';
+import Card from '@/components/util/Card';
+import HorizontalGroup from '@/components/util/HorizontalGroup';
+import VerticalGroup from '@/components/util/VerticalGroup';
 
 dayjs.extend(advancedFormat);
 dayjs.extend(utc);
 
 export default function Ledger(props) {
-    const { occasions } = useContext(OccasionsContext);
-    const { people } = useContext(PeopleContext);
-    const { ledger } = useContext(LedgerContext);
+    const { occasions, people, ledger } = useLedger();
 
     const [editorOpen, setEditorOpen] = useState(false);
     const [editIsNew, setEditIsNew] = useState(false);
@@ -151,3 +149,5 @@ export default function Ledger(props) {
         </>
     );
 }
+
+Ledger.getLayout = (page) => <PrimaryLayout>{page}</PrimaryLayout>;

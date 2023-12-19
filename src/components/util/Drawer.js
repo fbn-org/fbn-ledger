@@ -1,7 +1,4 @@
-import { Container, Divider, Slide, Typography, useTheme } from '@mui/material';
-
-import HorizontalGroup from './HorizontalGroup';
-import VerticalGroup from './VerticalGroup';
+import { Container, Divider, Slide, Stack, Typography, useTheme } from '@mui/material';
 
 export default function Drawer(props) {
     const theme = useTheme();
@@ -33,20 +30,30 @@ export default function Drawer(props) {
                         alignItems: 'center'
                     }}
                 >
-                    <VerticalGroup style={{ width: '100%', maxWidth: theme.breakpoints.values.sm }}>
+                    <Stack
+                        direction="column"
+                        width="100%"
+                        maxWidth={theme.breakpoints.values.sm}
+                        justifyContent="flex-start"
+                        alignItems="center"
+                    >
                         <Divider style={{ width: '100%', marginBottom: '15px' }} />
 
-                        <VerticalGroup
-                            style={{
-                                width: '100%',
-                                alignItems: 'flex-start',
-                                gap: '15px',
-                                marginBottom: '16px',
-                                padding: '0px 5px'
-                            }}
+                        <Stack
+                            direction="column"
+                            width="100%"
+                            alignItems="flex-start"
+                            gap={1}
+                            marginBottom="16px"
                         >
-                            <HorizontalGroup style={{ width: '100%' }}>
-                                <VerticalGroup style={{ alignItems: 'flex-start' }}>
+                            <Stack
+                                direction="row"
+                                width="100%"
+                            >
+                                <Stack
+                                    direction="column"
+                                    alignItems="flex-start"
+                                >
                                     <Typography
                                         variant="h4"
                                         sx={{ flexGrow: 1 }}
@@ -61,24 +68,23 @@ export default function Drawer(props) {
                                             {props.subtitle}
                                         </Typography>
                                     ) : null}
-                                </VerticalGroup>
-                                <HorizontalGroup
-                                    style={{
-                                        height: '100%',
-                                        gap: '5px',
-                                        flexGrow: 1,
-                                        justifyContent: 'flex-end',
-                                        alignItems: 'flex-start',
-                                        alignSelf: 'flex-start'
-                                    }}
+                                </Stack>
+                                <Stack
+                                    direction="row"
+                                    height="100%"
+                                    gap={1}
+                                    flexGrow={1}
+                                    justifyContent="flex-end"
+                                    alignItems="flex-start"
+                                    alignSelf="flex-start"
                                 >
                                     {props.actions}
-                                </HorizontalGroup>
-                            </HorizontalGroup>
+                                </Stack>
+                            </Stack>
 
                             {props.children}
-                        </VerticalGroup>
-                    </VerticalGroup>
+                        </Stack>
+                    </Stack>
                 </div>
             </Slide>
         </Container>

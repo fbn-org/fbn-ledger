@@ -1,7 +1,4 @@
-import { Paper, Typography } from '@mui/material';
-
-import HorizontalGroup from './HorizontalGroup.js';
-import VerticalGroup from './VerticalGroup.js';
+import { Paper, Stack, Typography } from '@mui/material';
 
 function Card(props) {
     return (
@@ -20,22 +17,31 @@ function Card(props) {
             }}
         >
             {props.title || props.icon || props.actions ? (
-                <HorizontalGroup
-                    style={{
-                        marginBottom: props.children ? '10px' : 0,
-                        width: '100%',
-                        alignItems: 'flex-start'
-                    }}
+                <Stack
+                    direction="row"
+                    mb={props.children ? '10px' : 0}
+                    width="100%"
+                    alignItems="flex-start"
                 >
                     {props.title || props.icon ? (
-                        <HorizontalGroup style={{ gap: '10px' }}>
-                            <VerticalGroup style={{ alignItems: 'flex-start' }}>
-                                <HorizontalGroup style={{ gap: '10px' }}>
+                        <Stack
+                            direction="row"
+                            gap={1}
+                        >
+                            <Stack
+                                direction="column"
+                                alignItems="flex-start"
+                            >
+                                <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    gap={1}
+                                >
                                     {props.icon}
                                     <Typography variant="h5">{props.title}</Typography>
                                     {props.titleChip}
-                                </HorizontalGroup>
-                                <HorizontalGroup style={{ gap: '5px' }}>
+                                </Stack>
+                                <Stack gap={1}>
                                     {props.subtitleIcon}
                                     <Typography
                                         variant="subtitle2"
@@ -43,36 +49,39 @@ function Card(props) {
                                     >
                                         {props.subtitle}
                                     </Typography>
-                                </HorizontalGroup>
-                            </VerticalGroup>
-                        </HorizontalGroup>
+                                </Stack>
+                            </Stack>
+                        </Stack>
                     ) : null}
                     {props.actions ? (
-                        <HorizontalGroup
-                            style={{
-                                gap: '5px',
-                                flexGrow: 1,
-                                justifyContent: 'flex-end',
-                                alignItems: 'flex-start'
-                            }}
+                        <Stack
+                            direction="row"
+                            gap={1}
+                            flexGrow={1}
+                            justifyContent="flex-end"
+                            alignItems="flex-start"
                         >
                             {props.actions}
-                        </HorizontalGroup>
+                        </Stack>
                     ) : null}
-                </HorizontalGroup>
+                </Stack>
             ) : null}
 
             {props.children}
 
             {props.footer ? (
-                <HorizontalGroup style={{ width: '100%', marginTop: '5px' }}>
+                <Stack
+                    direction="row"
+                    width="100%"
+                    mt={1}
+                >
                     <Typography
                         variant="caption"
                         color="text.secondary"
                     >
                         {props.footer}
                     </Typography>
-                </HorizontalGroup>
+                </Stack>
             ) : null}
         </Paper>
     );

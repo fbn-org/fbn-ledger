@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Avatar, Fab, Icon, IconButton, Typography } from '@mui/material';
+import { Avatar, Fab, Icon, IconButton, Stack, Typography } from '@mui/material';
 
 import { Add, Edit, Receipt, ReceiptLong } from '@mui/icons-material';
 
@@ -15,8 +15,6 @@ import PrimaryLayout from '@/layouts/PrimaryLayout';
 import EditTransaction from '@/components/ledger/EditTransaction';
 import Payouts from '@/components/occasions/Payouts';
 import Card from '@/components/util/Card';
-import HorizontalGroup from '@/components/util/HorizontalGroup';
-import VerticalGroup from '@/components/util/VerticalGroup';
 
 dayjs.extend(advancedFormat);
 dayjs.extend(utc);
@@ -87,15 +85,25 @@ export default function Ledger(props) {
                     justifyContent: 'flex-start',
                     alignItems: 'flex-start',
                     gap: '15px',
-                    border: 'none'
+                    border: 'none',
+                    marginBottom: '80px'
                 }}
             >
-                <HorizontalGroup style={{ gap: '10px' }}>
+                <Stack
+                    direction="row"
+                    gap={1}
+                    alignItems="center"
+                    justifyContent="center"
+                >
                     <ReceiptLong fontSize="large" />
                     <Typography variant="h4">Ledger</Typography>
-                </HorizontalGroup>
+                </Stack>
 
-                <VerticalGroup style={{ width: '100%', gap: '15px' }}>
+                <Stack
+                    direction="column"
+                    width="100%"
+                    gap={2}
+                >
                     {ledger.map((transaction) => {
                         const payer = people.find((person) => person.id === transaction.payer).name;
                         var date = dayjs.utc(transaction.date).local().format('MMMM Do, YYYY hh:mm A');
@@ -144,7 +152,7 @@ export default function Ledger(props) {
                             </Card>
                         );
                     })}
-                </VerticalGroup>
+                </Stack>
             </div>
         </>
     );

@@ -1,11 +1,8 @@
 import { useEffect } from 'react';
 
-import { Chip, InputAdornment, TextField } from '@mui/material';
+import { Chip, InputAdornment, Stack, TextField } from '@mui/material';
 
 import { Add, KeyboardDoubleArrowRight } from '@mui/icons-material';
-
-import HorizontalGroup from '../util/HorizontalGroup';
-import VerticalGroup from '../util/VerticalGroup';
 
 export default function PersonItem(props) {
     const personId = props.personId;
@@ -46,11 +43,18 @@ export default function PersonItem(props) {
     return (
         <>
             {individualAmounts[personId] !== undefined ? (
-                <VerticalGroup
+                <Stack
+                    direction="column"
+                    width="100%"
+                    gap={1}
                     key={personId}
-                    style={{ width: ' 100%', gap: '10px' }}
                 >
-                    <HorizontalGroup style={{ width: '100%', gap: '5px' }}>
+                    <Stack
+                        direction="row"
+                        width="100%"
+                        gap={1}
+                        alignItems="center"
+                    >
                         <Chip
                             label={name}
                             color={name.toLowerCase()}
@@ -74,14 +78,17 @@ export default function PersonItem(props) {
                                 }));
                             }}
                         />
-                    </HorizontalGroup>
+                    </Stack>
 
                     {individualAmounts[personId].slice(1).map((amount, index) => {
                         const id = index + 1;
                         return (
-                            <HorizontalGroup
+                            <Stack
+                                direction="row"
+                                width="100%"
+                                gap={1}
                                 key={id}
-                                style={{ width: '100%', gap: '5px' }}
+                                alignItems="center"
                             >
                                 <div style={{ flexBasis: '40%' }}>
                                     {/* {id === 1 ?
@@ -112,10 +119,10 @@ export default function PersonItem(props) {
                                         }));
                                     }}
                                 />
-                            </HorizontalGroup>
+                            </Stack>
                         );
                     })}
-                </VerticalGroup>
+                </Stack>
             ) : null}
         </>
     );

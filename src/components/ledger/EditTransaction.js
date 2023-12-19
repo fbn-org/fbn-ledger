@@ -13,6 +13,7 @@ import {
     InputLabel,
     MenuItem,
     Select,
+    Stack,
     TextField,
     ToggleButton,
     ToggleButtonGroup,
@@ -32,8 +33,6 @@ import utc from 'dayjs/plugin/utc';
 import useRequest from '@/hooks/useRequest';
 
 import Drawer from '../util/Drawer';
-import HorizontalGroup from '../util/HorizontalGroup';
-import VerticalGroup from '../util/VerticalGroup';
 import PersonItem from './PersonItem';
 import SharedItem from './SharedItem';
 import TransactionSection from './TransactionSection';
@@ -365,8 +364,16 @@ export default function EditTransaction(props) {
                 title="Metadata"
                 open
             >
-                <VerticalGroup style={{ width: '100%', gap: '20px', marginTop: '5px' }}>
-                    <HorizontalGroup style={{ width: '100%', gap: '10px' }}>
+                <Stack
+                    direction="column"
+                    width="100%"
+                    gap={2}
+                    mt={1}
+                >
+                    <Stack
+                        direction="row"
+                        gap={1}
+                    >
                         <TextField
                             label="Description"
                             variant="outlined"
@@ -390,12 +397,12 @@ export default function EditTransaction(props) {
                                 renderValue={(selected) => {
                                     let person = currentPeople.find((p) => p.id === selected);
                                     return (
-                                        <HorizontalGroup
-                                            style={{
-                                                justifyContent: 'flex-start',
-                                                width: '100%',
-                                                gap: '5px'
-                                            }}
+                                        <Stack
+                                            direction="row"
+                                            justifyContent="flex-start"
+                                            width="100%"
+                                            alignItems="center"
+                                            gap={1}
                                         >
                                             {person ? (
                                                 <>
@@ -412,7 +419,7 @@ export default function EditTransaction(props) {
                                                     <Typography variant="body1">{person.name}</Typography>
                                                 </>
                                             ) : null}
-                                        </HorizontalGroup>
+                                        </Stack>
                                     );
                                 }}
                             >
@@ -438,9 +445,12 @@ export default function EditTransaction(props) {
                                 })}
                             </Select>
                         </FormControl>
-                    </HorizontalGroup>
+                    </Stack>
 
-                    <HorizontalGroup style={{ width: '100%', gap: '10px' }}>
+                    <Stack
+                        direction="row"
+                        gap={1}
+                    >
                         <DateTimePicker
                             slotProps={{ textField: { size: 'medium' } }}
                             label="Time"
@@ -495,12 +505,17 @@ export default function EditTransaction(props) {
                                 })}
                             </Select>
                         </FormControl>
-                    </HorizontalGroup>
-                </VerticalGroup>
+                    </Stack>
+                </Stack>
             </TransactionSection>
 
             <TransactionSection title="Individual items">
-                <VerticalGroup style={{ width: '100%', gap: '15px', marginTop: '5px' }}>
+                <Stack
+                    direction="column"
+                    gap={2}
+                    mt={1}
+                    width="100%"
+                >
                     {individualAmounts
                         ? currentPeople.map((personInfo) => {
                               return (
@@ -514,11 +529,16 @@ export default function EditTransaction(props) {
                               );
                           })
                         : null}
-                </VerticalGroup>
+                </Stack>
             </TransactionSection>
 
             <TransactionSection title="Shared items">
-                <VerticalGroup style={{ width: '100%', gap: '15px', marginTop: '5px' }}>
+                <Stack
+                    direction="column"
+                    gap={2}
+                    mt={1}
+                    width="100%"
+                >
                     {sharedAmounts && sharedAmounts.length > 0
                         ? sharedAmounts.map((sharedItem, index) => {
                               return (
@@ -533,19 +553,29 @@ export default function EditTransaction(props) {
                               );
                           })
                         : null}
-                </VerticalGroup>
+                </Stack>
             </TransactionSection>
 
-            <VerticalGroup style={{ width: '100%', gap: '15px', marginTop: '10px' }}>
-                <HorizontalGroup
-                    style={{
-                        width: '100%',
-                        gap: '5px',
-                        alignSelf: 'flex-end',
-                        justifyContent: 'flex-end'
-                    }}
+            <Stack
+                width="100%"
+                direction="column"
+                gap={1}
+                mt={1}
+            >
+                <Stack
+                    width="100%"
+                    direction="row"
+                    gap={1}
+                    justifyContent="center"
+                    alignItems="center"
                 >
-                    <HorizontalGroup style={{ flexBasis: '40%', justifyContent: 'center' }}>
+                    <Stack
+                        width="100%"
+                        direction="row"
+                        flexBasis="40%"
+                        justifyContent="center"
+                        alignItems="center"
+                    >
                         {/* <Button variant="text" sx={{ textTransform: "none" }} color="primaryText"> */}
                         <Typography
                             variant="h6"
@@ -554,7 +584,7 @@ export default function EditTransaction(props) {
                             Tax
                         </Typography>
                         {/* </Button> */}
-                    </HorizontalGroup>
+                    </Stack>
                     <Add />
                     <TextField
                         variant="outlined"
@@ -569,18 +599,26 @@ export default function EditTransaction(props) {
                             setTax(e.target.value);
                         }}
                     />
-                </HorizontalGroup>
+                </Stack>
 
-                <VerticalGroup style={{ width: '100%' }}>
-                    <HorizontalGroup
-                        style={{
-                            width: '100%',
-                            gap: '5px',
-                            alignSelf: 'flex-end',
-                            justifyContent: 'flex-end'
-                        }}
+                <Stack
+                    direction="column"
+                    width="100%"
+                >
+                    <Stack
+                        direction="row"
+                        gap={1}
+                        alignSelf="flex-end"
+                        justifyContent="center"
+                        alignItems="center"
+                        width="100%"
                     >
-                        <HorizontalGroup style={{ flexBasis: '40%', justifyContent: 'center' }}>
+                        <Stack
+                            direction="row"
+                            flexBasis="40%"
+                            justifyContent="center"
+                            alignItems="center"
+                        >
                             <Button
                                 variant="text"
                                 sx={{ textTransform: 'none' }}
@@ -594,7 +632,7 @@ export default function EditTransaction(props) {
                                     Tip
                                 </Typography>
                             </Button>
-                        </HorizontalGroup>
+                        </Stack>
                         <Add />
                         <TextField
                             variant="outlined"
@@ -609,12 +647,17 @@ export default function EditTransaction(props) {
                             }}
                             sx={{ flexBasis: '60%' }}
                         />
-                    </HorizontalGroup>
+                    </Stack>
                     <Collapse
                         in={showTipCalculator}
                         sx={{ width: '100%' }}
                     >
-                        <HorizontalGroup style={{ width: '100%', marginTop: '15px' }}>
+                        <Stack
+                            direction="row"
+                            mt={2}
+                            justifyContent="center"
+                            alignItems="center"
+                        >
                             <ToggleButtonGroup
                                 exclusive
                                 size="medium"
@@ -650,7 +693,12 @@ export default function EditTransaction(props) {
                                 </ToggleButton>
                             </ToggleButtonGroup>
                             <Typography variant="h5">=</Typography>
-                            <HorizontalGroup style={{ flexBasis: '45%' }}>
+                            <Stack
+                                direction="row"
+                                flexBasis="45%"
+                                justifyContent="center"
+                                alignItems="center"
+                            >
                                 <Typography
                                     variant="h6"
                                     sx={{ textAlign: 'center', flexGrow: 1 }}
@@ -665,22 +713,22 @@ export default function EditTransaction(props) {
                                 >
                                     <Check color="primary" />
                                 </IconButton>
-                            </HorizontalGroup>
-                        </HorizontalGroup>
+                            </Stack>
+                        </Stack>
                     </Collapse>
-                </VerticalGroup>
-            </VerticalGroup>
+                </Stack>
+            </Stack>
             {/* </TransactionSection> */}
 
             <Divider sx={{ width: '60%', alignSelf: 'flex-end' }} />
 
-            <HorizontalGroup
-                style={{
-                    width: '100%',
-                    gap: '5px',
-                    alignSelf: 'flex-end',
-                    justifyContent: 'flex-end'
-                }}
+            <Stack
+                direction="row"
+                width="100%"
+                gap={1}
+                alignSelf="flex-end"
+                justifyContent="flex-end"
+                alignItems="center"
             >
                 <Typography
                     variant="h6"
@@ -695,15 +743,14 @@ export default function EditTransaction(props) {
                 >
                     ${total.toFixed(2)}
                 </Typography>
-            </HorizontalGroup>
+            </Stack>
 
-            <HorizontalGroup
-                style={{
-                    width: '100%',
-                    gap: '10px',
-                    justifyContent: 'space-evenly',
-                    marginTop: '10px'
-                }}
+            <Stack
+                direction="row"
+                width="100%"
+                justifyContent="space-evenly"
+                marginTop={1}
+                gap={1}
             >
                 <Button
                     variant="outlined"
@@ -725,7 +772,7 @@ export default function EditTransaction(props) {
                 >
                     Save
                 </LoadingButton>
-            </HorizontalGroup>
+            </Stack>
         </Drawer>
     );
 }

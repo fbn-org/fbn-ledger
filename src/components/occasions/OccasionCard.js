@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Avatar, AvatarGroup, Button, Grid, Icon, IconButton, Typography, useTheme } from '@mui/material';
+import { Avatar, AvatarGroup, Button, Grid, Icon, IconButton, Stack, Typography, useTheme } from '@mui/material';
 
 import { Edit } from '@mui/icons-material';
 
@@ -9,7 +9,6 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 import utc from 'dayjs/plugin/utc';
 
 import Card from '../util/Card';
-import VerticalGroup from '../util/VerticalGroup';
 
 dayjs.extend(advancedFormat);
 dayjs.extend(utc);
@@ -94,7 +93,11 @@ export default function OccasionCard(props) {
             }
             style={{ width: '100%' }}
         >
-            <VerticalGroup style={{ width: '100%', gap: '15px' }}>
+            <Stack
+                direction="column"
+                width="100%"
+                gap={2}
+            >
                 {!disableStats ? (
                     <Grid
                         container
@@ -104,17 +107,23 @@ export default function OccasionCard(props) {
                             item
                             xs={6}
                         >
-                            <VerticalGroup style={{ alignItems: 'flex-start' }}>
+                            <Stack
+                                direction="column"
+                                alignItems="flex-start"
+                            >
                                 <Typography variant="h6">{transactions.length}</Typography>
                                 <Typography variant="body2">transactions</Typography>
-                            </VerticalGroup>
+                            </Stack>
                         </Grid>
 
                         <Grid
                             item
                             xs={6}
                         >
-                            <VerticalGroup style={{ alignItems: 'flex-start' }}>
+                            <Stack
+                                direction="column"
+                                alignItems="flex-start"
+                            >
                                 <Typography variant="h6">
                                     $
                                     {transactions
@@ -122,14 +131,18 @@ export default function OccasionCard(props) {
                                         .toFixed(2)}
                                 </Typography>
                                 <Typography variant="body2">total spend</Typography>
-                            </VerticalGroup>
+                            </Stack>
                         </Grid>
                     </Grid>
                 ) : (
-                    <VerticalGroup style={{ width: '100%', alignItems: 'flex-start' }}>
+                    <Stack
+                        direction="column"
+                        width="100%"
+                        alignItems="flex-start"
+                    >
                         <Typography variant="h6">{timeLeft > 0 ? `${timeLeft} hours` : '< 1 hour'}</Typography>
                         <Typography variant="body2">until start</Typography>
-                    </VerticalGroup>
+                    </Stack>
                 )}
 
                 {showPayoutsButton ? (
@@ -144,7 +157,7 @@ export default function OccasionCard(props) {
                         Payouts
                     </Button>
                 ) : null}
-            </VerticalGroup>
+            </Stack>
         </Card>
     );
 }

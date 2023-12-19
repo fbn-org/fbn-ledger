@@ -11,6 +11,7 @@ import {
     InputLabel,
     MenuItem,
     Select,
+    Stack,
     TextField,
     Tooltip,
     useTheme
@@ -27,8 +28,6 @@ import utc from 'dayjs/plugin/utc';
 import useRequest from '@/hooks/useRequest';
 
 import Drawer from '../util/Drawer';
-import HorizontalGroup from '../util/HorizontalGroup';
-import VerticalGroup from '../util/VerticalGroup';
 
 dayjs.extend(utc);
 
@@ -158,7 +157,13 @@ export default function EditOccasion(props) {
                 ) : null
             }
         >
-            <VerticalGroup style={{ width: '100%', alignItems: 'flex-start', gap: '15px' }}>
+            <Stack
+                direction="column"
+                width="100%"
+                alignItems="flex-start"
+                gap={2}
+                mt={1}
+            >
                 <TextField
                     label="Name"
                     variant="outlined"
@@ -168,13 +173,12 @@ export default function EditOccasion(props) {
                     onChange={(e) => setName(e.target.value)}
                 />
 
-                <HorizontalGroup
-                    style={{
-                        width: '100%',
-                        alignItems: 'flex-start',
-                        gap: '10px',
-                        alignItems: 'center'
-                    }}
+                <Stack
+                    direction="row"
+                    width="100%"
+                    alignItems="center"
+                    gap={1}
+                    justifyContent="center"
                 >
                     <DatePicker
                         slotProps={{ textField: { size: 'medium' } }}
@@ -192,7 +196,7 @@ export default function EditOccasion(props) {
                         onChange={(v) => setEndDate(v)}
                         minDate={startDate}
                     />
-                </HorizontalGroup>
+                </Stack>
 
                 <FormControl
                     fullWidth
@@ -210,13 +214,11 @@ export default function EditOccasion(props) {
                             setIncludedPeople(typeof value === 'string' ? value.split(',') : value);
                         }}
                         renderValue={(selected) => (
-                            <HorizontalGroup
-                                style={{
-                                    justifyContent: 'flex-start',
-                                    width: '100%',
-                                    gap: '10px',
-                                    flexWrap: 'wrap'
-                                }}
+                            <Stack
+                                direction="row"
+                                gap={1}
+                                justifyContent="flex-start"
+                                flexWrap="wrap"
                             >
                                 {selected.map((value) => {
                                     let person = people.find((p) => p.id === value);
@@ -228,7 +230,7 @@ export default function EditOccasion(props) {
                                         />
                                     ) : null;
                                 })}
-                            </HorizontalGroup>
+                            </Stack>
                         )}
                         sx={{ paddingY: '0px' }}
                     >
@@ -255,13 +257,12 @@ export default function EditOccasion(props) {
                     </Select>
                 </FormControl>
 
-                <HorizontalGroup
-                    style={{
-                        width: '100%',
-                        gap: '10px',
-                        justifyContent: 'space-evenly',
-                        marginTop: '10px'
-                    }}
+                <Stack
+                    direction="row"
+                    width="100%"
+                    gap={1}
+                    justifyContent="space-evenly"
+                    marginTop={1}
                 >
                     <Button
                         variant="outlined"
@@ -283,8 +284,8 @@ export default function EditOccasion(props) {
                     >
                         Save
                     </LoadingButton>
-                </HorizontalGroup>
-            </VerticalGroup>
+                </Stack>
+            </Stack>
         </Drawer>
     );
 }

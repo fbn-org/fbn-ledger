@@ -26,6 +26,8 @@ export function LedgerProvider({ children, baseTheme }) {
     const { data: session } = useSession();
 
     const refresh = useCallback(() => {
+        if (!session?.user) return;
+
         request('/api/occasions/fetchOccasions')
             .then((data) => {
                 // maybe come up with a better way to sort these
@@ -94,7 +96,7 @@ export function LedgerProvider({ children, baseTheme }) {
                 });
             })
             .catch((err) => {});
-    }, [request]);
+    }, [request, session]);
 
     useEffect(() => {
         refresh();

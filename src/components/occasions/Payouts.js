@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 
-import { Chip, IconButton, Typography } from '@mui/material';
+import { Chip, IconButton, Stack, Typography } from '@mui/material';
 
 import { Close, KeyboardDoubleArrowRight } from '@mui/icons-material';
 
 import useRequest from '@/hooks/useRequest.js';
 
 import Drawer from '../util/Drawer.js';
-import HorizontalGroup from '../util/HorizontalGroup.js';
-import VerticalGroup from '../util/VerticalGroup.js';
 
 export default function Payouts(props) {
     const request = useRequest();
@@ -143,27 +141,35 @@ export default function Payouts(props) {
                 </IconButton>
             }
         >
-            <VerticalGroup style={{ width: '100%', alignItems: 'flex-start' }}>
+            <Stack
+                direction="column"
+                width="100%"
+                alignItems="flex-start"
+                justifyContent="center"
+            >
                 {owes ? (
                     Object.keys(owes).map((fromId) => {
                         if (Object.keys(owes[fromId]).length > 0) {
                             return (
-                                <VerticalGroup
+                                <Stack
+                                    direction="column"
+                                    width="100%"
+                                    gap={2}
+                                    mb={2}
                                     key={fromId}
-                                    style={{ width: '100%', gap: '15px', marginBottom: '15px' }}
                                 >
                                     {Object.keys(owes[fromId]).map((toId) => {
                                         const fromName = people.find((person) => person.id === fromId).name;
                                         const toName = people.find((person) => person.id === toId).name;
 
                                         return owes[fromId][toId] > 0 ? (
-                                            <HorizontalGroup
+                                            <Stack
+                                                direction="row"
+                                                width="100%"
+                                                gap={1}
+                                                justifyContent="center"
+                                                alignItems="center"
                                                 key={toId}
-                                                style={{
-                                                    width: '100%',
-                                                    gap: '5px',
-                                                    justifyContent: 'center'
-                                                }}
                                             >
                                                 <Chip
                                                     label={fromName}
@@ -185,19 +191,24 @@ export default function Payouts(props) {
                                                     variant="outlined"
                                                     sx={{ flexBasis: '37.5%' }}
                                                 />
-                                            </HorizontalGroup>
+                                            </Stack>
                                         ) : null;
                                     })}
-                                </VerticalGroup>
+                                </Stack>
                             );
                         } else return null;
                     })
                 ) : (
-                    <HorizontalGroup style={{ width: '100%', gap: '5px', justifyContent: 'center' }}>
-                        <Typography variant="h6">nothing yet </Typography>
-                    </HorizontalGroup>
+                    <Stack
+                        direction="row"
+                        width="100%"
+                        gap={1}
+                        justifyContent="center"
+                    >
+                        <Typography variant="h6">nothing yet</Typography>
+                    </Stack>
                 )}
-            </VerticalGroup>
+            </Stack>
         </Drawer>
     );
 }

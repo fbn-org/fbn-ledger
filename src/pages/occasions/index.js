@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Collapse, Fab, ListItemButton, Typography, useTheme } from '@mui/material';
+import { Collapse, Fab, ListItemButton, Stack, Typography, useTheme } from '@mui/material';
 
 import { AccessTime, Add, Celebration, Done, ExpandLess, ExpandMore, HourglassTop } from '@mui/icons-material';
 
@@ -11,8 +11,6 @@ import PrimaryLayout from '@/layouts/PrimaryLayout';
 import EditOccasion from '@/components/occasions/EditOccasion.js';
 import OccasionCard from '@/components/occasions/OccasionCard.js';
 import Payouts from '@/components/occasions/Payouts.js';
-import HorizontalGroup from '@/components/util/HorizontalGroup.js';
-import VerticalGroup from '@/components/util/VerticalGroup.js';
 
 export default function Occasions(props) {
     const theme = useTheme();
@@ -104,12 +102,21 @@ export default function Occasions(props) {
                     border: 'none'
                 }}
             >
-                <HorizontalGroup style={{ gap: '10px' }}>
+                <Stack
+                    direction="row"
+                    gap={1}
+                    alignItems="center"
+                    justifyContent="center"
+                >
                     <Celebration fontSize="large" />
                     <Typography variant="h4">Occasions</Typography>
-                </HorizontalGroup>
+                </Stack>
 
-                <VerticalGroup style={{ width: '100%', gap: '5px' }}>
+                <Stack
+                    direction="column"
+                    width="100%"
+                    gap={1}
+                >
                     <OccasionGroup
                         occasionsType="active"
                         icon={typeIcons['active']}
@@ -140,7 +147,7 @@ export default function Occasions(props) {
                         payoutsCallback={showPayouts}
                         defaultOpen={false}
                     />
-                </VerticalGroup>
+                </Stack>
             </div>
         </>
     );
@@ -164,7 +171,10 @@ function OccasionGroup(props) {
     }, [occasions, props.defaultOpen]);
 
     return (
-        <VerticalGroup style={{ width: '100%' }}>
+        <Stack
+            direction="column"
+            width="100%"
+        >
             <ListItemButton
                 sx={{ width: '100%', height: 'auto', paddingX: '5px' }}
                 onClick={() => {
@@ -172,15 +182,27 @@ function OccasionGroup(props) {
                 }}
                 disabled={occasions.length === 0}
             >
-                <HorizontalGroup style={{ width: '100%', gap: '10px' }}>
+                <Stack
+                    direction="row"
+                    width="100%"
+                    gap={1}
+                    justifyContent="center"
+                    alignItems="center"
+                >
                     {icon}
                     <Typography variant="h5">
                         {occasionsType.charAt(0).toUpperCase() + occasionsType.slice(1)}
                     </Typography>
-                    <HorizontalGroup style={{ width: 'auto', flexGrow: 1, justifyContent: 'flex-end' }}>
+                    <Stack
+                        direction="row"
+                        width="auto"
+                        flexGrow={1}
+                        justifyContent="flex-end"
+                        alignItems="center"
+                    >
                         {!open ? <ExpandMore color="secondary" /> : <ExpandLess color="secondary" />}
-                    </HorizontalGroup>
-                </HorizontalGroup>
+                    </Stack>
+                </Stack>
             </ListItemButton>
             <Collapse
                 in={open}
@@ -188,13 +210,12 @@ function OccasionGroup(props) {
                 unmountOnExit
                 mountOnEnter
             >
-                <VerticalGroup
-                    style={{
-                        marginTop: '5px',
-                        width: '100%',
-                        gap: '15px',
-                        marginBottom: occasionsType === 'past' ? '80px' : 0
-                    }}
+                <Stack
+                    direction="column"
+                    mt={1}
+                    width="100%"
+                    gap={2}
+                    mb={occasionsType === 'past' ? '80px' : 0}
                 >
                     {occasions.length !== 0 && people.length !== 0
                         ? occasions.map((occasion) => {
@@ -212,9 +233,9 @@ function OccasionGroup(props) {
                               );
                           })
                         : null}
-                </VerticalGroup>
+                </Stack>
             </Collapse>
-        </VerticalGroup>
+        </Stack>
     );
 }
 

@@ -1,35 +1,44 @@
 import { useState } from 'react';
 
-import { Collapse, ListItemButton, Typography } from '@mui/material';
+import { Collapse, ListItemButton, Stack, Typography } from '@mui/material';
 
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
-
-import HorizontalGroup from '../util/HorizontalGroup';
-import VerticalGroup from '../util/VerticalGroup';
 
 export default function TransactionSection(props) {
     const [open, setOpen] = useState(props.open || false);
 
     return (
-        <VerticalGroup style={{ width: '100%' }}>
+        <Stack
+            direction="column"
+            width="100%"
+        >
             <ListItemButton
                 sx={{ width: '100%', height: 'auto', paddingX: '5px' }}
                 onClick={() => setOpen((a) => !a)}
             >
-                <HorizontalGroup style={{ width: '100%', gap: '10px' }}>
+                <Stack
+                    direction="row"
+                    width="100%"
+                    gap={1}
+                >
                     {props.icon}
                     <Typography variant="h5">{props.title}</Typography>
-                    <HorizontalGroup style={{ width: 'auto', flexGrow: 1, justifyContent: 'flex-end' }}>
+                    <Stack
+                        direction="row"
+                        width="auto"
+                        flexGrow={1}
+                        justifyContent="flex-end"
+                    >
                         {!open ? <ExpandMore color="secondary" /> : <ExpandLess color="secondary" />}
-                    </HorizontalGroup>
-                </HorizontalGroup>
+                    </Stack>
+                </Stack>
             </ListItemButton>
             <Collapse
                 in={open}
                 style={{ width: '100%' }}
             >
-                <VerticalGroup style={{ marginTop: '10px' }}>{props.children}</VerticalGroup>
+                <Stack marginTop={1}>{props.children}</Stack>
             </Collapse>
-        </VerticalGroup>
+        </Stack>
     );
 }

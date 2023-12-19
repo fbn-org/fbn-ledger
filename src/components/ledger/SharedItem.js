@@ -7,12 +7,11 @@ import {
     InputLabel,
     MenuItem,
     Select,
+    Stack,
     TextField
 } from '@mui/material';
 
 import { KeyboardDoubleArrowRight } from '@mui/icons-material';
-
-import HorizontalGroup from '../util/HorizontalGroup';
 
 export default function SharedItem(props) {
     const people = props.people;
@@ -48,7 +47,13 @@ export default function SharedItem(props) {
     }
 
     return (
-        <HorizontalGroup style={{ width: '100%', gap: '5px' }}>
+        <Stack
+            direction="row"
+            width="100%"
+            gap={1}
+            justifyContent="center"
+            alignItems="center"
+        >
             <FormControl
                 size="small"
                 sx={{ flexBasis: '40%' }}
@@ -62,7 +67,12 @@ export default function SharedItem(props) {
                     value={sharedAmounts[index].people}
                     onChange={updatePeople}
                     renderValue={(selected) => (
-                        <HorizontalGroup style={{ justifyContent: 'flex-start', width: '100%' }}>
+                        <Stack
+                            direction="row"
+                            justifyContent="flex-start"
+                            width="100%"
+                            alignItems="center"
+                        >
                             <AvatarGroup spacing="small">
                                 {selected.map((value) => {
                                     let person = people.find((p) => p.id === value);
@@ -80,7 +90,7 @@ export default function SharedItem(props) {
                                     ) : null;
                                 })}
                             </AvatarGroup>
-                        </HorizontalGroup>
+                        </Stack>
                     )}
                 >
                     {people.map((person) => {
@@ -117,6 +127,6 @@ export default function SharedItem(props) {
                 value={sharedAmounts[index].amount}
                 onChange={updateAmount}
             />
-        </HorizontalGroup>
+        </Stack>
     );
 }

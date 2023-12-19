@@ -1,13 +1,11 @@
 import { useMemo } from 'react';
 
-import { BottomNavigation, BottomNavigationAction, useTheme } from '@mui/material';
+import { BottomNavigation, BottomNavigationAction, Stack, useTheme } from '@mui/material';
 
 import { Celebration, Home, ReceiptLong } from '@mui/icons-material';
 
 import { usePathname } from 'next/navigation';
 import { push } from 'next/router';
-
-import VerticalGroup from '@/components/util/VerticalGroup';
 
 import BaseLayout from './BaseLayout';
 
@@ -40,13 +38,12 @@ export default function PrimaryLayout({ children }) {
                     {children}
                 </div>
 
-                <VerticalGroup
-                    style={{
-                        width: '100vw',
-                        height: '80px',
-                        bottom: 0,
-                        zIndex: 100
-                    }}
+                <Stack
+                    direction="column"
+                    width="100vw"
+                    height="80px"
+                    bottom={0}
+                    zIndex={100}
                 >
                     <BottomNavigation
                         value={selectedPage}
@@ -78,7 +75,7 @@ export default function PrimaryLayout({ children }) {
                             backgroundColor: theme.palette.background.default
                         }}
                     />
-                </VerticalGroup>
+                </Stack>
             </>
         </BaseLayout>
     );

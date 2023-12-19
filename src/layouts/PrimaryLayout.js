@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
-import { BottomNavigation, BottomNavigationAction, Container, useTheme } from '@mui/material';
+import { BottomNavigation, BottomNavigationAction, useTheme } from '@mui/material';
 
 import { Celebration, Home, ReceiptLong } from '@mui/icons-material';
 
@@ -9,7 +9,7 @@ import { push } from 'next/router';
 
 import VerticalGroup from '@/components/util/VerticalGroup';
 
-const pages = ['dashboard', 'occasions', 'ledger'];
+import BaseLayout from './BaseLayout';
 
 export default function PrimaryLayout({ children }) {
     const pathname = usePathname();
@@ -22,27 +22,10 @@ export default function PrimaryLayout({ children }) {
         }
     }, [pathname]);
 
-    useEffect(() => {
-        console.log(selectedPage);
-    }, [selectedPage]);
-
     const theme = useTheme();
 
     return (
-        <Container
-            maxWidth="sm"
-            sx={{
-                height: '100vh',
-                width: '100%',
-                display: 'flex',
-                padding: '0px',
-                margin: 'auto',
-                flexDirection: 'column',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                WebkitOverflowScrolling: 'touch'
-            }}
-        >
+        <BaseLayout>
             <>
                 <div
                     style={{
@@ -97,6 +80,6 @@ export default function PrimaryLayout({ children }) {
                     />
                 </VerticalGroup>
             </>
-        </Container>
+        </BaseLayout>
     );
 }

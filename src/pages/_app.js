@@ -9,6 +9,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { CacheProvider } from '@emotion/react';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import { SessionProvider } from 'next-auth/react';
+import { SnackbarProvider } from 'notistack';
 
 import { LedgerProvider } from '@/contexts/LedgerContext.js';
 
@@ -29,6 +31,15 @@ const baseTheme = createTheme({
     shape: {
         borderRadius: 5
     },
+    components: {
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none'
+                }
+            }
+        }
+    },
     typography: {
         fontFamily: [
             'Inter',
@@ -46,7 +57,7 @@ const baseTheme = createTheme({
 
 const clientSideEmotionCache = createEmotionCache();
 
-export default function App({ Component, emotionCache = clientSideEmotionCache, pageProps }) {
+export default function App({ Component, session, emotionCache = clientSideEmotionCache, pageProps }) {
     useEffect(() => {
         document.title = 'Ledger';
     }, []);
@@ -54,14 +65,21 @@ export default function App({ Component, emotionCache = clientSideEmotionCache, 
     const getLayout = Component.getLayout || ((page) => page);
 
     return (
-        <CacheProvider value={emotionCache}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <LedgerProvider baseTheme={baseTheme}>
-                    <CssBaseline />
+        <SessionProvider session={session}>
+            <CacheProvider value={emotionCache}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <SnackbarProvider
+                        autoHideDuration={4000}
+                        anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
+                    >
+                        <LedgerProvider baseTheme={baseTheme}>
+                            <CssBaseline />
 
-                    {getLayout(<Component {...pageProps} />)}
-                </LedgerProvider>
-            </LocalizationProvider>
-        </CacheProvider>
+                            {getLayout(<Component {...pageProps} />)}
+                        </LedgerProvider>
+                    </SnackbarProvider>
+                </LocalizationProvider>
+            </CacheProvider>
+        </SessionProvider>
     );
 }

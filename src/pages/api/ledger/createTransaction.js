@@ -1,10 +1,12 @@
+import { authOptions } from '@/pages/api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth/next';
+
 import clientPromise from '@/lib/mongodb';
-import validatePassword from '@/lib/validatePassword';
 
 export default async function handler(req, res) {
-    if (!validatePassword(req.headers.password)) {
-        res.status(401).json({ message: 'Unauthorized' });
-        return;
+    const session = await getServerSession(req, res, authOptions);
+    if (!session) {
+        return res.status(401).json({ message: 'Unauthorized' });
     }
 
     const mongoClient = await clientPromise;

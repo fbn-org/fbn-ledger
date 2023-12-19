@@ -1,15 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-import { InputAdornment, TextField, ThemeProvider, createTheme } from '@mui/material';
-
-import { Lock } from '@mui/icons-material';
+import { ThemeProvider, createTheme } from '@mui/material';
 
 import dayjs from 'dayjs';
+import { useSession } from 'next-auth/react';
 
-import useLocalStorage from '@/util/useLocalStorage';
-
-import request from '@/components/util/API';
-import VerticalGroup from '@/components/util/VerticalGroup';
+import useRequest from '@/hooks/useRequest';
 
 const LedgerContext = createContext([]);
 
@@ -26,19 +22,11 @@ export function LedgerProvider({ children, baseTheme }) {
     const [people, setPeople] = useState(null);
     const [ledger, setLedger] = useState(null);
 
-    const [savedPassword, setSavedPassword] = useLocalStorage('password', '');
-    const [password, setPassword] = useState(savedPassword);
-    const targetPassword = process.env.PASSWORD;
-
-    useEffect(() => {
-        if (password) {
-            setSavedPassword(password);
-        }
-    }, [password, setSavedPassword]);
+    const request = useRequest();
+    const { data: session } = useSession();
 
     const refresh = useCallback(() => {
         request('/api/occasions/fetchOccasions')
-            .then((res) => res.json())
             .then((data) => {
                 // maybe come up with a better way to sort these
                 data.sort((a, b) => {
@@ -69,10 +57,10 @@ export function LedgerProvider({ children, baseTheme }) {
                         return old;
                     }
                 });
-            });
+            })
+            .catch((err) => {});
 
         request('/api/fetchPeople')
-            .then((res) => res.json())
             .then((data) => {
                 setPeople((old) => {
                     if (JSON.stringify(old) !== JSON.stringify(data)) {
@@ -81,10 +69,12 @@ export function LedgerProvider({ children, baseTheme }) {
                         return old;
                     }
                 });
-            });
+            })
+            .catch((err) => {});
 
-        request('/api/ledger/fetchLedger')
-            .then((res) => res.json())
+        request('/api/ledger/fetchLedger', {
+            method: 'GET'
+        })
             .then((data) => {
                 data.sort((a, b) => {
                     if (dayjs(a.date) < dayjs(b.date)) {
@@ -102,8 +92,9 @@ export function LedgerProvider({ children, baseTheme }) {
                         return old;
                     }
                 });
-            });
-    }, []);
+            })
+            .catch((err) => {});
+    }, [request]);
 
     useEffect(() => {
         refresh();
@@ -140,42 +131,7 @@ export function LedgerProvider({ children, baseTheme }) {
     return (
         <ThemeProvider theme={theme}>
             <LedgerContext.Provider value={{ occasions, people, ledger, theme, refresh }}>
-                {people && occasions && ledger ? (
-                    <>
-                        {password === targetPassword ? (
-                            <>{children}</>
-                        ) : (
-                            <VerticalGroup
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    flexGrow: 1,
-                                    position: 'fixed',
-                                    justifyContent: 'center',
-                                    background: theme.palette.background.default,
-                                    zIndex: 100000
-                                }}
-                            >
-                                <TextField
-                                    variant="outlined"
-                                    type="password"
-                                    value={password}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Lock />
-                                            </InputAdornment>
-                                        )
-                                    }}
-                                    onChange={(e) => {
-                                        console.log(e);
-                                        setPassword(e.target.value);
-                                    }}
-                                />
-                            </VerticalGroup>
-                        )}
-                    </>
-                ) : null}
+                {<>{children}</>}
             </LedgerContext.Provider>
         </ThemeProvider>
     );

@@ -4,13 +4,15 @@ import { Chip, IconButton, Typography } from '@mui/material';
 
 import { Close, KeyboardDoubleArrowRight } from '@mui/icons-material';
 
-import request from '@/components/util/API.js';
+import useRequest from '@/hooks/useRequest.js';
 
 import Drawer from '../util/Drawer.js';
 import HorizontalGroup from '../util/HorizontalGroup.js';
 import VerticalGroup from '../util/VerticalGroup.js';
 
 export default function Payouts(props) {
+    const request = useRequest();
+
     const occasion = props.occasion;
     const people = props.people;
     const setOpen = props.setOpen;
@@ -25,12 +27,12 @@ export default function Payouts(props) {
             request(`/api/ledger/fetchTransactions/${occasion._id}`, {
                 method: 'GET'
             })
-                .then((res) => res.json())
                 .then((data) => {
                     setTransactions(data);
-                });
+                })
+                .catch((err) => {});
         }
-    }, [occasion]);
+    }, [occasion, request]);
 
     useEffect(() => {
         processPayments(transactions);

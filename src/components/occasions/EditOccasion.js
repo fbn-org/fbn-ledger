@@ -24,7 +24,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
-import request from '@/components/util/API.js';
+import useRequest from '@/hooks/useRequest';
 
 import Drawer from '../util/Drawer';
 import HorizontalGroup from '../util/HorizontalGroup';
@@ -34,6 +34,8 @@ dayjs.extend(utc);
 
 export default function EditOccasion(props) {
     const theme = useTheme();
+
+    const request = useRequest();
 
     const isNew = props.isNew;
     const editData = props.editData;
@@ -69,10 +71,10 @@ export default function EditOccasion(props) {
                 },
                 body: JSON.stringify(data)
             })
-                .then((res) => res.json())
                 .then((data) => {
                     close();
-                });
+                })
+                .catch((err) => {});
         } else {
             request(`/api/occasions/${editData._id}`, {
                 method: 'PUT',
@@ -83,10 +85,10 @@ export default function EditOccasion(props) {
                     ...data
                 })
             })
-                .then((res) => res.json())
                 .then((data) => {
                     close();
-                });
+                })
+                .catch((err) => {});
         }
     }
 
@@ -97,11 +99,9 @@ export default function EditOccasion(props) {
 
         request(`/api/occasions/${editData._id}`, {
             method: 'DELETE'
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                close();
-            });
+        }).then((data) => {
+            close();
+        });
     }
 
     function close() {

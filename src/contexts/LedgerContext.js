@@ -166,9 +166,21 @@ export function LedgerProvider({ children, baseTheme }) {
         [people]
     );
 
+    const checkMembership = useCallback(
+        (id) => {
+            if (people.find((person) => person._id === id)) {
+                return true;
+            }
+            return false;
+        },
+        [people]
+    );
+
     return (
         <ThemeProvider theme={theme}>
-            <LedgerContext.Provider value={{ occasions, people, ledger, group, user, theme, refresh, getPersonFromId }}>
+            <LedgerContext.Provider
+                value={{ occasions, people, ledger, group, user, theme, refresh, getPersonFromId, checkMembership }}
+            >
                 {<>{children}</>}
             </LedgerContext.Provider>
         </ThemeProvider>

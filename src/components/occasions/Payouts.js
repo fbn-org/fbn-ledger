@@ -13,7 +13,7 @@ import Drawer from '../util/Drawer.js';
 export default function Payouts({ occasion, people, setOpen, open, presetTransactions, onClose }) {
     const request = useRequest();
 
-    const { getPersonFromId } = useLedger();
+    const { getPersonFromId, checkMembership } = useLedger();
 
     const [transactions, setTransactions] = useState([]);
     const [owes, setOwes] = useState(null);
@@ -171,7 +171,7 @@ export default function Payouts({ occasion, people, setOpen, open, presetTransac
                                             >
                                                 <Chip
                                                     label={fromName}
-                                                    color={fromId.toLowerCase()}
+                                                    color={checkMembership(fromId) ? fromId : 'default'}
                                                     variant="outlined"
                                                     sx={{ flexBasis: '37.5%' }}
                                                 />
@@ -185,7 +185,7 @@ export default function Payouts({ occasion, people, setOpen, open, presetTransac
                                                 <KeyboardDoubleArrowRight />
                                                 <Chip
                                                     label={toName}
-                                                    color={toId.toLowerCase()}
+                                                    color={checkMembership(toId) ? toId : 'default'}
                                                     variant="outlined"
                                                     sx={{ flexBasis: '37.5%' }}
                                                 />

@@ -38,7 +38,7 @@ export default function EditOccasion({ isNew, editData, group, people, open, onC
 
     const request = useRequest();
 
-    const { getPersonFromId } = useLedger();
+    const { getPersonFromId, checkMembership } = useLedger();
 
     const [saving, setSaving] = useState(false);
     const [confirmationOpen, setConfirmationOpen] = useState(false);
@@ -226,7 +226,7 @@ export default function EditOccasion({ isNew, editData, group, people, open, onC
                                     return person ? (
                                         <Chip
                                             label={person.name}
-                                            color={person._id.toLowerCase()}
+                                            color={checkMembership(person._id) ? person._id : 'default'}
                                             key={value}
                                         />
                                     ) : null;

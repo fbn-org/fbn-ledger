@@ -84,7 +84,10 @@ export default function Dashboard() {
 
         ledger.forEach((transaction) => {
             let total = parseFloat(transaction.total);
-            stats[transaction.payer].offset += total;
+
+            if (stats[transaction.payer]) {
+                stats[transaction.payer].offset += total;
+            }
             let extra = 0;
             if (transaction.tax !== '') {
                 extra += parseFloat(transaction.tax);
@@ -117,9 +120,11 @@ export default function Dashboard() {
             console.log(peopleTotals);
 
             Object.keys(peopleTotals).forEach((p) => {
-                // calculate weight of total and add to stats
-                let weight = peopleTotals[p] / total;
-                stats[p].totalSpend += peopleTotals[p] + extra * weight;
+                if (stats[p]) {
+                    // calculate weight of total and add to stats
+                    let weight = peopleTotals[p] / total;
+                    stats[p].totalSpend += peopleTotals[p] + extra * weight;
+                }
             });
         });
 

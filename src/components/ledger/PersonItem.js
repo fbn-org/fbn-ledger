@@ -4,12 +4,16 @@ import { Chip, InputAdornment, Stack, TextField } from '@mui/material';
 
 import { Add, KeyboardDoubleArrowRight } from '@mui/icons-material';
 
+import useLedger from '@/contexts/LedgerContext';
+
 export default function PersonItem({ personId, name, individualAmounts, setIndividualAmounts }) {
     // useEffect(() => {
     //     if (individualAmounts[personId] === undefined) {
     //         setIndividualAmounts(individualAmounts => ({ ...individualAmounts, [personId]: [""] }))
     //     }
     // }, [])
+
+    const { checkMembership } = useLedger();
 
     useEffect(() => {
         if (individualAmounts[personId] !== undefined) {
@@ -52,7 +56,7 @@ export default function PersonItem({ personId, name, individualAmounts, setIndiv
                     >
                         <Chip
                             label={name}
-                            color={personId}
+                            color={checkMembership(personId) ? personId : 'default'}
                             variant="outlined"
                             sx={{ flexBasis: '40%' }}
                         />

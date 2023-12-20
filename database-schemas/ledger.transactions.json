@@ -12,17 +12,17 @@
         "tip": "18.08",
         "individual_items": {
             "6580e45c75450313c0230395": ["15.50"],
-            "eric": ["17.25"],
+            "65833c3f74715132a5224231": ["17.25"],
             "hudson": ["16.00"],
             "matty": ["16.00"]
         },
         "shared_items": [
             {
-                "people": ["eric", "6580e45c75450313c0230395", "matty", "hudson"],
+                "people": ["65833c3f74715132a5224231", "6580e45c75450313c0230395", "matty", "hudson"],
                 "amount": "15.00"
             },
             {
-                "people": ["eric", "6580e45c75450313c0230395", "hudson"],
+                "people": ["65833c3f74715132a5224231", "6580e45c75450313c0230395", "hudson"],
                 "amount": "7.50"
             },
             {
@@ -116,22 +116,22 @@
         "tax": "3",
         "tip": "",
         "individual_items": {
-            "eric": ["7.69"],
+            "65833c3f74715132a5224231": ["7.69"],
             "6580e45c75450313c0230395": ["7.49"],
             "matty": ["7.49"],
             "hudson": ["7.69", "6.49"]
         },
         "shared_items": [
             {
-                "people": ["matty", "hudson", "6580e45c75450313c0230395", "eric"],
+                "people": ["matty", "hudson", "6580e45c75450313c0230395", "65833c3f74715132a5224231"],
                 "amount": "3.79"
             },
             {
-                "people": ["hudson", "eric", "6580e45c75450313c0230395", "matty"],
+                "people": ["hudson", "65833c3f74715132a5224231", "6580e45c75450313c0230395", "matty"],
                 "amount": "3.79"
             },
             {
-                "people": ["hudson", "eric", "matty", "6580e45c75450313c0230395"],
+                "people": ["hudson", "65833c3f74715132a5224231", "matty", "6580e45c75450313c0230395"],
                 "amount": "2.99"
             }
         ],
@@ -149,14 +149,14 @@
         "tax": "",
         "tip": "",
         "individual_items": {
-            "eric": [],
+            "65833c3f74715132a5224231": [],
             "6580e45c75450313c0230395": [],
             "matty": [],
             "hudson": []
         },
         "shared_items": [
             {
-                "people": ["6580e45c75450313c0230395", "eric", "matty", "hudson"],
+                "people": ["6580e45c75450313c0230395", "65833c3f74715132a5224231", "matty", "hudson"],
                 "amount": "46.05"
             }
         ],

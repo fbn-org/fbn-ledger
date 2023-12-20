@@ -3,11 +3,11 @@
         "_id": {
             "$oid": "649131c8f1ce8410ba090f6c"
         },
-        "name": " eric’s last super!",
+        "name": " 65833c3f74715132a5224231’s last super!",
         "start_date": "2023-06-21T04:00:00.000Z",
         "end_date": "2023-06-22T03:59:59.999Z",
         "group": "658272b5dab44fb823e85601",
-        "included_people": ["eric", "6580e45c75450313c0230395", "matty", "hudson"]
+        "included_people": ["65833c3f74715132a5224231", "6580e45c75450313c0230395", "matty", "hudson"]
     },
     {
         "_id": {
@@ -37,7 +37,7 @@
         "start_date": "2023-11-21T05:00:00.000Z",
         "end_date": "2023-11-23T04:59:59.999Z",
         "group": "658272b5dab44fb823e85601",
-        "included_people": ["eric", "6580e45c75450313c0230395", "matty", "hudson"]
+        "included_people": ["65833c3f74715132a5224231", "6580e45c75450313c0230395", "matty", "hudson"]
     },
     {
         "_id": {
@@ -47,6 +47,6 @@
         "start_date": "2023-12-20T05:00:00.000Z",
         "end_date": "2023-12-22T04:59:59.999Z",
         "group": "658272b5dab44fb823e85601",
-        "included_people": ["6580e45c75450313c0230395", "eric", "matty", "hudson"]
+        "included_people": ["6580e45c75450313c0230395", "65833c3f74715132a5224231", "matty", "hudson"]
     }
 ]

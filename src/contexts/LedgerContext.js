@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-import { ThemeProvider, createTheme } from '@mui/material';
+import { ThemeProvider, createTheme, getContrastRatio } from '@mui/material';
 
 import { prominent } from 'color.js';
 import dayjs from 'dayjs';
@@ -114,7 +114,7 @@ export function LedgerProvider({ children, baseTheme }) {
                 });
             })
             .catch((err) => {});
-    }, [request, session, group?._id]);
+    }, [request, session, group]);
 
     useEffect(() => {
         refresh();
@@ -125,31 +125,73 @@ export function LedgerProvider({ children, baseTheme }) {
         return () => clearInterval(interval);
     }, [refresh]);
 
-    const generateTheme = useCallback(
-        (people) => {
-            if (people) {
-                let newTheme = { ...baseTheme };
-                people.forEach((person) => {
-                    prominent(person.image, { amount: 1, format: 'hex' }).then((color) => {
-                        newTheme.palette[person._id.toLowerCase()] = {
-                            main: color,
-                            // contrastText: getContrastRatio(color, '#111') > 4.5 ? '#111' : '#fff'
-                            contrastText: '#fff'
-                        };
-                    });
-                });
-                newTheme.palette.primaryText = {
-                    main: newTheme.palette.text.primary
+    const peopleBaseColors = useMemo(() => {
+        if (people) {
+            let colors = {};
+            people.forEach((person) => {
+                colors[person._id] = {
+                    main: '#fff',
+                    contrastText: '#000'
                 };
-                return createTheme(newTheme);
-            } else {
-                return createTheme(baseTheme);
-            }
-        },
-        [baseTheme]
-    );
+            });
+            console.log(colors);
+            return colors;
+        }
+    }, [people]);
 
-    const theme = useMemo(() => generateTheme(people), [people, generateTheme]);
+    const peopleRealColors = useMemo(() => {
+        if (people) {
+            function generate() {
+                return new Promise((resolve, reject) => {
+                    let newColors = {};
+                    people.forEach((person) => {
+                        prominent(person.image, { amount: 1, format: 'hex' }).then((color) => {
+                            newColors[person._id.toLowerCase()] = {
+                                main: color,
+                                contrastText: getContrastRatio(color, '#111') > 4.5 ? '#111' : '#fff'
+                                // contrastText: '#fff'
+                            };
+                        });
+                    });
+                    console.log(newColors);
+                    resolve(newColors);
+                });
+            }
+
+            generate().then((colors) => {
+                console.log(colors);
+                return colors;
+            });
+        }
+    }, [people]);
+
+    const generateTheme = useCallback(() => {
+        let newTheme = { ...baseTheme };
+        newTheme.palette.primaryText = {
+            main: newTheme.palette.text.primary
+        };
+        if (peopleRealColors) {
+            console.log('using real');
+            Object.keys(peopleRealColors).forEach((personId) => {
+                newTheme.palette[personId.toLowerCase()] = peopleRealColors[personId];
+            });
+        } else if (peopleBaseColors) {
+            console.log('using base');
+            Object.keys(peopleBaseColors).forEach((personId) => {
+                newTheme.palette[personId.toLowerCase()] = peopleBaseColors[personId];
+            });
+        }
+        return createTheme(newTheme);
+    }, [baseTheme, peopleBaseColors, peopleRealColors]);
+
+    const theme = useMemo(() => {
+        if (people) {
+            return generateTheme();
+        } else {
+            console.log('using base');
+            return createTheme(baseTheme);
+        }
+    }, [generateTheme, people, baseTheme]);
 
     const getPersonFromId = useCallback(
         (id) => {

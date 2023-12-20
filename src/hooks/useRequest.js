@@ -11,7 +11,11 @@ export default function useRequest() {
         (url, data) => {
             return new Promise((resolve, reject) => {
                 fetch(url, {
-                    ...data
+                    ...data,
+                    headers: {
+                        ...data?.headers,
+                        'Content-Type': 'application/json'
+                    }
                 })
                     .then((res) => {
                         if (res.status === 200) {

@@ -1,13 +1,13 @@
 import { Container, Divider, Slide, Stack, Typography, useTheme } from '@mui/material';
 
-export default function Drawer(props) {
+export default function Drawer({ open, title, subtitle, actions, children }) {
     const theme = useTheme();
 
     return (
         <Container maxWidth="sm">
             <Slide
                 direction="up"
-                in={props.open}
+                in={open}
                 mountOnEnter
                 unmountOnExit
                 style={{ position: 'relative' }}
@@ -58,14 +58,14 @@ export default function Drawer(props) {
                                         variant="h4"
                                         sx={{ flexGrow: 1 }}
                                     >
-                                        {props.title}
+                                        {title}
                                     </Typography>
-                                    {props.subtitle ? (
+                                    {subtitle ? (
                                         <Typography
                                             variant="subtitle1"
                                             color="text.secondary"
                                         >
-                                            {props.subtitle}
+                                            {subtitle}
                                         </Typography>
                                     ) : null}
                                 </Stack>
@@ -78,11 +78,11 @@ export default function Drawer(props) {
                                     alignItems="flex-start"
                                     alignSelf="flex-start"
                                 >
-                                    {props.actions}
+                                    {actions}
                                 </Stack>
                             </Stack>
 
-                            {props.children}
+                            {children}
                         </Stack>
                     </Stack>
                 </div>

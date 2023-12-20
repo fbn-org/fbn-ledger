@@ -1,11 +1,12 @@
 import { useState } from 'react';
 
-import { Collapse, ListItemButton, Stack, Typography } from '@mui/material';
+import { Collapse, ListItemButton, Stack, Typography, useTheme } from '@mui/material';
 
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
-export default function TransactionSection(props) {
-    const [open, setOpen] = useState(props.open || false);
+export default function TransactionSection({ open, icon, title, children }) {
+    const [realOpen, setRealOpen] = useState(open || false);
+    const theme = useTheme();
 
     return (
         <Stack
@@ -13,31 +14,32 @@ export default function TransactionSection(props) {
             width="100%"
         >
             <ListItemButton
-                sx={{ width: '100%', height: 'auto', paddingX: '5px' }}
-                onClick={() => setOpen((a) => !a)}
+                sx={{ width: '100%', height: 'auto', paddingX: '5px', borderRadius: theme.shape.borderRadius }}
+                onClick={() => setRealOpen((a) => !a)}
             >
                 <Stack
                     direction="row"
                     width="100%"
                     gap={1}
+                    alignItems="center"
                 >
-                    {props.icon}
-                    <Typography variant="h5">{props.title}</Typography>
+                    {icon}
+                    <Typography variant="h5">{title}</Typography>
                     <Stack
                         direction="row"
                         width="auto"
                         flexGrow={1}
                         justifyContent="flex-end"
                     >
-                        {!open ? <ExpandMore color="secondary" /> : <ExpandLess color="secondary" />}
+                        {!realOpen ? <ExpandMore color="secondary" /> : <ExpandLess color="secondary" />}
                     </Stack>
                 </Stack>
             </ListItemButton>
             <Collapse
-                in={open}
+                in={realOpen}
                 style={{ width: '100%' }}
             >
-                <Stack marginTop={1}>{props.children}</Stack>
+                <Stack marginTop={1}>{children}</Stack>
             </Collapse>
         </Stack>
     );

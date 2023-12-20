@@ -8,14 +8,8 @@ import useRequest from '@/hooks/useRequest.js';
 
 import Drawer from '../util/Drawer.js';
 
-export default function Payouts(props) {
+export default function Payouts({ occasion, people, setOpen, open, presetTransactions, onClose }) {
     const request = useRequest();
-
-    const occasion = props.occasion;
-    const people = props.people;
-    const setOpen = props.setOpen;
-    const open = props.open;
-    const presetTransactions = props.presetTransactions;
 
     const [transactions, setTransactions] = useState([]);
     const [owes, setOwes] = useState(null);
@@ -124,7 +118,7 @@ export default function Payouts(props) {
         setOpen(false);
         setOwes(null);
         setTransactions([]);
-        props.onClose();
+        onClose();
     }
 
     return (
@@ -159,8 +153,8 @@ export default function Payouts(props) {
                                     key={fromId}
                                 >
                                     {Object.keys(owes[fromId]).map((toId) => {
-                                        const fromName = people.find((person) => person.id === fromId).name;
-                                        const toName = people.find((person) => person.id === toId).name;
+                                        const fromName = people.find((person) => person._id === fromId).name;
+                                        const toName = people.find((person) => person._id === toId).name;
 
                                         return owes[fromId][toId] > 0 ? (
                                             <Stack
@@ -173,7 +167,7 @@ export default function Payouts(props) {
                                             >
                                                 <Chip
                                                     label={fromName}
-                                                    color={fromName.toLowerCase()}
+                                                    color={fromId.toLowerCase()}
                                                     variant="outlined"
                                                     sx={{ flexBasis: '37.5%' }}
                                                 />
@@ -187,7 +181,7 @@ export default function Payouts(props) {
                                                 <KeyboardDoubleArrowRight />
                                                 <Chip
                                                     label={toName}
-                                                    color={toName.toLowerCase()}
+                                                    color={toId.toLowerCase()}
                                                     variant="outlined"
                                                     sx={{ flexBasis: '37.5%' }}
                                                 />

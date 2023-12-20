@@ -12,6 +12,7 @@ import utc from 'dayjs/plugin/utc';
 import { SessionProvider } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 
+import { AuthProvider } from '@/contexts/AuthContext';
 import { LedgerProvider } from '@/contexts/LedgerContext.js';
 
 import createEmotionCache from '../createEmotionCache';
@@ -29,7 +30,7 @@ const baseTheme = createTheme({
         }
     },
     shape: {
-        borderRadius: 5
+        borderRadius: '5px'
     },
     components: {
         MuiButton: {
@@ -72,11 +73,13 @@ export default function App({ Component, session, emotionCache = clientSideEmoti
                         autoHideDuration={4000}
                         anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
                     >
-                        <LedgerProvider baseTheme={baseTheme}>
-                            <CssBaseline />
+                        <AuthProvider>
+                            <LedgerProvider baseTheme={baseTheme}>
+                                <CssBaseline />
 
-                            {getLayout(<Component {...pageProps} />)}
-                        </LedgerProvider>
+                                {getLayout(<Component {...pageProps} />)}
+                            </LedgerProvider>
+                        </AuthProvider>
                     </SnackbarProvider>
                 </LocalizationProvider>
             </CacheProvider>

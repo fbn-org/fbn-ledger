@@ -13,13 +13,7 @@ import {
 
 import { KeyboardDoubleArrowRight } from '@mui/icons-material';
 
-export default function SharedItem(props) {
-    const people = props.people;
-    const sharedAmounts = props.sharedAmounts;
-    const setSharedAmounts = props.setSharedAmounts;
-    const sharedItem = props.sharedItem;
-    const index = props.index;
-
+export default function SharedItem({ people, sharedAmounts, setSharedAmounts, sharedItem, index }) {
     function updatePeople(event) {
         const {
             target: { value }
@@ -75,11 +69,11 @@ export default function SharedItem(props) {
                         >
                             <AvatarGroup spacing="small">
                                 {selected.map((value) => {
-                                    let person = people.find((p) => p.id === value);
+                                    let person = people.find((p) => p._id === value);
                                     return person ? (
                                         <Avatar
                                             sx={{
-                                                bgcolor: `${person.name.toLowerCase()}.main`,
+                                                bgcolor: `${person._id.toLowerCase()}.main`,
                                                 width: 18,
                                                 height: 18
                                             }}
@@ -96,13 +90,13 @@ export default function SharedItem(props) {
                     {people.map((person) => {
                         return (
                             <MenuItem
-                                key={person.id}
-                                value={person.id}
+                                key={person._id}
+                                value={person._id}
                                 sx={{ gap: '5px' }}
                             >
                                 <Avatar
                                     sx={{
-                                        bgcolor: `${person.name.toLowerCase()}.main`,
+                                        bgcolor: `${person._id.toLowerCase()}.main`,
                                         width: 20,
                                         height: 20
                                     }}

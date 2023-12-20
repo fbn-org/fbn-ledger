@@ -22,7 +22,7 @@ export default function Occasions(props) {
     const [payoutsOpen, setPayoutsOpen] = useState(false);
     const [payoutsOccasion, setPayoutsOccasion] = useState(null);
 
-    const { occasions, people, ledger } = useLedger();
+    const { occasions, people, ledger, group } = useLedger();
 
     function editOccasion(occasion) {
         setEditorOpen(true);
@@ -67,6 +67,7 @@ export default function Occasions(props) {
                 isNew={editIsNew}
                 editData={editData}
                 people={people}
+                group={group}
             />
             <Payouts
                 onClose={() => {
@@ -117,58 +118,58 @@ export default function Occasions(props) {
                     width="100%"
                     gap={1}
                 >
-                    <OccasionGroup
-                        occasionsType="active"
-                        icon={typeIcons['active']}
-                        occasions={occasions.filter((occasion) => occasion.timeState === 'active')}
-                        people={people}
-                        ledger={ledger}
-                        editCallback={editOccasion}
-                        payoutsCallback={showPayouts}
-                        defaultOpen={true}
-                    />
-                    <OccasionGroup
-                        occasionsType="upcoming"
-                        icon={typeIcons['upcoming']}
-                        occasions={occasions.filter((occasion) => occasion.timeState === 'upcoming')}
-                        people={people}
-                        ledger={ledger}
-                        editCallback={editOccasion}
-                        payoutsCallback={showPayouts}
-                        defaultOpen={occasions.filter((occasion) => occasion.timeState === 'active').length === 0}
-                    />
-                    <OccasionGroup
-                        occasionsType="past"
-                        icon={typeIcons['past']}
-                        occasions={occasions.filter((occasion) => occasion.timeState === 'past')}
-                        people={people}
-                        ledger={ledger}
-                        editCallback={editOccasion}
-                        payoutsCallback={showPayouts}
-                        defaultOpen={false}
-                    />
+                    {occasions && (
+                        <>
+                            <OccasionGroup
+                                occasionsType="active"
+                                icon={typeIcons['active']}
+                                occasions={occasions.filter((occasion) => occasion.timeState === 'active')}
+                                people={people}
+                                ledger={ledger}
+                                editCallback={editOccasion}
+                                payoutsCallback={showPayouts}
+                                defaultOpen={true}
+                            />
+                            <OccasionGroup
+                                occasionsType="upcoming"
+                                icon={typeIcons['upcoming']}
+                                occasions={occasions.filter((occasion) => occasion.timeState === 'upcoming')}
+                                people={people}
+                                ledger={ledger}
+                                editCallback={editOccasion}
+                                payoutsCallback={showPayouts}
+                                defaultOpen={
+                                    occasions.filter((occasion) => occasion.timeState === 'active').length === 0
+                                }
+                            />
+                            <OccasionGroup
+                                occasionsType="past"
+                                icon={typeIcons['past']}
+                                occasions={occasions && occasions.filter((occasion) => occasion.timeState === 'past')}
+                                people={people}
+                                ledger={ledger}
+                                editCallback={editOccasion}
+                                payoutsCallback={showPayouts}
+                                defaultOpen={false}
+                            />
+                        </>
+                    )}
                 </Stack>
             </div>
         </>
     );
 }
 
-function OccasionGroup(props) {
-    const occasionsType = props.occasionsType;
-    const occasions = props.occasions;
-    const people = props.people;
-    const ledger = props.ledger;
-    const editOccasion = props.editCallback;
-    const showPayouts = props.payoutsCallback;
-    const icon = props.icon;
+function OccasionGroup({ occasionsType, occasions, people, ledger, editCallback, payoutsCallback, icon, defaultOpen }) {
+    const theme = useTheme();
 
-    const [open, setOpen] = useState(occasions.length !== 0 ? props.defaultOpen : false);
+    const [open, setOpen] = useState(occasions.length !== 0 ? defaultOpen : false);
 
     useEffect(() => {
-        if (props.defaultOpen) {
-            setOpen(occasions.length !== 0 ? props.defaultOpen : false);
+        if (defaultOpen) {
+            setOpen(occasions.length !== 0 ? defaultOpen : false);
         }
-    }, [occasions, props.defaultOpen]);
+    }, [occasions, defaultOpen]);
 
     return (
         <Stack
@@ -176,7 +177,7 @@ function OccasionGroup(props) {
             width="100%"
         >
             <ListItemButton
-                sx={{ width: '100%', height: 'auto', paddingX: '5px' }}
+                sx={{ width: '100%', height: 'auto', paddingX: '5px', borderRadius: theme.shape.borderRadius }}
                 onClick={() => {
                     setOpen((open) => !open);
                 }}
@@ -225,8 +226,8 @@ function OccasionGroup(props) {
                                       occasion={occasion}
                                       people={people}
                                       ledger={ledger}
-                                      editCallback={editOccasion}
-                                      payoutsCallback={showPayouts}
+                                      editCallback={editCallback}
+                                      payoutsCallback={payoutsCallback}
                                       showPayoutsButton={occasionsType === 'past'}
                                       disableStats={occasionsType === 'upcoming'}
                                   />

@@ -31,14 +31,10 @@ import Drawer from '../util/Drawer';
 
 dayjs.extend(utc);
 
-export default function EditOccasion(props) {
+export default function EditOccasion({ isNew, editData, group, people, open, onClose }) {
     const theme = useTheme();
 
     const request = useRequest();
-
-    const isNew = props.isNew;
-    const editData = props.editData;
-    const people = props.people;
 
     const [saving, setSaving] = useState(false);
     const [confirmationOpen, setConfirmationOpen] = useState(false);
@@ -57,6 +53,7 @@ export default function EditOccasion(props) {
         setSaving(true);
         let data = {
             name: name,
+            group: group._id,
             start_date: startDate.startOf('day').utc(),
             end_date: endDate.endOf('day').utc(),
             included_people: includedPeople
@@ -115,7 +112,7 @@ export default function EditOccasion(props) {
         setIncludedPeople([]);
         setSaving(false);
         setConfirmationOpen(false);
-        props.onClose();
+        onClose();
     }
 
     useEffect(() => {
@@ -130,7 +127,7 @@ export default function EditOccasion(props) {
     return (
         <Drawer
             title={isNew ? 'New Occasion' : 'Edit Occasion'}
-            open={props.open}
+            open={open}
             actions={
                 !isNew ? (
                     <ClickAwayListener onClickAway={() => setConfirmationOpen(false)}>
@@ -144,7 +141,7 @@ export default function EditOccasion(props) {
                             disableFocusListener
                             disableHoverListener
                             disableTouchListener
-                            title="Tap again to confirm deletion"
+                            title="Tap again to delete this occasion"
                         >
                             <IconButton
                                 color="secondary"
@@ -221,11 +218,11 @@ export default function EditOccasion(props) {
                                 flexWrap="wrap"
                             >
                                 {selected.map((value) => {
-                                    let person = people.find((p) => p.id === value);
+                                    let person = people.find((p) => p._id === value);
                                     return person ? (
                                         <Chip
                                             label={person.name}
-                                            color={person.name.toLowerCase()}
+                                            color={person._id.toLowerCase()}
                                             key={value}
                                         />
                                     ) : null;
@@ -234,26 +231,27 @@ export default function EditOccasion(props) {
                         )}
                         sx={{ paddingY: '0px' }}
                     >
-                        {people.map((person) => {
-                            return (
-                                <MenuItem
-                                    key={person.id}
-                                    value={person.id}
-                                    sx={{ gap: '5px' }}
-                                >
-                                    <Avatar
-                                        sx={{
-                                            bgcolor: `${person.name.toLowerCase()}.main`,
-                                            width: 20,
-                                            height: 20
-                                        }}
+                        {people &&
+                            people.map((person) => {
+                                return (
+                                    <MenuItem
+                                        key={person._id}
+                                        value={person._id}
+                                        sx={{ gap: '5px' }}
                                     >
-                                        <Icon />
-                                    </Avatar>
-                                    {person.name}
-                                </MenuItem>
-                            );
-                        })}
+                                        <Avatar
+                                            sx={{
+                                                bgcolor: `${person._id.toLowerCase()}.main`,
+                                                width: 20,
+                                                height: 20
+                                            }}
+                                        >
+                                            <Icon />
+                                        </Avatar>
+                                        {person.name}
+                                    </MenuItem>
+                                );
+                            })}
                     </Select>
                 </FormControl>
 

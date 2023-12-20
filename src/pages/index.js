@@ -9,7 +9,7 @@ export default function Printing(props) {
         if (!session) {
             router.push('/auth');
         } else {
-            router.push('/dashboard');
+            router.push('/app/dashboard');
         }
     }
 }

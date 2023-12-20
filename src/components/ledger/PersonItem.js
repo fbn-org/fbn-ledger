@@ -4,12 +4,7 @@ import { Chip, InputAdornment, Stack, TextField } from '@mui/material';
 
 import { Add, KeyboardDoubleArrowRight } from '@mui/icons-material';
 
-export default function PersonItem(props) {
-    const personId = props.personId;
-    const name = props.name;
-    const individualAmounts = props.individualAmounts;
-    const setIndividualAmounts = props.setIndividualAmounts;
-
+export default function PersonItem({ personId, name, individualAmounts, setIndividualAmounts }) {
     // useEffect(() => {
     //     if (individualAmounts[personId] === undefined) {
     //         setIndividualAmounts(individualAmounts => ({ ...individualAmounts, [personId]: [""] }))
@@ -57,7 +52,7 @@ export default function PersonItem(props) {
                     >
                         <Chip
                             label={name}
-                            color={name.toLowerCase()}
+                            color={personId}
                             variant="outlined"
                             sx={{ flexBasis: '40%' }}
                         />

@@ -74,7 +74,8 @@ export default function Dashboard() {
         // calculate people stats
         let stats = {};
         people.forEach((person) => {
-            stats[person.id] = {
+            stats[person._id] = {
+                id: person._id,
                 name: person.name,
                 totalSpend: 0,
                 offset: 0
@@ -93,15 +94,37 @@ export default function Dashboard() {
             }
             total -= extra;
 
+            let peopleTotals = {};
+
             Object.keys(transaction.individual_items).forEach((p) => {
+                if (!peopleTotals[p]) {
+                    peopleTotals[p] = 0;
+                }
                 let personTotal = transaction.individual_items[p].reduce((acc, item) => acc + parseFloat(item), 0);
-                let weight = personTotal / total;
-                stats[p].totalSpend += personTotal + extra * weight;
+                peopleTotals[p] += personTotal;
+            });
+
+            // add shared items too
+            transaction.shared_items.forEach((item) => {
+                item.people.forEach((p) => {
+                    if (!peopleTotals[p]) {
+                        peopleTotals[p] = 0;
+                    }
+                    peopleTotals[p] += parseFloat(item.amount) / item.people.length;
+                });
+            });
+
+            console.log(peopleTotals);
+
+            Object.keys(peopleTotals).forEach((p) => {
+                // calculate weight of total and add to stats
+                let weight = peopleTotals[p] / total;
+                stats[p].totalSpend += peopleTotals[p] + extra * weight;
             });
         });
 
         people.forEach((person) => {
-            stats[person.id].offset -= stats[person.id].totalSpend;
+            stats[person._id].offset -= stats[person._id].totalSpend;
         });
 
         setPeopleStats(stats);
@@ -189,7 +212,7 @@ export default function Dashboard() {
                             >
                                 {recentTransactions.map((transaction) => {
                                     const date = dayjs.utc(transaction.date).local().format('MM-DD-YYYY');
-                                    const payer = people.find((person) => person.id === transaction.payer).name;
+                                    const payer = people.find((person) => person._id === transaction.payer)._id;
 
                                     return (
                                         <Grid
@@ -242,7 +265,7 @@ export default function Dashboard() {
 
                                     return (
                                         <Grid
-                                            key={data.name}
+                                            key={data.id}
                                             item
                                             xs={6}
                                         >
@@ -258,7 +281,7 @@ export default function Dashboard() {
                                                     >
                                                         <Avatar
                                                             sx={{
-                                                                bgcolor: `${data.name.toLowerCase()}.main`,
+                                                                bgcolor: `${data.id.toLowerCase()}.main`,
                                                                 height: 18,
                                                                 width: 18
                                                             }}
@@ -268,7 +291,7 @@ export default function Dashboard() {
                                                         <Typography
                                                             variant="h6"
                                                             style={{
-                                                                color: theme.palette[data.name.toLowerCase()].main
+                                                                color: theme.palette[data.id.toLowerCase()]?.main
                                                             }}
                                                         >
                                                             {data.name}

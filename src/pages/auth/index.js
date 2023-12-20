@@ -45,7 +45,7 @@ export async function getServerSideProps(context) {
     // Note: Make sure not to redirect to the same page
     // To avoid an infinite loop!
     if (session) {
-        return { redirect: { destination: '/dashboard' } };
+        return { redirect: { destination: '/app/dashboard' } };
     }
 
     const providers = await getProviders();

@@ -11,8 +11,17 @@ export default async function handler(req, res) {
 
     const mongoClient = await clientPromise;
 
+    console.log(req.query);
+    const groupId = req.query['group'];
+
     if (req.method === 'GET') {
-        const data = await mongoClient.db('ledger').collection('occasions').find().toArray();
+        const data = await mongoClient
+            .db('ledger')
+            .collection('occasions')
+            .find({
+                group: groupId
+            })
+            .toArray();
 
         res.status(200).json(data);
     }

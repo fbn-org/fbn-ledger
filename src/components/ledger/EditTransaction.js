@@ -39,14 +39,9 @@ import TransactionSection from './TransactionSection';
 
 dayjs.extend(utc);
 
-export default function EditTransaction(props) {
+export default function EditTransaction({ isNew, editData, people, group, occasions, open, onClose }) {
     const theme = useTheme();
     const request = useRequest();
-
-    const isNew = props.isNew;
-    const editData = props.editData;
-    const people = props.people;
-    const occasions = props.occasions;
 
     const [saving, setSaving] = useState(false);
     const [confirmationOpen, setConfirmationOpen] = useState(false);
@@ -94,6 +89,7 @@ export default function EditTransaction(props) {
             date: date.utc(),
             payer: userPaying,
             occasion: occasion,
+            group: group._id,
             tax: tax,
             tip: tip,
             individual_items: amountsFinal,
@@ -193,7 +189,7 @@ export default function EditTransaction(props) {
 
     const presetValues = useCallback(
         (occasion, unfixedIndividualAmounts, unfixedSharedAmounts) => {
-            var occasionFromId = occasions.find((o) => o._id == occasion);
+            var occasionFromId = occasions && occasions.find((o) => o._id == occasion);
             var peopleForOccasion = [];
             var peopleUnformattedForOccasion = [];
 
@@ -202,21 +198,17 @@ export default function EditTransaction(props) {
             } else {
                 for (const index in people) {
                     let peopleInfo = people[index];
-                    peopleUnformattedForOccasion.push(peopleInfo.id);
+                    peopleUnformattedForOccasion.push(peopleInfo._id);
                 }
             }
 
             // Format personal info from table of users
             for (const index in peopleUnformattedForOccasion) {
                 let personId = peopleUnformattedForOccasion[index];
-                let personInfo = people.find((user) => user.id === personId);
+                let personInfo = people.find((user) => user._id === personId);
 
                 if (personInfo) {
-                    let info = {
-                        id: personId,
-                        name: personInfo.name
-                    };
-                    peopleForOccasion.push(info);
+                    peopleForOccasion.push(personInfo);
                 }
             }
 
@@ -227,12 +219,12 @@ export default function EditTransaction(props) {
                 // make sure everyone in individualAmounts is actually in the occasion
                 if (peopleForOccasion !== null) {
                     peopleForOccasion.forEach((person) => {
-                        newIndividualAmounts[person.id] = [''];
+                        newIndividualAmounts[person._id] = [''];
                     });
 
                     if (unfixedIndividualAmounts) {
                         for (const personId of Object.keys(unfixedIndividualAmounts)) {
-                            let targetPerson = peopleForOccasion.find((user) => user.id === personId);
+                            let targetPerson = peopleForOccasion.find((user) => user._id === personId);
                             if (targetPerson) {
                                 newIndividualAmounts[personId] = unfixedIndividualAmounts[personId];
                             }
@@ -246,7 +238,7 @@ export default function EditTransaction(props) {
                                 amount: ''
                             };
                             for (const personId of item.people) {
-                                let targetPerson = peopleForOccasion.find((user) => user.id === personId);
+                                let targetPerson = peopleForOccasion.find((user) => user._id === personId);
                                 if (targetPerson) {
                                     newSharedItem.people.push(personId);
                                 }
@@ -298,7 +290,7 @@ export default function EditTransaction(props) {
     }, [tipPercent, subtotal]);
 
     function close() {
-        props.onClose();
+        onClose();
         setReason('');
         setDate(dayjs());
         setTax('');
@@ -332,7 +324,7 @@ export default function EditTransaction(props) {
 
     return (
         <Drawer
-            open={props.open}
+            open={open}
             title={isNew ? 'New Transaction' : 'Edit Transaction'}
             actions={
                 !isNew ? (
@@ -347,7 +339,7 @@ export default function EditTransaction(props) {
                             disableFocusListener
                             disableHoverListener
                             disableTouchListener
-                            title="Tap again to confirm deletion"
+                            title="Tap again to delete this transaction"
                         >
                             <IconButton
                                 color="secondary"
@@ -392,10 +384,12 @@ export default function EditTransaction(props) {
                                 label="Buyer"
                                 value={userPaying}
                                 onChange={(selectionEntry) => {
+                                    console.log(selectionEntry.target.value);
                                     setUserPaying(selectionEntry.target.value);
                                 }}
                                 renderValue={(selected) => {
-                                    let person = currentPeople.find((p) => p.id === selected);
+                                    console.log(selected);
+                                    let person = currentPeople.find((p) => p._id === selected);
                                     return (
                                         <Stack
                                             direction="row"
@@ -408,7 +402,7 @@ export default function EditTransaction(props) {
                                                 <>
                                                     <Avatar
                                                         sx={{
-                                                            bgcolor: `${person.name.toLowerCase()}.main`,
+                                                            bgcolor: `${person._id.toLowerCase()}.main`,
                                                             width: 18,
                                                             height: 18
                                                         }}
@@ -426,13 +420,13 @@ export default function EditTransaction(props) {
                                 {currentPeople.map((person) => {
                                     return (
                                         <MenuItem
-                                            key={person.id}
-                                            value={person.id}
+                                            key={person._id}
+                                            value={person._id}
                                             sx={{ gap: '5px' }}
                                         >
                                             <Avatar
                                                 sx={{
-                                                    bgcolor: `${person.name.toLowerCase()}.main`,
+                                                    bgcolor: `${person._id.toLowerCase()}.main`,
                                                     width: 20,
                                                     height: 20
                                                 }}
@@ -489,20 +483,21 @@ export default function EditTransaction(props) {
                                         </MenuItem>
                                     ) : null
                                 ) : null}
-                                {occasions.map((occasion) => {
-                                    if (occasion.timeState === 'active') {
-                                        return (
-                                            <MenuItem
-                                                key={occasion._id}
-                                                value={occasion._id}
-                                            >
-                                                {occasion.name}
-                                            </MenuItem>
-                                        );
-                                    } else {
-                                        return null;
-                                    }
-                                })}
+                                {occasions &&
+                                    occasions.map((occasion) => {
+                                        if (occasion.timeState === 'active') {
+                                            return (
+                                                <MenuItem
+                                                    key={occasion._id}
+                                                    value={occasion._id}
+                                                >
+                                                    {occasion.name}
+                                                </MenuItem>
+                                            );
+                                        } else {
+                                            return null;
+                                        }
+                                    })}
                             </Select>
                         </FormControl>
                     </Stack>
@@ -520,8 +515,8 @@ export default function EditTransaction(props) {
                         ? currentPeople.map((personInfo) => {
                               return (
                                   <PersonItem
-                                      key={personInfo.id}
-                                      personId={personInfo.id}
+                                      key={personInfo._id}
+                                      personId={personInfo._id}
                                       name={personInfo.name}
                                       individualAmounts={individualAmounts}
                                       setIndividualAmounts={setIndividualAmounts}

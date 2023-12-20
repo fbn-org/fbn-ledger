@@ -14,7 +14,7 @@ export default function PrimaryLayout({ children }) {
 
     const selectedPage = useMemo(() => {
         if (pathname) {
-            return pathname.split('/')[1] || '';
+            return pathname.split('/')[2] || '';
         } else {
             return 'dashboard';
         }
@@ -53,19 +53,19 @@ export default function PrimaryLayout({ children }) {
                             label="Home"
                             value="dashboard"
                             icon={<Home />}
-                            onClick={() => push('/dashboard')}
+                            onClick={() => push('/app/dashboard')}
                         />
                         <BottomNavigationAction
                             label="Occasions"
                             value="occasions"
                             icon={<Celebration />}
-                            onClick={() => push('/occasions')}
+                            onClick={() => push('/app/occasions')}
                         />
                         <BottomNavigationAction
                             label="Ledger"
                             value="ledger"
                             icon={<ReceiptLong />}
-                            onClick={() => push('/ledger')}
+                            onClick={() => push('/app/ledger')}
                         />
                     </BottomNavigation>
                     <div

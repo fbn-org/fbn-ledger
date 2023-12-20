@@ -13,16 +13,16 @@ import Card from '../util/Card';
 dayjs.extend(advancedFormat);
 dayjs.extend(utc);
 
-export default function OccasionCard(props) {
+export default function OccasionCard({
+    people,
+    occasion,
+    ledger,
+    editCallback,
+    payoutsCallback,
+    showPayoutsButton,
+    disableStats
+}) {
     const theme = useTheme();
-
-    const people = props.people;
-    const occasion = props.occasion;
-    const ledger = props.ledger;
-    const editCallback = props.editCallback;
-    const payoutsCallback = props.payoutsCallback;
-    const showPayoutsButton = props.showPayoutsButton;
-    const disableStats = props.disableStats;
 
     const startDate = dayjs.utc(occasion.start_date).local().format('MMMM Do, YYYY');
     const endDate = dayjs.utc(occasion.end_date).local().format('MMMM Do, YYYY');
@@ -56,12 +56,12 @@ export default function OccasionCard(props) {
                     }}
                 >
                     {occasion.included_people.map((personId) => {
-                        const personName = people.find((person) => person.id === personId).name;
+                        const person = people.find((person) => person._id === personId);
                         return (
                             <Avatar
                                 key={personId}
                                 sx={{
-                                    bgcolor: `${personName.toLowerCase()}.main`,
+                                    bgcolor: `${person._id.toLowerCase()}.main`,
                                     height: 20,
                                     width: 20,
                                     fontSize: 12

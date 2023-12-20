@@ -20,7 +20,7 @@ dayjs.extend(advancedFormat);
 dayjs.extend(utc);
 
 export default function Ledger(props) {
-    const { occasions, people, ledger } = useLedger();
+    const { occasions, people, ledger, group } = useLedger();
 
     const [editorOpen, setEditorOpen] = useState(false);
     const [editIsNew, setEditIsNew] = useState(false);
@@ -62,6 +62,7 @@ export default function Ledger(props) {
                 editData={editData}
                 people={people}
                 occasions={occasions}
+                group={group}
             />
 
             <Fab
@@ -104,54 +105,56 @@ export default function Ledger(props) {
                     width="100%"
                     gap={2}
                 >
-                    {ledger.map((transaction) => {
-                        const payer = people.find((person) => person.id === transaction.payer).name;
-                        var date = dayjs.utc(transaction.date).local().format('MMMM Do, YYYY hh:mm A');
+                    {ledger && people
+                        ? ledger.map((transaction) => {
+                              const payer = people.find((person) => person._id === transaction.payer)._id;
+                              var date = dayjs.utc(transaction.date).local().format('MMMM Do, YYYY hh:mm A');
 
-                        return (
-                            <Card
-                                key={transaction._id}
-                                title={`$${transaction.total}`}
-                                subtitle={date}
-                                icon={
-                                    <Avatar
-                                        sx={{
-                                            bgcolor: `${payer.toLowerCase()}.main`,
-                                            height: 20,
-                                            width: 20
-                                        }}
-                                    >
-                                        <Icon />
-                                    </Avatar>
-                                }
-                                actions={
-                                    <>
-                                        {transaction.occasion === 'None' ? (
-                                            <IconButton
-                                                color="primary"
-                                                onClick={() => {
-                                                    showPayouts(transaction);
-                                                }}
-                                            >
-                                                <Receipt />
-                                            </IconButton>
-                                        ) : null}
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => {
-                                                editTransaction(transaction);
-                                            }}
-                                        >
-                                            <Edit />
-                                        </IconButton>
-                                    </>
-                                }
-                                style={{ width: '100%' }}
-                            >
-                                <Typography variant="body1">{transaction.reason}</Typography>
-                            </Card>
-                        );
-                    })}
+                              return (
+                                  <Card
+                                      key={transaction._id}
+                                      title={`$${transaction.total}`}
+                                      subtitle={date}
+                                      icon={
+                                          <Avatar
+                                              sx={{
+                                                  bgcolor: `${payer.toLowerCase()}.main`,
+                                                  height: 20,
+                                                  width: 20
+                                              }}
+                                          >
+                                              <Icon />
+                                          </Avatar>
+                                      }
+                                      actions={
+                                          <>
+                                              {transaction.occasion === 'None' ? (
+                                                  <IconButton
+                                                      color="primary"
+                                                      onClick={() => {
+                                                          showPayouts(transaction);
+                                                      }}
+                                                  >
+                                                      <Receipt />
+                                                  </IconButton>
+                                              ) : null}
+                                              <IconButton
+                                                  color="primary"
+                                                  onClick={() => {
+                                                      editTransaction(transaction);
+                                                  }}
+                                              >
+                                                  <Edit />
+                                              </IconButton>
+                                          </>
+                                      }
+                                      style={{ width: '100%' }}
+                                  >
+                                      <Typography variant="body1">{transaction.reason}</Typography>
+                                  </Card>
+                              );
+                          })
+                        : null}
                 </Stack>
             </div>
         </>

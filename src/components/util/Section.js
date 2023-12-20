@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material';
 
-function Section(props) {
+function Section({ style, icon, title, children }) {
     return (
         <div
             style={{
@@ -11,7 +11,7 @@ function Section(props) {
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
                 alignItems: 'flex-start',
-                ...props.style
+                ...style
             }}
         >
             <div
@@ -25,10 +25,10 @@ function Section(props) {
                     gap: '5px'
                 }}
             >
-                {props.icon}
-                <Typography variant="h5">{props.title}</Typography>
+                {icon}
+                <Typography variant="h5">{title}</Typography>
             </div>
-            {props.children}
+            {children}
         </div>
     );
 }

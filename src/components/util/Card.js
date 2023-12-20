@@ -1,6 +1,6 @@
 import { Paper, Stack, Typography } from '@mui/material';
 
-function Card(props) {
+function Card({ title, subtitle, icon, subtitleIcon, titleChip, actions, footer, children, style, ...props }) {
     return (
         <Paper
             variant="outlined"
@@ -13,17 +13,17 @@ function Card(props) {
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
                 alignItems: 'flex-start',
-                ...props.style
+                ...style
             }}
         >
-            {props.title || props.icon || props.actions ? (
+            {title || icon || actions ? (
                 <Stack
                     direction="row"
-                    mb={props.children ? '10px' : 0}
+                    mb={children ? '10px' : 0}
                     width="100%"
                     alignItems="flex-start"
                 >
-                    {props.title || props.icon ? (
+                    {title || icon ? (
                         <Stack
                             direction="row"
                             gap={1}
@@ -37,23 +37,23 @@ function Card(props) {
                                     alignItems="center"
                                     gap={1}
                                 >
-                                    {props.icon}
-                                    <Typography variant="h5">{props.title}</Typography>
-                                    {props.titleChip}
+                                    {icon}
+                                    <Typography variant="h5">{title}</Typography>
+                                    {titleChip}
                                 </Stack>
                                 <Stack gap={1}>
-                                    {props.subtitleIcon}
+                                    {subtitleIcon}
                                     <Typography
                                         variant="subtitle2"
                                         color="text.secondary"
                                     >
-                                        {props.subtitle}
+                                        {subtitle}
                                     </Typography>
                                 </Stack>
                             </Stack>
                         </Stack>
                     ) : null}
-                    {props.actions ? (
+                    {actions ? (
                         <Stack
                             direction="row"
                             gap={1}
@@ -61,15 +61,15 @@ function Card(props) {
                             justifyContent="flex-end"
                             alignItems="flex-start"
                         >
-                            {props.actions}
+                            {actions}
                         </Stack>
                     ) : null}
                 </Stack>
             ) : null}
 
-            {props.children}
+            {children}
 
-            {props.footer ? (
+            {footer ? (
                 <Stack
                     direction="row"
                     width="100%"
@@ -79,7 +79,7 @@ function Card(props) {
                         variant="caption"
                         color="text.secondary"
                     >
-                        {props.footer}
+                        {footer}
                     </Typography>
                 </Stack>
             ) : null}

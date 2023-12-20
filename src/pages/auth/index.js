@@ -1,6 +1,6 @@
 import { Button, Stack, Typography } from '@mui/material';
 
-import { ReceiptLong } from '@mui/icons-material';
+import ReceiptLong from '@mui/icons-material/ReceiptLong';
 
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth/next';

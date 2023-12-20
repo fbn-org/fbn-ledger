@@ -11,7 +11,6 @@ export default async function handler(req, res) {
 
     const mongoClient = await clientPromise;
 
-    console.log(req.query);
     const groupId = req.query['group'];
 
     if (req.method === 'GET') {

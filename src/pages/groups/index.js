@@ -2,16 +2,22 @@ import { Avatar, AvatarGroup, Button, Divider, Icon, Stack, Typography } from '@
 
 import { Create, Group, GroupAdd } from '@mui/icons-material';
 
+import useLedger from '@/contexts/LedgerContext';
+
 import PrimaryLayout from '@/layouts/PrimaryLayout';
 
-import NewGroupDialog from '@/components/groups/CreateGroup';
-import GroupEditDialog from '@/components/groups/EditGroup';
+import CreateGroup from '@/components/groups/CreateGroup';
+import EditGroup from '@/components/groups/EditGroup';
+import JoinGroup from '@/components/groups/JoinGroup';
 
 export default function Groups({}) {
+    const { user, groups } = useLedger();
+
     return (
         <>
-            <NewGroupDialog open={false} />
-            <GroupEditDialog open={false} />
+            <CreateGroup open={false} />
+            <EditGroup open={false} />
+            <JoinGroup open={true} />
 
             <Stack
                 direction="row"

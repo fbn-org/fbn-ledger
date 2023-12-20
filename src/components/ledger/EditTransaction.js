@@ -30,6 +30,8 @@ import { DateTimePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
+import useLedger from '@/contexts/LedgerContext';
+
 import useRequest from '@/hooks/useRequest';
 
 import Drawer from '../util/Drawer';
@@ -42,6 +44,8 @@ dayjs.extend(utc);
 export default function EditTransaction({ isNew, editData, people, group, occasions, open, onClose }) {
     const theme = useTheme();
     const request = useRequest();
+
+    const { getPersonFromId } = useLedger();
 
     const [saving, setSaving] = useState(false);
     const [confirmationOpen, setConfirmationOpen] = useState(false);
@@ -205,7 +209,7 @@ export default function EditTransaction({ isNew, editData, people, group, occasi
             // Format personal info from table of users
             for (const index in peopleUnformattedForOccasion) {
                 let personId = peopleUnformattedForOccasion[index];
-                let personInfo = people.find((user) => user._id === personId);
+                let personInfo = getPersonFromId(personId);
 
                 if (personInfo) {
                     peopleForOccasion.push(personInfo);
@@ -389,7 +393,7 @@ export default function EditTransaction({ isNew, editData, people, group, occasi
                                 }}
                                 renderValue={(selected) => {
                                     console.log(selected);
-                                    let person = currentPeople.find((p) => p._id === selected);
+                                    let person = getPersonFromId(selected);
                                     return (
                                         <Stack
                                             direction="row"

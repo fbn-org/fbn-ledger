@@ -25,6 +25,8 @@ import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
+import useLedger from '@/contexts/LedgerContext';
+
 import useRequest from '@/hooks/useRequest';
 
 import Drawer from '../util/Drawer';
@@ -35,6 +37,8 @@ export default function EditOccasion({ isNew, editData, group, people, open, onC
     const theme = useTheme();
 
     const request = useRequest();
+
+    const { getPersonFromId } = useLedger();
 
     const [saving, setSaving] = useState(false);
     const [confirmationOpen, setConfirmationOpen] = useState(false);
@@ -218,7 +222,7 @@ export default function EditOccasion({ isNew, editData, group, people, open, onC
                                 flexWrap="wrap"
                             >
                                 {selected.map((value) => {
-                                    let person = people.find((p) => p._id === value);
+                                    let person = getPersonFromId(value);
                                     return person ? (
                                         <Chip
                                             label={person.name}

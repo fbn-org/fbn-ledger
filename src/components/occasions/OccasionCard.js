@@ -8,6 +8,8 @@ import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import utc from 'dayjs/plugin/utc';
 
+import useLedger from '@/contexts/LedgerContext';
+
 import Card from '../util/Card';
 
 dayjs.extend(advancedFormat);
@@ -23,6 +25,8 @@ export default function OccasionCard({
     disableStats
 }) {
     const theme = useTheme();
+
+    const { getPersonFromId } = useLedger();
 
     const startDate = dayjs.utc(occasion.start_date).local().format('MMMM Do, YYYY');
     const endDate = dayjs.utc(occasion.end_date).local().format('MMMM Do, YYYY');
@@ -56,7 +60,7 @@ export default function OccasionCard({
                     }}
                 >
                     {occasion.included_people.map((personId) => {
-                        const person = people.find((person) => person._id === personId);
+                        const person = getPersonFromId(personId);
                         return (
                             <Avatar
                                 key={personId}

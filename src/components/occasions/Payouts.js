@@ -4,12 +4,16 @@ import { Chip, IconButton, Stack, Typography } from '@mui/material';
 
 import { Close, KeyboardDoubleArrowRight } from '@mui/icons-material';
 
+import useLedger from '@/contexts/LedgerContext.js';
+
 import useRequest from '@/hooks/useRequest.js';
 
 import Drawer from '../util/Drawer.js';
 
 export default function Payouts({ occasion, people, setOpen, open, presetTransactions, onClose }) {
     const request = useRequest();
+
+    const { getPersonFromId } = useLedger();
 
     const [transactions, setTransactions] = useState([]);
     const [owes, setOwes] = useState(null);
@@ -153,8 +157,8 @@ export default function Payouts({ occasion, people, setOpen, open, presetTransac
                                     key={fromId}
                                 >
                                     {Object.keys(owes[fromId]).map((toId) => {
-                                        const fromName = people.find((person) => person._id === fromId).name;
-                                        const toName = people.find((person) => person._id === toId).name;
+                                        const fromName = getPersonFromId(fromId).name;
+                                        const toName = getPersonFromId(toId).name;
 
                                         return owes[fromId][toId] > 0 ? (
                                             <Stack

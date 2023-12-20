@@ -151,9 +151,24 @@ export function LedgerProvider({ children, baseTheme }) {
 
     const theme = useMemo(() => generateTheme(people), [people, generateTheme]);
 
+    const getPersonFromId = useCallback(
+        (id) => {
+            if (people.find((person) => person._id === id)) {
+                return people.find((person) => person._id === id);
+            } else {
+                return {
+                    _id: id,
+                    name: 'Unknown',
+                    image: ''
+                };
+            }
+        },
+        [people]
+    );
+
     return (
         <ThemeProvider theme={theme}>
-            <LedgerContext.Provider value={{ occasions, people, ledger, group, user, theme, refresh }}>
+            <LedgerContext.Provider value={{ occasions, people, ledger, group, user, theme, refresh, getPersonFromId }}>
                 {<>{children}</>}
             </LedgerContext.Provider>
         </ThemeProvider>

@@ -13,7 +13,11 @@ import {
 
 import { KeyboardDoubleArrowRight } from '@mui/icons-material';
 
+import useLedger from '@/contexts/LedgerContext';
+
 export default function SharedItem({ people, sharedAmounts, setSharedAmounts, sharedItem, index }) {
+    const { getPersonFromId } = useLedger();
+
     function updatePeople(event) {
         const {
             target: { value }
@@ -69,7 +73,7 @@ export default function SharedItem({ people, sharedAmounts, setSharedAmounts, sh
                         >
                             <AvatarGroup spacing="small">
                                 {selected.map((value) => {
-                                    let person = people.find((p) => p._id === value);
+                                    let person = getPersonFromId(value);
                                     return person ? (
                                         <Avatar
                                             sx={{

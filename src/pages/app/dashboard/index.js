@@ -38,7 +38,7 @@ export default function Dashboard() {
     const theme = useTheme();
     const { data: session } = useSession();
 
-    const { occasions, people, ledger } = useLedger();
+    const { occasions, people, ledger, getPersonFromId } = useLedger();
 
     const [recentTransactions, setRecentTransactions] = useState(null);
     const [featuredOccasion, setFeaturedOccasion] = useState(null);
@@ -212,7 +212,7 @@ export default function Dashboard() {
                             >
                                 {recentTransactions.map((transaction) => {
                                     const date = dayjs.utc(transaction.date).local().format('MM-DD-YYYY');
-                                    const payer = people.find((person) => person._id === transaction.payer)._id;
+                                    const payer = getPersonFromId(transaction.payer)._id;
 
                                     return (
                                         <Grid

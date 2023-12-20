@@ -20,7 +20,7 @@ dayjs.extend(advancedFormat);
 dayjs.extend(utc);
 
 export default function Ledger(props) {
-    const { occasions, people, ledger, group } = useLedger();
+    const { occasions, people, ledger, group, getPersonFromId } = useLedger();
 
     const [editorOpen, setEditorOpen] = useState(false);
     const [editIsNew, setEditIsNew] = useState(false);
@@ -107,7 +107,8 @@ export default function Ledger(props) {
                 >
                     {ledger && people
                         ? ledger.map((transaction) => {
-                              const payer = people.find((person) => person._id === transaction.payer)._id;
+                              const payer = getPersonFromId(transaction.payer)._id;
+
                               var date = dayjs.utc(transaction.date).local().format('MMMM Do, YYYY hh:mm A');
 
                               return (

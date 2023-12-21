@@ -14,7 +14,7 @@ export default function TransactionSection({ open, icon, title, children }) {
             width="100%"
         >
             <ListItemButton
-                sx={{ width: '100%', height: 'auto', paddingX: '5px', borderRadius: theme.shape.borderRadius }}
+                sx={{ width: '100%', height: 'auto', paddingX: '5px', borderRadius: '5px' }}
                 onClick={() => setRealOpen((a) => !a)}
             >
                 <Stack

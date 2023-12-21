@@ -127,12 +127,27 @@ export function LedgerProvider({ children, baseTheme }) {
         return () => clearInterval(interval);
     }, [refresh]);
 
+    // color stuff below this
+    function adjust(color, amount) {
+        return (
+            '#' +
+            color
+                .replace(/^#/, '')
+                .replace(/../g, (color) =>
+                    ('0' + Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2)
+                )
+        );
+    }
+
     const generateRealColors = useCallback(async () => {
         if (people) {
             let newColors = {};
             for (let i = 0; i < people.length; i++) {
                 const person = people[i];
                 await prominent(person.image, { amount: 1, format: 'hex' }).then((color) => {
+                    if (getContrastRatio(color, '#111') <= 4.5) {
+                        color = adjust(color, 50);
+                    }
                     newColors[person._id.toLowerCase()] = {
                         main: color,
                         contrastText: getContrastRatio(color, '#111') > 4.5 ? '#111' : '#fff'
@@ -179,29 +194,6 @@ export function LedgerProvider({ children, baseTheme }) {
             });
         }
     }, [generateRealColors, baseTheme, peopleBaseColors, people]);
-
-    // const generateTheme = useCallback(() => {
-    //     let newTheme = { ...baseTheme };
-    //     newTheme.palette.primaryText = {
-    //         main: newTheme.palette.text.primary
-    //     };
-    //     if (peopleRealColors) {
-    //         console.log('using real');
-    //         Object.keys(peopleRealColors).forEach((personId) => {
-    //             newTheme.palette[personId.toLowerCase()] = peopleRealColors[personId];
-    //         });
-    //     } else if (peopleBaseColors) {
-    //         console.log('using base');
-    //         Object.keys(peopleBaseColors).forEach((personId) => {
-    //             newTheme.palette[personId.toLowerCase()] = peopleBaseColors[personId];
-    //         });
-    //     }
-    //     setTheme(createTheme(newTheme));
-    // }, [baseTheme, peopleBaseColors, peopleRealColors]);
-
-    // useEffect(() => {
-    //     generateTheme();
-    // }, [generateTheme]);
 
     const getPersonFromId = useCallback(
         (id) => {

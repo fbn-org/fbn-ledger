@@ -30,13 +30,21 @@ const baseTheme = createTheme({
         }
     },
     shape: {
-        borderRadius: '5px'
+        borderRadius: 5
     },
     components: {
         MuiButton: {
             styleOverrides: {
                 root: {
                     textTransform: 'none'
+                }
+            }
+        },
+        MuiDrawer: {
+            styleOverrides: {
+                paper: {
+                    // this is the ONLY WAY to fix the background color i have no idea why this works
+                    backgroundImage: 'url()'
                 }
             }
         }

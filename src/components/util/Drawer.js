@@ -1,92 +1,73 @@
-import { Container, Divider, Slide, Stack, Typography, useTheme } from '@mui/material';
+import { Container, Divider, Drawer, Stack, Typography, useTheme } from '@mui/material';
 
-export default function Drawer({ open, title, subtitle, actions, children }) {
+export default function CustomDrawer({ open, title, subtitle, actions, children }) {
     const theme = useTheme();
 
     return (
-        <Container maxWidth="sm">
-            <Slide
-                direction="up"
-                in={open}
-                mountOnEnter
-                unmountOnExit
-                style={{ position: 'relative' }}
+        <Drawer
+            anchor={'bottom'}
+            open={open}
+        >
+            <Container
+                maxWidth="sm"
+                w="100%"
             >
-                <div
-                    style={{
-                        position: 'fixed',
-                        width: '100vw',
-                        maxHeight: '100vh',
-                        left: 0,
-                        overflowY: 'scroll',
-                        bottom: 0,
-                        background: theme.palette.background.default,
-                        zIndex: 100,
-                        padding: '0px 15px 80px 15px',
-                        paddingBottom: '80px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'flex-start',
-                        alignItems: 'center'
-                    }}
+                <Divider style={{ width: '100%', marginBottom: '10px' }} />
+                <Stack
+                    direction="column"
+                    width="100%"
+                    maxWidth={theme.breakpoints.values.sm}
+                    justifyContent="flex-start"
+                    alignItems="center"
                 >
                     <Stack
                         direction="column"
                         width="100%"
-                        maxWidth={theme.breakpoints.values.sm}
-                        justifyContent="flex-start"
-                        alignItems="center"
+                        alignItems="flex-start"
+                        gap={2}
+                        marginBottom="16px"
                     >
-                        <Divider style={{ width: '100%', marginBottom: '15px' }} />
-
                         <Stack
-                            direction="column"
+                            direction="row"
                             width="100%"
-                            alignItems="flex-start"
-                            gap={1}
-                            marginBottom="16px"
                         >
                             <Stack
-                                direction="row"
-                                width="100%"
+                                direction="column"
+                                alignItems="flex-start"
+                                spacing={0}
                             >
-                                <Stack
-                                    direction="column"
-                                    alignItems="flex-start"
+                                <Typography
+                                    variant="h4"
+                                    sx={{ flexGrow: 1 }}
                                 >
+                                    {title}
+                                </Typography>
+                                {subtitle ? (
                                     <Typography
-                                        variant="h4"
-                                        sx={{ flexGrow: 1 }}
+                                        variant="subtitle1"
+                                        color="text.secondary"
                                     >
-                                        {title}
+                                        {subtitle}
                                     </Typography>
-                                    {subtitle ? (
-                                        <Typography
-                                            variant="subtitle1"
-                                            color="text.secondary"
-                                        >
-                                            {subtitle}
-                                        </Typography>
-                                    ) : null}
-                                </Stack>
-                                <Stack
-                                    direction="row"
-                                    height="100%"
-                                    gap={1}
-                                    flexGrow={1}
-                                    justifyContent="flex-end"
-                                    alignItems="flex-start"
-                                    alignSelf="flex-start"
-                                >
-                                    {actions}
-                                </Stack>
+                                ) : null}
                             </Stack>
-
-                            {children}
+                            <Stack
+                                direction="row"
+                                height="100%"
+                                gap={1}
+                                flexGrow={1}
+                                justifyContent="flex-end"
+                                alignItems="flex-start"
+                                alignSelf="flex-start"
+                            >
+                                {actions}
+                            </Stack>
                         </Stack>
+
+                        {children}
                     </Stack>
-                </div>
-            </Slide>
-        </Container>
+                </Stack>
+            </Container>
+        </Drawer>
     );
 }

@@ -1,28 +1,13 @@
 import { useEffect, useState } from 'react';
 
-import {
-    Avatar,
-    Divider,
-    Grid,
-    Icon,
-    IconButton,
-    ListItemIcon,
-    ListItemText,
-    Menu,
-    MenuItem,
-    MenuList,
-    Stack,
-    Typography,
-    useTheme
-} from '@mui/material';
+import { Avatar, Container, Drawer, Grid, Icon, IconButton, Stack, Typography, useTheme } from '@mui/material';
 
-import { Group, KeyboardDoubleArrowDown, KeyboardDoubleArrowUp, Logout } from '@mui/icons-material';
+import { KeyboardDoubleArrowDown, KeyboardDoubleArrowUp } from '@mui/icons-material';
 
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import utc from 'dayjs/plugin/utc';
-import { signOut, useSession } from 'next-auth/react';
-import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 import useLedger from '@/contexts/LedgerContext.js';
 
@@ -38,14 +23,13 @@ export default function Dashboard() {
     const theme = useTheme();
     const { data: session } = useSession();
 
-    const { occasions, people, ledger, getPersonFromId } = useLedger();
+    const { occasions, group, people, ledger, getPersonFromId } = useLedger();
 
     const [recentTransactions, setRecentTransactions] = useState(null);
     const [featuredOccasion, setFeaturedOccasion] = useState(null);
     const [peopleStats, setPeopleStats] = useState(null);
 
-    const [anchorEl, setAnchorEl] = useState(null);
-    const menuOpen = Boolean(anchorEl);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     useEffect(() => {
         if (!ledger) return;
@@ -156,45 +140,19 @@ export default function Dashboard() {
                 >
                     <IconButton
                         size="small"
-                        onClick={(event) => setAnchorEl(event.currentTarget)}
+                        onClick={(event) => setMenuOpen(true)}
                     >
                         <Avatar src={session?.user?.image} />
                     </IconButton>
-                    <Menu
+                    <Drawer
+                        anchor={'bottom'}
                         open={menuOpen}
-                        onClose={() => setAnchorEl(null)}
-                        anchorEl={anchorEl}
+                        onClose={() => {
+                            setMenuOpen(false);
+                        }}
                     >
-                        {/* <Stack
-                            direction="column"
-                            alignItems="start"
-                            justifyContent="start"
-                            px={2}
-                        >
-                            <Typography variant="h6">{session?.user?.name}</Typography>
-                        </Stack> */}
-                        <MenuList>
-                            <MenuItem selected>
-                                <ListItemText>FBN</ListItemText>
-                            </MenuItem>
-                            <Divider />
-                            <MenuItem
-                                as={Link}
-                                href="/groups"
-                            >
-                                <ListItemIcon>
-                                    <Group />
-                                </ListItemIcon>
-                                <ListItemText>Groups</ListItemText>
-                            </MenuItem>
-                            <MenuItem onClick={signOut}>
-                                <ListItemIcon>
-                                    <Logout />
-                                </ListItemIcon>
-                                <ListItemText>Sign out</ListItemText>
-                            </MenuItem>
-                        </MenuList>
-                    </Menu>
+                        <Container maxWidth="sm">hi</Container>
+                    </Drawer>
 
                     <Typography
                         variant="h4"
@@ -202,7 +160,7 @@ export default function Dashboard() {
                         textAlign="center"
                         lineHeight={1.5}
                     >
-                        FBN
+                        {group && group.name}
                     </Typography>
                 </Stack>
 

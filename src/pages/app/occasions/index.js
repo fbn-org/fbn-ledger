@@ -177,7 +177,7 @@ function OccasionGroup({ occasionsType, occasions, people, ledger, editCallback,
             width="100%"
         >
             <ListItemButton
-                sx={{ width: '100%', height: 'auto', paddingX: '5px', borderRadius: theme.shape.borderRadius }}
+                sx={{ width: '100%', height: 'auto', paddingX: '5px', borderRadius: '5px' }}
                 onClick={() => {
                     setOpen((open) => !open);
                 }}

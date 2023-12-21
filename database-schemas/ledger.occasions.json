@@ -7,17 +7,22 @@
         "start_date": "2023-06-21T04:00:00.000Z",
         "end_date": "2023-06-22T03:59:59.999Z",
         "group": "658272b5dab44fb823e85601",
-        "included_people": ["65833c3f74715132a5224231", "6580e45c75450313c0230395", "matty", "hudson"]
+        "included_people": [
+            "65833c3f74715132a5224231",
+            "6580e45c75450313c0230395",
+            "65836d2e5b8e2976979a64a3",
+            "658344b84cbdf593cc991e03"
+        ]
     },
     {
         "_id": {
             "$oid": "64b0e67da7fc9243bde90d14"
         },
-        "name": "hudson’s birthday",
+        "name": "658344b84cbdf593cc991e03’s birthday",
         "start_date": "2023-07-14T04:00:00.000Z",
         "end_date": "2023-07-15T03:59:59.999Z",
         "group": "658272b5dab44fb823e85601",
-        "included_people": ["6580e45c75450313c0230395", "matty", "hudson"]
+        "included_people": ["6580e45c75450313c0230395", "65836d2e5b8e2976979a64a3", "658344b84cbdf593cc991e03"]
     },
     {
         "_id": {
@@ -27,7 +32,7 @@
         "start_date": "2023-07-21T04:00:00.000Z",
         "end_date": "2023-07-22T03:59:59.999Z",
         "group": "658272b5dab44fb823e85601",
-        "included_people": ["6580e45c75450313c0230395", "hudson", "matty"]
+        "included_people": ["6580e45c75450313c0230395", "658344b84cbdf593cc991e03", "65836d2e5b8e2976979a64a3"]
     },
     {
         "_id": {
@@ -37,7 +42,12 @@
         "start_date": "2023-11-21T05:00:00.000Z",
         "end_date": "2023-11-23T04:59:59.999Z",
         "group": "658272b5dab44fb823e85601",
-        "included_people": ["65833c3f74715132a5224231", "6580e45c75450313c0230395", "matty", "hudson"]
+        "included_people": [
+            "65833c3f74715132a5224231",
+            "6580e45c75450313c0230395",
+            "65836d2e5b8e2976979a64a3",
+            "658344b84cbdf593cc991e03"
+        ]
     },
     {
         "_id": {
@@ -47,6 +57,11 @@
         "start_date": "2023-12-20T05:00:00.000Z",
         "end_date": "2023-12-22T04:59:59.999Z",
         "group": "658272b5dab44fb823e85601",
-        "included_people": ["6580e45c75450313c0230395", "65833c3f74715132a5224231", "matty", "hudson"]
+        "included_people": [
+            "6580e45c75450313c0230395",
+            "65833c3f74715132a5224231",
+            "65836d2e5b8e2976979a64a3",
+            "658344b84cbdf593cc991e03"
+        ]
     }
 ]

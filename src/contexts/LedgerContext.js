@@ -23,6 +23,8 @@ export function LedgerProvider({ children, baseTheme }) {
     const [group, setGroup] = useState(null);
     const [people, setPeople] = useState(null);
 
+    const [theme, setTheme] = useState(createTheme(baseTheme));
+
     const request = useRequest();
     const { data: session } = useSession();
 
@@ -125,6 +127,24 @@ export function LedgerProvider({ children, baseTheme }) {
         return () => clearInterval(interval);
     }, [refresh]);
 
+    const generateRealColors = useCallback(async () => {
+        if (people) {
+            let newColors = {};
+            for (let i = 0; i < people.length; i++) {
+                const person = people[i];
+                await prominent(person.image, { amount: 1, format: 'hex' }).then((color) => {
+                    newColors[person._id.toLowerCase()] = {
+                        main: color,
+                        contrastText: getContrastRatio(color, '#111') > 4.5 ? '#111' : '#fff'
+                        // contrastText: '#fff'
+                    };
+                });
+            }
+            console.log(newColors);
+            return newColors;
+        }
+    }, [people]);
+
     const peopleBaseColors = useMemo(() => {
         if (people) {
             let colors = {};
@@ -135,63 +155,53 @@ export function LedgerProvider({ children, baseTheme }) {
                 };
             });
             console.log(colors);
-            return colors;
         }
     }, [people]);
 
-    const peopleRealColors = useMemo(() => {
-        if (people) {
-            function generate() {
-                return new Promise((resolve, reject) => {
-                    let newColors = {};
-                    people.forEach((person) => {
-                        prominent(person.image, { amount: 1, format: 'hex' }).then((color) => {
-                            newColors[person._id.toLowerCase()] = {
-                                main: color,
-                                contrastText: getContrastRatio(color, '#111') > 4.5 ? '#111' : '#fff'
-                                // contrastText: '#fff'
-                            };
-                        });
-                    });
-                    console.log(newColors);
-                    resolve(newColors);
-                });
-            }
-
-            generate().then((colors) => {
-                console.log(colors);
-                return colors;
-            });
-        }
-    }, [people]);
-
-    const generateTheme = useCallback(() => {
+    useEffect(() => {
         let newTheme = { ...baseTheme };
         newTheme.palette.primaryText = {
             main: newTheme.palette.text.primary
         };
-        if (peopleRealColors) {
-            console.log('using real');
-            Object.keys(peopleRealColors).forEach((personId) => {
-                newTheme.palette[personId.toLowerCase()] = peopleRealColors[personId];
-            });
-        } else if (peopleBaseColors) {
+        if (peopleBaseColors) {
             console.log('using base');
             Object.keys(peopleBaseColors).forEach((personId) => {
                 newTheme.palette[personId.toLowerCase()] = peopleBaseColors[personId];
             });
+            setTheme(createTheme(newTheme));
+        } else if (people) {
+            generateRealColors().then((colors) => {
+                console.log(colors);
+                Object.keys(colors).forEach((personId) => {
+                    newTheme.palette[personId.toLowerCase()] = colors[personId];
+                });
+                setTheme(createTheme(newTheme));
+            });
         }
-        return createTheme(newTheme);
-    }, [baseTheme, peopleBaseColors, peopleRealColors]);
+    }, [generateRealColors, baseTheme, peopleBaseColors, people]);
 
-    const theme = useMemo(() => {
-        if (people) {
-            return generateTheme();
-        } else {
-            console.log('using base');
-            return createTheme(baseTheme);
-        }
-    }, [generateTheme, people, baseTheme]);
+    // const generateTheme = useCallback(() => {
+    //     let newTheme = { ...baseTheme };
+    //     newTheme.palette.primaryText = {
+    //         main: newTheme.palette.text.primary
+    //     };
+    //     if (peopleRealColors) {
+    //         console.log('using real');
+    //         Object.keys(peopleRealColors).forEach((personId) => {
+    //             newTheme.palette[personId.toLowerCase()] = peopleRealColors[personId];
+    //         });
+    //     } else if (peopleBaseColors) {
+    //         console.log('using base');
+    //         Object.keys(peopleBaseColors).forEach((personId) => {
+    //             newTheme.palette[personId.toLowerCase()] = peopleBaseColors[personId];
+    //         });
+    //     }
+    //     setTheme(createTheme(newTheme));
+    // }, [baseTheme, peopleBaseColors, peopleRealColors]);
+
+    // useEffect(() => {
+    //     generateTheme();
+    // }, [generateTheme]);
 
     const getPersonFromId = useCallback(
         (id) => {

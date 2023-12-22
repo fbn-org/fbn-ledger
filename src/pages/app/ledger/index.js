@@ -80,13 +80,14 @@ export default function Ledger(props) {
             <div
                 style={{
                     width: '100%',
-                    height: '100%',
+                    height: 'auto',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'flex-start',
                     alignItems: 'flex-start',
                     gap: '15px',
                     border: 'none',
+                    overflow: 'auto',
                     marginBottom: '80px'
                 }}
             >

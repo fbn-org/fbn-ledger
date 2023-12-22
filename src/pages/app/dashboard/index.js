@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Avatar, Container, Drawer, Grid, Icon, IconButton, Stack, Typography, useTheme } from '@mui/material';
+import { Avatar, Grid, Icon, IconButton, Stack, Typography, useTheme } from '@mui/material';
 
 import { KeyboardDoubleArrowDown, KeyboardDoubleArrowUp } from '@mui/icons-material';
 
@@ -8,11 +8,13 @@ import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import utc from 'dayjs/plugin/utc';
 import { useSession } from 'next-auth/react';
+import { useDisclosure } from 'react-use-disclosure';
 
 import useLedger from '@/contexts/LedgerContext.js';
 
 import PrimaryLayout from '@/layouts/PrimaryLayout.js';
 
+import MenuDrawer from '@/components/dashboard/MenuDrawer';
 import OccasionCard from '@/components/occasions/OccasionCard.js';
 import Card from '@/components/util/Card.js';
 
@@ -29,7 +31,7 @@ export default function Dashboard() {
     const [featuredOccasion, setFeaturedOccasion] = useState(null);
     const [peopleStats, setPeopleStats] = useState(null);
 
-    const [menuOpen, setMenuOpen] = useState(false);
+    const { isOpen: menuOpen, open: onMenuOpen, close: onMenuClose } = useDisclosure();
 
     useEffect(() => {
         if (!ledger) return;
@@ -121,6 +123,11 @@ export default function Dashboard() {
 
     return (
         <>
+            <MenuDrawer
+                open={menuOpen}
+                onClose={onMenuClose}
+            />
+
             <div
                 style={{
                     width: '100%',
@@ -140,19 +147,10 @@ export default function Dashboard() {
                 >
                     <IconButton
                         size="small"
-                        onClick={(event) => setMenuOpen(true)}
+                        onClick={(event) => onMenuOpen()}
                     >
                         <Avatar src={session?.user?.image} />
                     </IconButton>
-                    <Drawer
-                        anchor={'bottom'}
-                        open={menuOpen}
-                        onClose={() => {
-                            setMenuOpen(false);
-                        }}
-                    >
-                        <Container maxWidth="sm">hi</Container>
-                    </Drawer>
 
                     <Typography
                         variant="h4"

@@ -19,46 +19,55 @@ export function LedgerProvider({ children, baseTheme }) {
     const [occasions, setOccasions] = useState(null);
     const [ledger, setLedger] = useState(null);
 
-    const [user, setUser] = useState(null);
-    const [group, setGroup] = useState(null);
-    const [people, setPeople] = useState(null);
-
-    const [theme, setTheme] = useState(createTheme(baseTheme));
-
-    const request = useRequest();
     const { data: session } = useSession();
 
-    // first fetch user data
-    useEffect(() => {
-        if (!session) return;
-        request(`/api/people/${session.user.id}`, {
-            method: 'GET'
-        })
-            .then((data) => {
-                console.log(data);
-                setUser(data);
-            })
-            .catch((err) => {});
-    }, [session, request]);
+    const user = useMemo(() => {
+        if (!session?.user) return null;
+        console.log(session.user);
+        return {
+            ...session.user
+        };
+    }, [session]);
+    const [group, setGroup] = useState(null);
+    const [groups, setGroups] = useState(null);
+    const [people, setPeople] = useState(null);
+
+    const request = useRequest();
+
+    const [theme, setTheme] = useState(createTheme(baseTheme));
 
     // fetch group data next
     useEffect(() => {
         if (!user) return;
-        const groupId = user.groups[0]; // also make this work with localstorage
-        request(`/api/groups/${groupId}`, {
-            method: 'GET'
-        })
-            .then((data) => {
-                setGroup(data.group);
-                setPeople(data.people);
-            })
-            .catch((err) => {});
+        const groups = user.groups;
+
+        async function fetchGroups() {
+            let groupData = {};
+
+            for (let i = 0; i < groups.length; i++) {
+                const groupId = groups[i];
+                await request(`/api/groups/${groupId}`, {
+                    method: 'GET'
+                })
+                    .then((data) => {
+                        groupData[data.group._id] = data;
+                    })
+                    .catch((err) => {});
+            }
+            return groupData;
+        }
+
+        fetchGroups().then((groupData) => {
+            setGroups(groupData);
+            if (groups?.length > 0) {
+                setGroup(groupData[groups[0]].group);
+                setPeople(groupData[groups[0]].people);
+            }
+        });
     }, [user, session, request]);
 
     const refresh = useCallback(() => {
         if (!session?.user) return;
-
-        console.log(group);
 
         request(`/api/occasions/fetchOccasions?group=${group?._id}`)
             .then((data) => {
@@ -178,13 +187,8 @@ export function LedgerProvider({ children, baseTheme }) {
         newTheme.palette.primaryText = {
             main: newTheme.palette.text.primary
         };
-        if (peopleBaseColors) {
-            console.log('using base');
-            Object.keys(peopleBaseColors).forEach((personId) => {
-                newTheme.palette[personId.toLowerCase()] = peopleBaseColors[personId];
-            });
-            setTheme(createTheme(newTheme));
-        } else if (people) {
+        if (people) {
+            console.log('generating');
             generateRealColors().then((colors) => {
                 console.log(colors);
                 Object.keys(colors).forEach((personId) => {
@@ -192,6 +196,14 @@ export function LedgerProvider({ children, baseTheme }) {
                 });
                 setTheme(createTheme(newTheme));
             });
+        } else if (peopleBaseColors) {
+            console.log('using base');
+            Object.keys(peopleBaseColors).forEach((personId) => {
+                newTheme.palette[personId.toLowerCase()] = peopleBaseColors[personId];
+            });
+            setTheme(createTheme(newTheme));
+        } else {
+            setTheme(createTheme(newTheme));
         }
     }, [generateRealColors, baseTheme, peopleBaseColors, people]);
 
@@ -220,10 +232,34 @@ export function LedgerProvider({ children, baseTheme }) {
         [people]
     );
 
+    const setActiveGroup = useCallback(
+        (groupId) => {
+            setGroup(groups[groupId].group);
+            setPeople(groups[groupId].people);
+        },
+        [groups]
+    );
+
     return (
         <ThemeProvider theme={theme}>
             <LedgerContext.Provider
-                value={{ occasions, people, ledger, group, user, theme, refresh, getPersonFromId, checkMembership }}
+                value={{
+                    occasions,
+                    ledger,
+
+                    user,
+
+                    people,
+                    group,
+                    groups,
+                    setActiveGroup,
+
+                    theme,
+                    refresh,
+
+                    getPersonFromId,
+                    checkMembership
+                }}
             >
                 {<>{children}</>}
             </LedgerContext.Provider>

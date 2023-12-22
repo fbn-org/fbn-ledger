@@ -1,4 +1,5 @@
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
+import { ObjectId } from 'mongodb';
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
@@ -24,7 +25,13 @@ export const authOptions = {
     callbacks: {
         session: async ({ session, token }) => {
             if (session?.user) {
+                const mognoClient = await clientPromise;
+                const userData = await mognoClient
+                    .db('auth')
+                    .collection('users')
+                    .findOne({ _id: new ObjectId(token.sub) });
                 session.user.id = token.sub;
+                session.user.groups = userData?.groups;
             }
             return session;
         },

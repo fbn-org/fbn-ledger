@@ -11,6 +11,9 @@ export default function CustomDrawer({ open, title, subtitle, actions, children 
             <Container
                 maxWidth="sm"
                 w="100%"
+                sx={{
+                    marginBottom: '30px'
+                }}
             >
                 <Divider style={{ width: '100%', marginBottom: '10px' }} />
                 <Stack

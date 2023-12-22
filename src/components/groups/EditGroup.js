@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
     Avatar,
@@ -12,9 +12,11 @@ import {
     Typography
 } from '@mui/material';
 
-import { AutoAwesome, ContentCopy, Delete, Remove } from '@mui/icons-material';
+import { AutoAwesome, ContentCopy, DeleteForever, Remove } from '@mui/icons-material';
 
 import { LoadingButton } from '@mui/lab';
+
+import { useSnackbar } from 'notistack';
 
 import Drawer from '@/components/util/Drawer';
 
@@ -34,22 +36,36 @@ function Section({ name, children }) {
     );
 }
 
-export default function EditGroup({ open }) {
+export default function EditGroup({ open, group, onClose }) {
     const [confirmationOpen, setConfirmationOpen] = useState(false);
+
+    const [groupData, setGroupData] = useState(null);
+    const [groupName, setGroupName] = useState(null);
+    const [groupPeople, setGroupPeople] = useState(null);
+
+    const { enqueueSnackbar } = useSnackbar();
+
+    useEffect(() => {
+        if (group) {
+            setGroupData(group.group);
+            setGroupName(group.group.name);
+            setGroupPeople(group.people);
+        }
+    }, [group]);
 
     return (
         <Drawer
             title={'Edit group'}
             open={open}
             actions={
-                <ClickAwayListener onClickAway={() => setConfirmationOpen(false)}>
+                <ClickAwayListener onClickAway={() => {}}>
                     <Tooltip
                         arrow
                         PopperProps={{
                             disablePortal: true
                         }}
-                        onClose={() => setConfirmationOpen(false)}
-                        open={confirmationOpen}
+                        onClose={null}
+                        open={null}
                         disableFocusListener
                         disableHoverListener
                         disableTouchListener
@@ -57,88 +73,111 @@ export default function EditGroup({ open }) {
                     >
                         <IconButton
                             color="secondary"
-                            onClick={() => (confirmationOpen ? deleteTransaction() : setConfirmationOpen(true))}
+                            onClick={null}
                         >
-                            <Delete />
+                            <DeleteForever />
                         </IconButton>
                     </Tooltip>
                 </ClickAwayListener>
             }
         >
-            <Stack
-                direction="column"
-                mt={1}
-                gap={2}
-                width="100%"
-            >
-                <TextField
-                    fullWidth
-                    variant="outlined"
-                    label="Group name"
-                    size="medium"
-                    defaultValue="FBN"
-                />
-
-                <Section name="People">
+            {groupData && (
+                <>
                     <Stack
                         direction="column"
-                        gap={1}
+                        mt={1}
+                        gap={2}
+                        width="100%"
                     >
-                        <Stack
-                            direction="row"
-                            gap={1}
-                            alignItems="center"
-                            px={1}
-                        >
-                            <Avatar sx={{ width: '20px', height: '20px' }}>
-                                <Icon />
-                            </Avatar>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            label="Group name"
+                            size="medium"
+                            value={groupName}
+                            onChange={(e) => setGroupName(e.target.value)}
+                        />
 
+                        <Section name="People">
+                            <Stack
+                                direction="column"
+                                gap={1}
+                            >
+                                {groupData.people.map((personId) => {
+                                    const person = groupPeople.find((person) => person._id === personId);
+
+                                    return (
+                                        <Stack
+                                            key={person._id}
+                                            direction="row"
+                                            gap={1.5}
+                                            alignItems="center"
+                                            px={1}
+                                        >
+                                            <Avatar
+                                                src={person.image}
+                                                sx={{ width: '25px', height: '25px' }}
+                                            >
+                                                <Icon />
+                                            </Avatar>
+
+                                            <Stack
+                                                direction="row"
+                                                gap={0.5}
+                                                alignItems="center"
+                                            >
+                                                <Typography variant="h6">{person.name}</Typography>
+                                                {person._id === groupData.createdBy && (
+                                                    <AutoAwesome
+                                                        fontSize="small"
+                                                        color="secondary"
+                                                    />
+                                                )}
+                                            </Stack>
+
+                                            <Spacer />
+                                            <IconButton
+                                                size="small"
+                                                color="secondary"
+                                            >
+                                                <Remove />
+                                            </IconButton>
+                                        </Stack>
+                                    );
+                                })}
+                            </Stack>
+                        </Section>
+
+                        <Section name="Invite code">
                             <Stack
                                 direction="row"
-                                gap={0.5}
+                                justifyContent="center"
                                 alignItems="center"
                             >
-                                <Typography variant="h6">Colin</Typography>
-                                <AutoAwesome
-                                    fontSize="small"
+                                <Typography
+                                    variant="body1"
+                                    fontFamily="monospace"
+                                >
+                                    {group.group._id}
+                                </Typography>
+                                <Spacer />
+                                <IconButton
+                                    size="small"
                                     color="primary"
-                                />
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(group.group._id);
+                                        enqueueSnackbar('copied invite code', {
+                                            variant: 'success'
+                                        });
+                                    }}
+                                >
+                                    <ContentCopy fontSize="small" />
+                                </IconButton>
                             </Stack>
-
-                            <Spacer />
-                            <IconButton
-                                size="small"
-                                color="secondary"
-                            >
-                                <Remove />
-                            </IconButton>
-                        </Stack>
+                        </Section>
                     </Stack>
-                </Section>
-
-                <Section name="Invite code">
-                    <Stack
-                        direction="row"
-                        justifyContent="center"
-                        alignItems="center"
-                    >
-                        <Typography
-                            variant="body1"
-                            fontFamily="monospace"
-                        >
-                            648e4ce5943894b71a1c60a3
-                        </Typography>
-                        <Spacer />
-                        <IconButton
-                            size="small"
-                            color="primary"
-                        >
-                            <ContentCopy fontSize="small" />
-                        </IconButton>
-                    </Stack>
-                </Section>
-            </Stack>
+                </>
+            )}
 
             <Stack
                 direction="row"
@@ -151,7 +190,7 @@ export default function EditGroup({ open }) {
                     variant="outlined"
                     color="secondary"
                     size="large"
-                    onClick={null}
+                    onClick={onClose}
                     sx={{ width: '100%' }}
                 >
                     Cancel

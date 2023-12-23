@@ -1,18 +1,21 @@
 import { Container, Divider, Drawer, Stack, Typography, useTheme } from '@mui/material';
 
-export default function CustomDrawer({ open, title, subtitle, actions, children }) {
+export default function CustomDrawer({ open, title, subtitle, onClose, actions, children }) {
     const theme = useTheme();
 
     return (
         <Drawer
             anchor={'bottom'}
             open={open}
+            onClose={() => {
+                onClose ? onClose() : null;
+            }}
         >
             <Container
                 maxWidth="sm"
                 w="100%"
                 sx={{
-                    marginBottom: '30px'
+                    marginBottom: '36px'
                 }}
             >
                 <Divider style={{ width: '100%', marginBottom: '10px' }} />

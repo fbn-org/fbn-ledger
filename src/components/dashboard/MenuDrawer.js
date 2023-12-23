@@ -25,7 +25,7 @@ export default function MenuDrawer({ open, onClose }) {
 
     return (
         <Drawer
-            anchor={'bottom'}
+            anchor={'top'}
             open={open}
             onClose={() => {
                 onClose();
@@ -33,7 +33,7 @@ export default function MenuDrawer({ open, onClose }) {
         >
             <Container
                 maxWidth="sm"
-                sx={{ pt: '16px', mb: '24px' }}
+                sx={{ mt: '30px', mb: '16px' }}
             >
                 <Stack
                     direction="column"
@@ -74,26 +74,31 @@ export default function MenuDrawer({ open, onClose }) {
                                         >
                                             <ListItemButton
                                                 selected={selectedGroup._id === group._id}
-                                                onClick={setActiveGroup(group._id)}
+                                                onClick={() => {
+                                                    setActiveGroup(group._id);
+                                                }}
                                             >
                                                 <ListItemIcon>
                                                     <AvatarGroup
                                                         max={4}
                                                         spacing="small"
+                                                        sx={{
+                                                            '& .MuiAvatar-root': { width: 20, height: 20, fontSize: 12 }
+                                                        }}
                                                     >
                                                         {people.map((person) => (
                                                             <Avatar
                                                                 key={person._id}
                                                                 src={person?.image}
-                                                                sx={{
-                                                                    width: 20,
-                                                                    height: 20
-                                                                }}
+                                                                // sx={{
+                                                                //     width: 20,
+                                                                //     height: 20
+                                                                // }}
                                                             />
                                                         ))}
                                                     </AvatarGroup>
                                                 </ListItemIcon>
-                                                <ListItemText>FBN</ListItemText>
+                                                <ListItemText>{group.name}</ListItemText>
                                             </ListItemButton>
                                         </ListItem>
                                     );

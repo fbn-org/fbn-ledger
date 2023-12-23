@@ -70,6 +70,7 @@ export default function Groups({}) {
                         width="100%"
                         flexGrow={1}
                         size="medium"
+                        onClick={onJoinOpen}
                     >
                         Join group
                     </Button>
@@ -79,6 +80,7 @@ export default function Groups({}) {
                         width="100%"
                         flexGrow={1}
                         size="medium"
+                        onClick={onCreateOpen}
                     >
                         Create group
                     </Button>
@@ -105,12 +107,19 @@ export default function Groups({}) {
                                     color="white"
                                     gap={1}
                                     justifyContent="flex-start"
+                                    py={1}
                                     onClick={() => {
                                         setEditingGroup(groups[groupId]);
                                         onEditOpen();
                                     }}
                                 >
-                                    <AvatarGroup spacing="small">
+                                    <AvatarGroup
+                                        spacing="small"
+                                        sx={{
+                                            width: 80,
+                                            justifyContent: 'flex-end'
+                                        }}
+                                    >
                                         {people.map((person) => {
                                             return (
                                                 <Avatar

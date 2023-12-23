@@ -131,7 +131,7 @@ export function LedgerProvider({ children, baseTheme }) {
         refresh();
         const interval = setInterval(() => {
             refresh();
-        }, 5000);
+        }, 2500);
 
         return () => clearInterval(interval);
     }, [refresh]);
@@ -234,10 +234,12 @@ export function LedgerProvider({ children, baseTheme }) {
 
     const setActiveGroup = useCallback(
         (groupId) => {
+            console.log(groupId);
             setGroup(groups[groupId].group);
             setPeople(groups[groupId].people);
+            refresh();
         },
-        [groups]
+        [groups, refresh]
     );
 
     return (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Avatar, Grid, Icon, IconButton, Stack, Typography, useTheme } from '@mui/material';
+import { Avatar, Divider, Grid, Icon, IconButton, Stack, Typography, useTheme } from '@mui/material';
 
 import { KeyboardDoubleArrowDown, KeyboardDoubleArrowUp } from '@mui/icons-material';
 
@@ -35,9 +35,8 @@ export default function Dashboard() {
 
     useEffect(() => {
         if (!ledger) return;
-        if (ledger.length !== 0) {
-            setRecentTransactions(ledger.slice(0, 4));
-        }
+        console.log(ledger);
+        setRecentTransactions(ledger.slice(0, 4));
     }, [ledger]);
 
     useEffect(() => {
@@ -102,8 +101,6 @@ export default function Dashboard() {
                     peopleTotals[p] += parseFloat(item.amount) / item.people.length;
                 });
             });
-
-            console.log(peopleTotals);
 
             Object.keys(peopleTotals).forEach((p) => {
                 if (stats[p]) {
@@ -212,7 +209,15 @@ export default function Dashboard() {
                                 showPayoutsButton={false}
                                 disableStats={featuredOccasion.timeState === 'upcoming'}
                             />
-                        ) : null}
+                        ) : (
+                            <Divider
+                                textAlign="center"
+                                sx={{ width: '100%', color: theme.palette.text.secondary }}
+                                fullWidth
+                            >
+                                no upcoming occasions
+                            </Divider>
+                        )}
 
                         {peopleStats ? (
                             // <Card style={{ gap: "10px" }} title="People" icon={<Person />}>

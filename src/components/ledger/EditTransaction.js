@@ -392,7 +392,6 @@ export default function EditTransaction({ isNew, editData, people, group, occasi
                                     setUserPaying(selectionEntry.target.value);
                                 }}
                                 renderValue={(selected) => {
-                                    console.log(selected);
                                     let person = getPersonFromId(selected);
                                     return (
                                         <Stack

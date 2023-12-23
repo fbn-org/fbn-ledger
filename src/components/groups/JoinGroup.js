@@ -68,7 +68,7 @@ export default function JoinGroup({ open, onClose }) {
             <Stack
                 direction="row"
                 mt={1}
-                gap={2}
+                spacing={1}
                 width="100%"
             >
                 <TextField
@@ -82,13 +82,17 @@ export default function JoinGroup({ open, onClose }) {
                     }}
                 />
                 <IconButton
+                    size="small"
+                    sx={{
+                        px: 2
+                    }}
                     color="primary"
                     onClick={async () => {
                         const groupId = await navigator.clipboard.readText();
                         setGroupId(groupId);
                     }}
                 >
-                    <ContentPaste />
+                    <ContentPaste fontSize="small" />
                 </IconButton>
             </Stack>
 

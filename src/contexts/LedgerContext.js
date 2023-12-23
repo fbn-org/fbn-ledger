@@ -44,7 +44,7 @@ export function LedgerProvider({ children, baseTheme }) {
         async function fetchGroups() {
             let groupData = {};
 
-            for (let i = 0; i < groups.length; i++) {
+            for (let i = 0; i < groups?.length; i++) {
                 const groupId = groups[i];
                 await request(`/api/groups/${groupId}`, {
                     method: 'GET'
@@ -164,7 +164,6 @@ export function LedgerProvider({ children, baseTheme }) {
                     };
                 });
             }
-            console.log(newColors);
             return newColors;
         }
     }, [people]);
@@ -178,7 +177,6 @@ export function LedgerProvider({ children, baseTheme }) {
                     contrastText: '#000'
                 };
             });
-            console.log(colors);
         }
     }, [people]);
 
@@ -188,9 +186,7 @@ export function LedgerProvider({ children, baseTheme }) {
             main: newTheme.palette.text.primary
         };
         if (people) {
-            console.log('generating');
             generateRealColors().then((colors) => {
-                console.log(colors);
                 Object.keys(colors).forEach((personId) => {
                     newTheme.palette[personId.toLowerCase()] = colors[personId];
                 });

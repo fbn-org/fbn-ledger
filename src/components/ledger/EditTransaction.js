@@ -267,7 +267,7 @@ export default function EditTransaction({ isNew, editData, people, group, occasi
             setCurrentOccasion(occasionFromId);
             setCurrentPeople(peopleForOccasion);
         },
-        [occasions, people]
+        [occasions, people, getPersonFromId]
     );
 
     useEffect(() => {

@@ -21,13 +21,11 @@ export default async function handler(req, res) {
                 ...body
             });
 
-        console.log(data);
-
         // add user to group
         const other = await mongoClient
             .db('auth')
             .collection('users')
-            .updateOne({ _id: new ObjectId(body.createdBy) }, { $push: { groups: data.insertedId } });
+            .updateOne({ _id: new ObjectId(body.createdBy) }, { $push: { groups: data.insertedId.toString() } });
 
         res.status(200).json(data);
     }

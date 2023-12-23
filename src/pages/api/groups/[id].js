@@ -39,5 +39,29 @@ export default async function handler(req, res) {
             group: groupData,
             people: peopleData
         });
+    } else if (req.method === 'DELETE') {
+        const groupData = await mongoClient
+            .db('ledger')
+            .collection('groups')
+            .deleteOne({
+                _id: new ObjectId(id)
+            });
+
+        // remove group from users
+        const peopleData = await mongoClient
+            .db('auth')
+            .collection('users')
+            .updateMany(
+                {
+                    groups: id
+                },
+                {
+                    $pull: {
+                        groups: id
+                    }
+                }
+            );
+
+        res.status(200).json(groupData);
     }
 }

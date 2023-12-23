@@ -24,6 +24,7 @@ export default function CreateGroup({ open, onClose }) {
     const close = useCallback(() => {
         setName('');
         onClose();
+        setSaving(false);
     }, [onClose]);
 
     const submit = useCallback(() => {

@@ -33,6 +33,41 @@ import Drawer from '@/components/util/Drawer';
 
 import Spacer from '../util/Spacer';
 
+function PersonListItem({ person, groupData, onDelete }) {
+    const { isOpen: isConfirmOpen, open: onConfirmOpen, close: onConfirmClose } = useDisclosure();
+
+    const deletePerson = useCallback(() => {
+        onDelete();
+        onConfirmClose();
+    }, [onDelete, onConfirmClose]);
+
+    return (
+        <ClickAwayListener onClickAway={onConfirmClose}>
+            <Tooltip
+                arrow
+                PopperProps={{
+                    disablePortal: true
+                }}
+                onClose={onConfirmClose}
+                open={isConfirmOpen}
+                disableFocusListener
+                disableHoverListener
+                disableTouchListener
+                title="Tap again to remove from group"
+            >
+                <IconButton
+                    size="small"
+                    color="secondary"
+                    disabled={person._id === groupData.createdBy}
+                    onClick={() => (isConfirmOpen ? deletePerson() : onConfirmOpen())}
+                >
+                    <Remove />
+                </IconButton>
+            </Tooltip>
+        </ClickAwayListener>
+    );
+}
+
 function Section({ name, children }) {
     return (
         <Stack
@@ -55,10 +90,12 @@ export default function EditGroup({ open, group, onClose }) {
     const [groupName, setGroupName] = useState(null);
     const [groupPeople, setGroupPeople] = useState(null);
 
+    const [saving, setSaving] = useState(false);
+
     const { enqueueSnackbar } = useSnackbar();
     const request = useRequest();
 
-    const { user } = useLedger();
+    const { user, refresh } = useLedger();
 
     const { update } = useSession();
 
@@ -74,6 +111,7 @@ export default function EditGroup({ open, group, onClose }) {
         setGroupData(null);
         setGroupName(null);
         setGroupPeople(null);
+        setSaving(false);
         onConfirmClose();
         onClose();
     }, [onClose, onConfirmClose]);
@@ -95,6 +133,58 @@ export default function EditGroup({ open, group, onClose }) {
                 });
             });
     }, [enqueueSnackbar, groupData, request, close, update]);
+
+    const removePerson = useCallback(
+        (personId) => {
+            const personName = groupPeople.find((person) => person._id === personId).name;
+            request(`/api/groups/${groupData._id}/remove/${personId}`, {
+                method: 'DELETE'
+            })
+                .then((data) => {
+                    setGroupPeople((people) => {
+                        return people.filter((person) => person._id !== personId);
+                    });
+                    enqueueSnackbar(`${personName} removed`, {
+                        variant: 'success'
+                    });
+                    update();
+                    refresh();
+                    if (user.id === personId) {
+                        close();
+                    }
+                })
+                .catch((err) => {
+                    enqueueSnackbar('unable to remove person', {
+                        variant: 'error'
+                    });
+                });
+        },
+        [request, groupData, enqueueSnackbar, update, refresh, user, groupPeople, close]
+    );
+
+    const saveGroup = useCallback(() => {
+        setSaving(true);
+        request(`/api/groups/${groupData._id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                ...groupData,
+                name: groupName
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then((data) => {
+                update();
+                refresh();
+                close();
+            })
+            .catch((err) => {
+                enqueueSnackbar('unable to update group', {
+                    variant: 'error'
+                });
+            });
+    }, [enqueueSnackbar, groupData, groupName, refresh, request, update, close]);
 
     return (
         <>
@@ -157,6 +247,7 @@ export default function EditGroup({ open, group, onClose }) {
                                 size="medium"
                                 value={groupName}
                                 onChange={(e) => setGroupName(e.target.value)}
+                                disabled={user.id !== groupData.createdBy}
                             />
 
                             <Section name="People">
@@ -164,9 +255,7 @@ export default function EditGroup({ open, group, onClose }) {
                                     direction="column"
                                     gap={1}
                                 >
-                                    {groupData.people.map((personId) => {
-                                        const person = groupPeople.find((person) => person._id === personId);
-
+                                    {groupPeople.map((person) => {
                                         return (
                                             <Stack
                                                 key={person._id}
@@ -197,13 +286,15 @@ export default function EditGroup({ open, group, onClose }) {
                                                 </Stack>
 
                                                 <Spacer />
-                                                <IconButton
-                                                    disabled={person._id === groupData.createdBy}
-                                                    size="small"
-                                                    color="secondary"
-                                                >
-                                                    <Remove />
-                                                </IconButton>
+                                                {user.id === groupData.createdBy || user.id === person._id ? (
+                                                    <PersonListItem
+                                                        person={person}
+                                                        groupData={groupData}
+                                                        onDelete={() => {
+                                                            removePerson(person._id);
+                                                        }}
+                                                    />
+                                                ) : null}
                                             </Stack>
                                         );
                                     })}
@@ -262,11 +353,11 @@ export default function EditGroup({ open, group, onClose }) {
                         color="primary"
                         size="large"
                         sx={{ width: '100%' }}
-                        onClick={null}
-                        loading={null}
-                        // disabled={name === '' || includedPeople.length === 0}
+                        onClick={saveGroup}
+                        loading={saving}
+                        // disabled={}
                     >
-                        Save
+                        Done
                     </LoadingButton>
                 </Stack>
             </Drawer>

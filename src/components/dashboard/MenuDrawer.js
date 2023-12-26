@@ -63,46 +63,51 @@ export default function MenuDrawer({ open, onClose }) {
                             disablePadding
                             dense
                         >
-                            {groups &&
-                                Object.keys(groups).map((groupId) => {
-                                    const group = groups[groupId].group;
-                                    const people = groups[groupId].people;
-                                    return (
-                                        <ListItem
-                                            disablePadding
-                                            key={groupId}
-                                        >
-                                            <ListItemButton
-                                                selected={selectedGroup._id === group._id}
-                                                onClick={() => {
-                                                    setActiveGroup(group._id);
-                                                }}
-                                            >
-                                                <ListItemIcon>
-                                                    <AvatarGroup
-                                                        max={4}
-                                                        spacing="small"
-                                                        sx={{
-                                                            '& .MuiAvatar-root': { width: 20, height: 20, fontSize: 12 }
-                                                        }}
-                                                    >
-                                                        {people.map((person) => (
-                                                            <Avatar
-                                                                key={person._id}
-                                                                src={person?.image}
-                                                                // sx={{
-                                                                //     width: 20,
-                                                                //     height: 20
-                                                                // }}
-                                                            />
-                                                        ))}
-                                                    </AvatarGroup>
-                                                </ListItemIcon>
-                                                <ListItemText>{group.name}</ListItemText>
-                                            </ListItemButton>
-                                        </ListItem>
-                                    );
-                                })}
+                            {groups && selectedGroup
+                                ? Object.keys(groups).map((groupId) => {
+                                      const group = groups[groupId].group;
+                                      const people = groups[groupId].people;
+                                      return (
+                                          <ListItem
+                                              disablePadding
+                                              key={groupId}
+                                          >
+                                              <ListItemButton
+                                                  selected={selectedGroup._id === group._id}
+                                                  onClick={() => {
+                                                      setActiveGroup(group._id);
+                                                  }}
+                                              >
+                                                  <ListItemIcon>
+                                                      <AvatarGroup
+                                                          max={4}
+                                                          spacing="small"
+                                                          sx={{
+                                                              '& .MuiAvatar-root': {
+                                                                  width: 20,
+                                                                  height: 20,
+                                                                  fontSize: 12
+                                                              }
+                                                          }}
+                                                      >
+                                                          {people.map((person) => (
+                                                              <Avatar
+                                                                  key={person._id}
+                                                                  src={person?.image}
+                                                                  // sx={{
+                                                                  //     width: 20,
+                                                                  //     height: 20
+                                                                  // }}
+                                                              />
+                                                          ))}
+                                                      </AvatarGroup>
+                                                  </ListItemIcon>
+                                                  <ListItemText>{group.name}</ListItemText>
+                                              </ListItemButton>
+                                          </ListItem>
+                                      );
+                                  })
+                                : null}
                         </List>
                         <Divider />
                         <List

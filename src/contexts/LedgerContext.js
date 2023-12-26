@@ -8,6 +8,8 @@ import { useSession } from 'next-auth/react';
 
 import useRequest from '@/hooks/useRequest';
 
+import useLocalStorage from '@/util/useLocalStorage';
+
 const LedgerContext = createContext([]);
 
 export default function useLedger() {
@@ -32,6 +34,8 @@ export function LedgerProvider({ children, baseTheme }) {
     const [groups, setGroups] = useState(null);
     const [people, setPeople] = useState(null);
 
+    const [savedGroupId, setSavedGroupId] = useLocalStorage('ledger-group', null);
+
     const request = useRequest();
 
     const [theme, setTheme] = useState(createTheme(baseTheme));
@@ -39,35 +43,39 @@ export function LedgerProvider({ children, baseTheme }) {
     // fetch group data next
     useEffect(() => {
         if (!user) return;
-        const groups = user.groups;
-
-        async function fetchGroups() {
-            let groupData = {};
-
-            for (let i = 0; i < groups?.length; i++) {
-                const groupId = groups[i];
-                await request(`/api/groups/${groupId}`, {
+        let requests = [];
+        const groups = user?.groups;
+        for (let i = 0; i < groups?.length; i++) {
+            const groupId = groups[i];
+            requests.push(
+                request(`/api/groups/${groupId}`, {
                     method: 'GET'
                 })
-                    .then((data) => {
-                        groupData[data.group._id] = data;
-                    })
-                    .catch((err) => {});
-            }
-            return groupData;
+            );
+            Promise.all(requests).then((data) => {
+                console.log(data);
+                let groupData = {};
+                data.forEach((group) => {
+                    groupData[group.group._id] = group;
+                });
+                setGroups(groupData);
+                if (!group && user.groups?.length > 0) {
+                    if (groupData[savedGroupId]) {
+                        setGroup(groupData[savedGroupId].group);
+                        setPeople(groupData[savedGroupId].people);
+                    } else {
+                        setGroup(groupData[groups[0]].group);
+                        setPeople(groupData[groups[0]].people);
+                    }
+                }
+            });
         }
-
-        fetchGroups().then((groupData) => {
-            setGroups(groupData);
-            if (groups?.length > 0) {
-                setGroup(groupData[groups[0]].group);
-                setPeople(groupData[groups[0]].people);
-            }
-        });
-    }, [user, session, request]);
+    }, [user, session, request, savedGroupId, group]);
 
     const refresh = useCallback(() => {
         if (!session?.user) return;
+
+        console.log('refresh');
 
         request(`/api/occasions/fetchOccasions?group=${group?._id}`)
             .then((data) => {
@@ -233,6 +241,7 @@ export function LedgerProvider({ children, baseTheme }) {
             console.log(groupId);
             setGroup(groups[groupId].group);
             setPeople(groups[groupId].people);
+            setSavedGroupId(group._id);
             refresh();
         },
         [groups, refresh]

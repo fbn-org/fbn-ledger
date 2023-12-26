@@ -63,5 +63,25 @@ export default async function handler(req, res) {
             );
 
         res.status(200).json(groupData);
+    } else if (req.method === 'PUT') {
+        const body = req.body;
+
+        delete body._id;
+
+        const groupData = await mongoClient
+            .db('ledger')
+            .collection('groups')
+            .updateOne(
+                {
+                    _id: new ObjectId(id)
+                },
+                {
+                    $set: {
+                        ...body
+                    }
+                }
+            );
+
+        res.status(200).json(groupData);
     }
 }

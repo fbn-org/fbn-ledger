@@ -41,7 +41,7 @@ export default function PersonItem({ personId, name, individualAmounts, setIndiv
 
     return (
         <>
-            {individualAmounts[personId] !== undefined ? (
+            {individualAmounts[personId] && (
                 <Stack
                     direction="column"
                     width="100%"
@@ -122,7 +122,7 @@ export default function PersonItem({ personId, name, individualAmounts, setIndiv
                         );
                     })}
                 </Stack>
-            ) : null}
+            )}
         </>
     );
 }

@@ -17,7 +17,7 @@ import Drawer from '../util/Drawer';
 
 export default function JoinGroup({ open, onClose }) {
     const { update } = useSession();
-    const { user, refresh } = useLedger();
+    const { user, refresh, groups } = useLedger();
 
     const request = useRequest();
 
@@ -28,6 +28,7 @@ export default function JoinGroup({ open, onClose }) {
 
     const close = useCallback(() => {
         setGroupId('');
+        setSaving(false);
         onClose();
     }, [onClose]);
 
@@ -35,14 +36,15 @@ export default function JoinGroup({ open, onClose }) {
         setSaving(true);
 
         if (user.groups.includes(groupId)) {
-            enqueueSnackbar('already in that group', {
-                variant: 'warning'
+            const groupName = groups[groupId].group.name;
+            enqueueSnackbar(`already in ${groupName}`, {
+                variant: 'success'
             });
             setSaving(false);
             return;
         }
 
-        request(`/api/groups/join/${groupId}`, {
+        request(`/api/groups/${groupId}/join`, {
             method: 'POST'
         })
             .then((data) => {

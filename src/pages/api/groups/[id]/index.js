@@ -13,14 +13,14 @@ export default async function handler(req, res) {
     const mongoClient = await clientPromise;
     const { id } = req.query;
 
-    if (req.method === 'GET') {
-        const groupData = await mongoClient
-            .db('ledger')
-            .collection('groups')
-            .findOne({
-                _id: new ObjectId(id)
-            });
+    const groupData = await mongoClient
+        .db('ledger')
+        .collection('groups')
+        .findOne({
+            _id: new ObjectId(id)
+        });
 
+    if (req.method === 'GET') {
         let peopleData = [];
 
         for (let i = 0; i < groupData.people.length; i++) {
@@ -40,7 +40,11 @@ export default async function handler(req, res) {
             people: peopleData
         });
     } else if (req.method === 'DELETE') {
-        const groupData = await mongoClient
+        if (groupData.createdBy !== session.user.id) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const removedGroupData = await mongoClient
             .db('ledger')
             .collection('groups')
             .deleteOne({
@@ -61,6 +65,20 @@ export default async function handler(req, res) {
                     }
                 }
             );
+
+        // delete all associated occasions
+        const occasionData = await mongoClient.db('ledger').collection('occasions').deleteMany({
+            group: id
+        });
+
+        console.log(occasionData);
+
+        // delete all associated ledger entries
+        const ledgerData = await mongoClient.db('ledger').collection('transactions').deleteMany({
+            group: id
+        });
+
+        console.log(ledgerData);
 
         res.status(200).json(groupData);
     } else if (req.method === 'PUT') {

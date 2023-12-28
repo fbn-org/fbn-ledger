@@ -137,7 +137,7 @@ export default function EditGroup({ open, group, onClose }) {
     const removePerson = useCallback(
         (personId) => {
             const personName = groupPeople.find((person) => person._id === personId).name;
-            request(`/api/groups/${groupData._id}/remove/${personId}`, {
+            request(`/api/groups/${groupData._id}/leave/${personId}`, {
                 method: 'DELETE'
             })
                 .then((data) => {

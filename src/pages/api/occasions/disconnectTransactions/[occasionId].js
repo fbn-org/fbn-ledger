@@ -1,5 +1,4 @@
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
-import { ObjectId } from 'mongodb';
 import { getServerSession } from 'next-auth/next';
 
 import clientPromise from '@/lib/mongodb';
@@ -29,15 +28,6 @@ export default async function handler(req, res) {
                     }
                 }
             );
-
-        res.status(200).json(data);
-    } else if (req.method === 'DELETE') {
-        const data = await mongoClient
-            .db('ledger')
-            .collection('occasions')
-            .deleteOne({
-                _id: new ObjectId(id)
-            });
 
         res.status(200).json(data);
     }
